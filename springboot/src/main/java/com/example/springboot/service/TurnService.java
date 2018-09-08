@@ -35,28 +35,35 @@ public class TurnService {
 		String currentPlayerTurn = tableService.getPlayerTurnQueue().peekFirst();
 		createTurnNode(tableService.getCharacterMap().get(currentPlayerTurn));
 	}
-	public void endTurn(String userName, boolean dynamite) {
+	public void endTurn(String userName) {
 		if(tableService.getPlayerTurnQueue().peek().equals(userName)){
 			tableService.getMessagingTemplate().convertAndSend("/topic/turn", new TurnResponse(ResponseType.EndTurn, userName));
 			tableService.getPlayerTurnQueue().poll();
-			String nextPlayer = tableService.getPlayerTurnQueue().peek();
-			if(StringUtils.isNotBlank(nextPlayer)) {
-				Character nextCcharacter = tableService.getCharacterMap().get(nextPlayer);
-				if(dynamite) {
-					nextCcharacter.setHasDynamite(true);
-					String sessionId = tableService.getUserMap().get(userName);
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), nextCcharacter, sessionId);
-				}
-				currentTurn.resetTurnNode(nextCcharacter);
-				currentTurn.run();
-				
-			} else {
-				tableService.getMessagingTemplate().convertAndSend("/topic/turn", new TurnResponse(ResponseType.Winner, userName));
-				return;
-			}
+			callNextPlayerTurn();
 			tableService.getPlayerTurnQueue().add(userName);
 		} else {
 			System.out.println("Turn service endTurn ERROR @!@@@@@!");
+		}
+	}
+	public void callNextPlayerTurn() {
+		String nextPlayer = tableService.getPlayerTurnQueue().peek();
+		if(StringUtils.isNotBlank(nextPlayer)) {
+			Character nextCharacter = tableService.getCharacterMap().get(nextPlayer);
+			currentTurn.resetTurnNode(nextCharacter);
+			currentTurn.run();
+		} else {
+			System.out.println("Turn service callNextPlayerTurn ERROR @!@@@@@!");
+//			tableService.getMessagingTemplate().convertAndSend("/topic/turn", new TurnResponse(ResponseType.Winner, userName));
+//			return;
+		}
+	}
+	public void callTurn() {
+		currentTurn.getNextPlayer().poll();
+		if (currentTurn.getNextPlayer().peek() == null) {
+			// request player in turn continue using card
+			currentTurn.requestPlayerUseCard();
+		} else {
+			currentTurn.requestOtherPlayerUseCard();
 		}
 	}
 	

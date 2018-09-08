@@ -178,9 +178,9 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 			$scope.actionMessage = response.userName + ' will draw card for escaping the Jail......';
 			console.log($scope.actionMessage);
 			$scope.playerDrawingCard = response.userName;
+			$scope.actionType = response.responseType;
 			$scope.playerUsingCard = '';
 			$scope.playerGettingCard = '';
-			$scope.actionType = '';
 			$scope.$apply();
 		}  else if (response.responseType === 'DrawCardDynamite') {
 			$scope.actionMessage = response.userName + ' will draw card for escaping dynamite......';
@@ -392,7 +392,7 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 			$scope.characterTurn = response.userName;
 			$scope.$apply();
 		} else if (response.responseType === 'EndTurn') {
-			$scope.actionMessage = ' Turn of '+ response.userName + ' is finished! ';
+			$scope.actionMessage = ' Turn of '+ response.userName + ' is finished! ';$scope.playerUsingCard = '';
 			console.log($scope.actionMessage);
 			$scope.$apply();
 		} else if (response.responseType === 'Winner') {

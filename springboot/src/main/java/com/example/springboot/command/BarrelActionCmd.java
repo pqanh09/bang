@@ -22,9 +22,6 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 	@Override
 	public void execute(Request request) {
 		String userName = request.getUser();
-		if(!turnService.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
-			return;
-		}
 		// get cards for escaping the bang/gatlling;
 		Card card = tableService.getFromNewCardList(1).get(0);
 		

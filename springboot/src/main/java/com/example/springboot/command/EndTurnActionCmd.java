@@ -37,7 +37,7 @@ public class EndTurnActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		
 		// if ok -> next turn
-		turnService.endTurn(userName, false);
+		turnService.endTurn(userName);
 		
 	}
 

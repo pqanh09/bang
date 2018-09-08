@@ -52,7 +52,7 @@ public class CardService {
 		}
 		
 		//
-		for (int i = 1; i <= 5; i++) {
+		for (int i = 1; i <= 20; i++) {
 			n++;
 			cards.add(new BarrelCard(Suit.hearts, String.valueOf(n)));
 		}
@@ -94,7 +94,7 @@ public class CardService {
 		}
 		
 		// ok
-		for (int i = 1; i <= 10; i++) {
+		for (int i = 1; i <= 5; i++) {
 			n++;
 			cards.add(new MissedCard(Suit.clubs, String.valueOf(n)));
 		}
@@ -165,12 +165,12 @@ public class CardService {
 			cards.add(new WinchesterCard(Suit.clubs, String.valueOf(n)));
 		}
 		// 
-		for (int i = 1; i <= 5; i++) {
+		for (int i = 1; i <= 20; i++) {
 			n++;
 			cards.add(new JailCard(Suit.diamonds, String.valueOf(n)));
 		}
 		// 
-		for (int i = 1; i <= 5; i++) {
+		for (int i = 1; i <= 20; i++) {
 			n++;
 			cards.add(new DynamiteCard(Suit.hearts, String.valueOf(n)));
 		}

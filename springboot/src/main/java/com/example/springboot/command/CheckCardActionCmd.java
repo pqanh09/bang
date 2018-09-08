@@ -12,10 +12,13 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.CardType;
 import com.example.springboot.model.card.CatPalouCard;
 import com.example.springboot.model.card.DuelloCard;
+import com.example.springboot.model.card.DynamiteCard;
+import com.example.springboot.model.card.JailCard;
 import com.example.springboot.model.card.MissedCard;
 import com.example.springboot.model.card.PanicCard;
 import com.example.springboot.model.card.SaloonCard;
 import com.example.springboot.model.card.VolcanicCard;
+import com.example.springboot.model.role.RoleType;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.CheckCardResponse;
 import com.example.springboot.response.ResponseType;
@@ -186,7 +189,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			else if (card instanceof SaloonCard) {
 				boolean findPlayerLoseLifePoint = false;
 				for (Entry<String, Character> entry : tableService.getCharacterMap().entrySet()) {
-					if(entry.getValue().getLifePoint() > entry.getValue().getCapacityLPoint()) {
+					if(entry.getValue().getLifePoint() < entry.getValue().getCapacityLPoint()) {
 						findPlayerLoseLifePoint = true;
 						break;
 					}
@@ -202,7 +205,24 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				Character targetCharater;
 				for (Entry<String, Character> entry : tableService.getCharacterMap().entrySet()) {
 					targetCharater = entry.getValue();
-					if(targetCharater.getUserName().equals(character.getUserName()) || !tableService.getPlayerTurnQueue().contains(entry.getKey())) {
+					if(targetCharater.getUserName().equals(userName) || !tableService.getPlayerTurnQueue().contains(entry.getKey())) {
+						continue;
+					}
+					userCanBeAffectList.add(entry.getKey());
+				}
+				tableService.getMessagingTemplate().convertAndSendToUser(sessionId, "/queue/checkcard",
+						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
+								!userCanBeAffectList.isEmpty()));
+				return;
+			} 
+			// JailCard
+			else if (card instanceof JailCard) {
+				// check number card of user
+				List<String> userCanBeAffectList = new ArrayList<>();
+				Character targetCharater;
+				for (Entry<String, Character> entry : tableService.getCharacterMap().entrySet()) {
+					targetCharater = entry.getValue();
+					if(targetCharater.getUserName().equals(userName) || RoleType.SCERIFFO.equals(targetCharater.getRoleType())) {
 						continue;
 					}
 					userCanBeAffectList.add(entry.getKey());
@@ -212,7 +232,23 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 								!userCanBeAffectList.isEmpty()));
 				return;
 			}
-			
+			// Dynamite
+			else if (card instanceof DynamiteCard) {
+				boolean alreadyDynamiteCard = false;
+				Character targetCharater;
+				for (Entry<String, Character> entry : tableService.getCharacterMap().entrySet()) {
+					targetCharater = entry.getValue();
+					for (Card cd : targetCharater.getCardsInFront()) {
+						if(cd instanceof DynamiteCard) {
+							alreadyDynamiteCard = true;
+							break;
+						}
+					}
+				}
+				tableService.getMessagingTemplate().convertAndSendToUser(sessionId, "/queue/checkcard",
+						new CheckCardResponse(!alreadyDynamiteCard));
+				return;
+			}
 		}
 		tableService.getMessagingTemplate().convertAndSendToUser(sessionId, "/queue/checkcard",
 				new CheckCardResponse(true));

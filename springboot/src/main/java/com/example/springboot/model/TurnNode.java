@@ -134,11 +134,13 @@ public class TurnNode {
 	public void run() {
 		//Check Dynamite
 		if(character.isHasDynamite()) {
-			tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName()));
+			tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName()));
+			return;
 		}
 		//Check jail
 		if(character.isBeJailed()) {
-			tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName()));
+			tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName()));
+			return;
 		}
 		//get cards
 		getCard();
