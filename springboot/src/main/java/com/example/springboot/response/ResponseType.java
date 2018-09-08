@@ -18,6 +18,8 @@ public enum ResponseType {
 	//
 	Character,
 	Dead,
+	LoseCard,
+	Gitf,
 	//
 	Suppending,
 	//

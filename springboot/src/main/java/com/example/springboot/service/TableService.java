@@ -14,11 +14,15 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import com.example.springboot.model.Character;
+import com.example.springboot.model.Constants;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.CardResponse;
 import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.ResponseType;
+import com.example.springboot.response.UserResponse;
+import com.example.springboot.utils.BangUtils;
 
 @Service("tableService")
 public class TableService {
@@ -35,11 +39,51 @@ public class TableService {
 
 	private Map<Pair<String, String>, Integer> rangeMap = new HashMap<>();
 
-	public void playerDead(String userName) {
+	public void playerDead(String userName, boolean beKilled) {
 		Character character = characterMap.get(userName);
+		character.setRoleType(character.getRole().getRoleType());
 		messagingTemplate.convertAndSend("/topic/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
 		playerTurnQueue.remove(userName);
 		updateRangeMap();
+		
+		if(beKilled) {
+			String killingPlayer = playerTurnQueue.peek();
+			Character killerCharacter = characterMap.get(killingPlayer);
+			String sessionIdKiller = userMap.get(userName);
+			RoleType roleTypeDeathPlayer = character.getRoleType();
+			
+			if(RoleType.FUORILEGGE.equals(roleTypeDeathPlayer)) {
+				messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Gitf, killerCharacter.getUserName()));
+				// get cards for character;
+				List<Card> cards = getFromNewCardList(Constants.DEFAULT_CARD);
+				killerCharacter.getCardsInHand().addAll(cards);
+				killerCharacter.setNumCardsInHand(killerCharacter.getCardsInHand().size());
+				//udpate character for user 
+				BangUtils.notifyCharacter(messagingTemplate, killerCharacter, sessionIdKiller);
+			} else if(RoleType.VICE.equals(roleTypeDeathPlayer) && RoleType.SCERIFFO.equals(killerCharacter.getRole().getRoleType())) {
+				messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.LoseCard, killerCharacter.getUserName()));
+				addToOldCardList(killerCharacter.getCardsInFront());
+				addToOldCardList(killerCharacter.getCardsInHand());
+				//udpate character for user 
+				BangUtils.notifyCharacter(messagingTemplate, killerCharacter, sessionIdKiller);
+			} else if(RoleType.SCERIFFO.equals(roleTypeDeathPlayer)) {
+				List<String> remainPlayers = new ArrayList<>(playerTurnQueue);
+				boolean hasFuorilegge = false;
+				for (String player : remainPlayers) {
+					if(characterMap.get(player).getRole().getRoleType().equals(RoleType.FUORILEGGE)) {
+						hasFuorilegge = true;
+						break;
+					}
+				}
+				if(hasFuorilegge) {
+					messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
+				} else {
+					messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.RINNEGATO.toString()));
+				}
+				
+			}
+			
+		}
 	}
 
 	public Map<Pair<String, String>, Integer> getRangeMap() {
@@ -58,6 +102,13 @@ public class TableService {
 		messagingTemplate.convertAndSend("/topic/oldcard", new OldCardResponse(Arrays.asList(card)));
 	}
 
+	public void addToOldCardList(List<Card> cards) {
+		oldCards.addAll(cards);
+		while (oldCards.size() > 2) {
+			cardPool.add(oldCards.poll());
+		}
+		messagingTemplate.convertAndSend("/topic/oldcard", new OldCardResponse(cards));
+	}
 	public List<Card> getFromNewCardList(int n) {
 		List<Card> cards = new ArrayList<>();
 		for (int i = 0; i < n; i++) {

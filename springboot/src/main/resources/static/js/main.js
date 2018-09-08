@@ -150,12 +150,26 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 		stompClient.subscribe('/topic/cardaction', onCardActionTopicReceived);
 		stompClient.subscribe('/topic/oldcard', onOldCardTopicReceived);
 		stompClient.subscribe('/topic/action', onActionTopicReceived);
+		stompClient.subscribe('/topic/server', onServerTopicReceived);
 		
 		// Tell your username to the server
 		stompClient.send("/app/game.join", {}, JSON.stringify({
 			id : $scope.userName,
 			actionType : 'Join'
 		}));
+	}
+	function onCardActionTopicReceived(payload) {
+		var response = JSON.parse(payload.body);
+		if (response.responseType === 'Gitf') {
+			$scope.actionMessage = response.userName + ' will receive after killing a FUORILEGGE';
+		} else if (response.responseType === 'LoseCard'){
+			$scope.actionMessage = response.userName + ' will lose all his cards after killing a VICE';
+		} else if (response.responseType === 'Winner'){
+			$scope.actionMessage = response.userName + ' win!!!!!';
+		} else {
+			console.log('ERROR');
+			alert(JSON.stringify(response));
+		}
 	}
 	function onCardActionTopicReceived(payload) {
 		var response = JSON.parse(payload.body);

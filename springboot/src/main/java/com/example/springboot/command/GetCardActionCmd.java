@@ -14,6 +14,7 @@ import com.example.springboot.service.HeroService;
 import com.example.springboot.service.ShareService;
 import com.example.springboot.service.TableService;
 import com.example.springboot.service.TurnService;
+import com.example.springboot.utils.BangUtils;
 
 public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 
@@ -37,8 +38,7 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 		character.getCardsInHand().addAll(cards);
 		character.setNumCardsInHand(character.getCardsInHand().size());
 		//udpate character for user 
-		tableService.getMessagingTemplate().convertAndSend("/topic/character", new CharacterResponse(ResponseType.Character, userName, character.getVO()));
-		tableService.getMessagingTemplate().convertAndSendToUser(sessionId, "/queue/character", new CharacterResponse(ResponseType.Character, userName, character));
+		BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
 		// update alreadyGetCard = true
 		turnService.getCurrentTurn().setAlreadyGetCard(true);
 		turnService.getCurrentTurn().requestPlayerUseCard();

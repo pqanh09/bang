@@ -66,7 +66,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
 
 			if (character.getLifePoint() == 0) {
-				tableService.playerDead(userName);
+				tableService.playerDead(userName, true);
 			}
 			if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Bang.equals(turnNode.getAction())) {
 				turnNode.setAction(ResponseType.Unknown);
@@ -139,7 +139,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				character.setLifePoint(character.getLifePoint() - 1);
 				BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
 				if (character.getLifePoint() == 0) {
-					tableService.playerDead(userName);
+					tableService.playerDead(userName, false);
 					turnService.callNextPlayerTurn();
 				} else {
 					turnNode.setAction(ResponseType.Unknown);
