@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<title>AAAAAAAAAAAAAA</title>
+<link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="/css/index.css" />
+</head>
+<body>
+	<div ng-app="myapp">
+		<div ng-controller="FirstCtrl">
+			<!-- 			<button type="button" class="btn btn-info btn-lg" ng-click="showdialog()" -->
+			<!-- 				data-target="#dialogSelectHero">Open Modal</button> -->
+			<!-- 				<button type="button" class="btn btn-info btn-lg" ng-click="closedialog() -->
+			<!-- 				data-target="#dialogSelectHero">Close Modal</button> -->
+
+			<!-- 			Modal -->
+			<div id="dialogSelectUser" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+
+					<!-- Modal content-->
+					<div class="modal-content" style="width: max-content;">
+						<div class="modal-header">
+							<h4 class="modal-title">Select player:</h4>
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+						</div>
+						<div class="modal-body">
+							<select ng-model="selectedUser"
+								ng-options="user for user in userCanBeAffectList"></select>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								data-dismiss="modal" ng-click="okUserDialogFunc()">OK</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal"
+								ng-click="canceUserDialoglFunc()">Cancel</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div id="dialogSelectHero" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content" style="width: max-content;">
+						<div class="modal-header">
+							<h4 class="modal-title">Select hero</h4>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="col-12" style="display: -webkit-box;">
+										<form class="item-card" ng-repeat="hero in heros">
+											<h7 class="item-card-name">{{hero.name}}</h7>
+											<h7 class="item-card-name">{{hero.id}}</h7>
+											<button type="button" data-dismiss="modal"
+												ng-click="heroPickFunc(hero.id)" class="btn btn-primary">Pick</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- for remove card when ending turn and general store -->
+			<div id="dialogSelectCard" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content" style="width: max-content;">
+						<div class="modal-header">
+							<h4 class="modal-title">Select card to
+								{{dialogSelectCardTitle}}</h4>
+								<button type="button" class="close" data-dismiss="modal" ng-show="actionType === 'RemoveCard'" >&times;</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="col-12" style="display: -webkit-box;">
+										<form class="item-card" ng-repeat="card in cards">
+											<h7 class="item-card-name">{{card.name}}</h7>
+											<button type="button" data-dismiss="modal"
+												ng-click="pickCardToRemoveFunc(card.id)"
+												class="btn btn-primary">{{dialogSelectCardActionStr}}</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="dialogSelectCardPC" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content" style="width: max-content;">
+						<div class="modal-header">
+							<h4 class="modal-title">Select card to
+								{{dialogSelectCardTitle}}</h4>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="col-12" style="display: -webkit-box;">
+										<ul class="list-group other-player">
+											<li class="list-group-item">Cards in front</li>
+											<li class="list-group-item" style="display: -webkit-box;">
+												<form class="item-card" ng-repeat="card in cards">
+													<h7 class="item-card-name">{{card.name}}</h7>
+													<button type="button" data-dismiss="modal"
+														ng-click="pickCardToRemoveFuncPC(card.id)"
+														class="btn btn-primary">{{dialogSelectCardActionStr}}</button>
+												</form>
+											</li>
+										</ul>
+										<ul class="list-group other-player">
+											<li class="list-group-item">Cards in hand (if not random
+												from front)</li>
+											<li class="list-group-item" style="display: -webkit-box;">
+												<button type="button" data-dismiss="modal"
+													ng-click="pickCardToRemoveFuncPCRandom()"
+													class="btn btn-primary">Random</button>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="usernamePage" ng-show="usernamePage">
+				<input type="text" class="form-control" id="name"
+					ng-model="userName" placeholder="Username" autocomplete="off">
+				<button type="submit" ng-click="joinFunc()" class="btn btn-success">Join</button>
+			</div>
+
+			<div id="waitingPage" ng-show="waitingPage">
+				<h4>{{notifyMessage}}</h4>
+			</div>
+
+
+			<div id="mainPage" ng-show="mainPage">
+				<div class="container">
+					<div class="row">
+						<div class="col-12" style="display: -webkit-box;"
+							id="charaterListElement">
+							<div ng-repeat="character in characters">
+								<ul class="list-group other-player"
+									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''">
+									<li class="list-group-item">{{character.userName}}</li>
+									<li class="list-group-item">{{character.roleType}}</li>
+									<li class="list-group-item">{{character.hero.name}}</li>
+									<li class="list-group-item">Point: {{character.lifePoint}}</li>
+									<li class="list-group-item">Hand:{{character.numCardsInHand}}</li>
+									<li class="list-group-item">Front:{{character.cardsInFront.length}}</li>
+									<li class="list-group-item">Gun: {{character.gun}}</li>
+									<li class="list-group-item">Barrel:{{character.barrel}}</li>
+									<li class="list-group-item">View Others: {{character.viewOthers}}</li>
+									<li class="list-group-item">Others View:{{character.othersView}}</li>
+									<li class="list-group-item">Jailed:{{character.beJailed}}</li>
+									<li class="list-group-item">Has Dynamite:{{character.hasDynamite}}</li>
+								</ul>
+							</div>
+
+						</div>
+					</div>
+					<br>
+					<div class="row">
+						<div class="col-2">
+							<h3>{{userName}}</h3>
+						</div>
+						<div class="col-2">
+							<ul class="list-group" style="text-align: center; width: 145px;">
+								<li class="list-group-item">{{actionMessage}}</li>
+								<li class="list-group-item">
+									<form class="item-card">
+										<h7>{{(oldCard.name) ? oldCard.name : ''}}</h7>
+										<h6 id="elementCardUseCardId"></h6>
+									</form>
+								</li>
+							</ul>
+						</div>
+						<div class="col-8"></div>
+					</div>
+					<br>
+					<div class="row">
+						<div class="col-12" style="display: -webkit-box;"
+							id="cardInFrontElement">
+							<form class="item-card" ng-repeat="card in cardsInFront">
+								<h7 class="item-card-name">{{card.name}}</h7>
+								<h7 class="item-card-id">{{card.id}}</h7>
+							</form>
+						</div>
+					</div>
+					<br>
+					<div class="row">
+						<div class="col-12" style="display: -webkit-box;"
+							id="cardInHandElement">
+							<form class="item-card" ng-repeat="card in cardsInHand">
+								<h7 class="item-card-name">{{card.name}}</h7>
+								<h7 class="item-card-id">{{card.id}}</h7>
+								
+								<button type="button" ng-show="playerUsingCard === userName"
+									ng-click="useCardFunc(card.id)" class="btn btn-primary">Use</button>
+							</form>
+							<form
+								style="text-align: center; width: 100px; height: 120px; margin: 0 2px 0 2px; padding: 5px 0 2px 0;">
+								<button type="button" ng-show="userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello')"
+									ng-click="lostLifePointFunc()" class="btn btn-primary">Lose life point</button>
+								<button type="button" ng-show="userName === playerUsingCard && userName !== characterTurn && userName === playerUsingBarrel"
+									ng-click="useBarrelCardFunc()" class="btn btn-primary">Barrel</button>
+							</form>
+						</div>
+					</div>
+					<br>
+
+					<div class="row">
+						<div class="col-12" style="display: -webkit-box;">
+							<!-- 					<form id="formGetCard" class="form-group hidden"> -->
+							<!-- 						<button type="button" class="btn btn-info">Get Card</button> -->
+							<!-- 					</form> -->
+							<form id="drawsForm" class="form-group">
+								<button type="button" class="btn btn-info" ng-show="userName === playerDrawingCard && userName === characterTurn"
+									ng-click="drawFunc()">Draw</button>
+							</form>
+							<form id="testForm" class="form-group">
+								<button type="button" class="btn btn-info" ng-show="userName === playerGettingCard && userName === characterTurn"
+									ng-click="getCardFunc()">Get Card</button>
+							</form>
+							<form id="testForm1" class="form-group">
+								<button type="button" class="btn btn-info"
+									ng-click="useHeroSkillFunc()">Use Hero'skill</button>
+							</form>
+							<form id="testForm2" class="form-group">
+								<button type="button" class="btn btn-info" ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"
+									ng-click="endTurnFunc()">End Turn</button>
+							</form>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<script src="/js/stomp.min.js"></script>
+	<script src="/js/sockjs.min.js"></script>
+	<script src="/vendor/jquery/dist/jquery.js"></script>
+	<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="/vendor/angular/angular.js"></script>
+	<script src="/js/main.js"></script>
+</body>
+</html>

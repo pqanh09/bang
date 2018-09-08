@@ -1,0 +1,41 @@
+.main-player {
+	width: 380px;
+}
+
+.other-player {
+	width: 188px;
+	margin: 0 3px 0 3px;
+}
+
+.item-card {
+	text-align: center;
+	border: solid;
+	width: 100px;
+	height: 120px;
+	margin: 0 2px 0 2px;
+	padding: 5px 0 2px 0;
+	border: 3px solid;
+	border-radius: 10px;
+}
+
+.item-card-name {
+	
+}
+
+.item-card-id {
+	display: none;
+}
+
+.panel-pick-card {
+	text-align: center;
+	width: 100%;
+}
+
+.hidden {
+	display: none;
+}
+
+.notify-charater {
+	border: solid;
+	border-color: blue;
+}
