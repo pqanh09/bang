@@ -11,6 +11,8 @@ public abstract class Card {
 		physical, magic, gun, viewothers, otherviews, barrel;
 	}
 	protected Suit suit = Suit.hearts;
+	protected int number;
+	protected String image;
 	protected String name;
 	protected String description;
 	protected CardType cardType = CardType.physical;
@@ -18,6 +20,23 @@ public abstract class Card {
 	private String id;
 	abstract public void run(Character character);
 	
+	
+	public String getImage() {
+		return image;
+	}
+
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+
+	public int getNumber() {
+		return number;
+	}
+	public void setNumber(int number) {
+		this.number = number;
+	}
 	public Suit getSuit() {
 		return suit;
 	}

@@ -222,7 +222,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				Character targetCharater;
 				for (Entry<String, Character> entry : tableService.getCharacterMap().entrySet()) {
 					targetCharater = entry.getValue();
-					if(targetCharater.getUserName().equals(userName) || RoleType.SCERIFFO.equals(targetCharater.getRoleType())) {
+					if(targetCharater.getUserName().equals(userName) || RoleType.SCERIFFO.equals(targetCharater.getRoleType()) || targetCharater.isBeJailed()) {
 						continue;
 					}
 					userCanBeAffectList.add(entry.getKey());
