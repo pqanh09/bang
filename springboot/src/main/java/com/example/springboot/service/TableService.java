@@ -43,6 +43,7 @@ public class TableService {
 		Character character = characterMap.get(userName);
 		character.setRoleType(character.getRole().getRoleType());
 		messagingTemplate.convertAndSend("/topic/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
+		BangUtils.notifyCharacter(messagingTemplate, character,userMap.get(userName));
 		playerTurnQueue.remove(userName);
 		updateRangeMap();
 		

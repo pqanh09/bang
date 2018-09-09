@@ -30,26 +30,33 @@
 .flex-container {
 	display: flex;
 	flex-wrap: wrap;
-	height: 280px;
+}
+.flex-container-weapon {
+	display: flex;
+	flex-wrap: wrap;
+	height: 180px;
 }
 
 .item-dialog-image {
 	width: 200px;
 	height: 300px;
 }
+
 .item-card-image {
-	width: 180px;
-	height: 267px;
+	width: 140px;
+    height: 210px;
 }
 
 .item-hero-image1 {
-	width: 270px;
-	height: 400px;
+	    width: 180px;
+    height: 270px;
 }
-
+.life-point{
+	padding: 0rem;
+}
 .item-card-in-front-hero {
-	width: 88px;
-	height: 138px;
+	width: 60px;
+    height: 90px;
 }
 
 .item-card-name {

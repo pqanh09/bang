@@ -301,7 +301,7 @@ public class CardService {
 		
 		
 		
-		Collections.shuffle(cards);
+		Collections.shuffle(cards);Collections.shuffle(cards);Collections.shuffle(cards);
 	}
 
 	public List<Card> getCards() {

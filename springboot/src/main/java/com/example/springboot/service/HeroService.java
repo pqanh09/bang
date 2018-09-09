@@ -35,7 +35,7 @@ public class HeroService {
 		heros.add(new CalamityJanet());
 		heros.add(new ElGringo());
 		heros.add(new JesseJones());
-		heros.add(new JohnnyKisch());
+
 		heros.add(new Jourdonnais());
 		heros.add(new KitCarlson());
 		heros.add(new LuckyDuke());
@@ -48,6 +48,7 @@ public class HeroService {
 		heros.add(new UncleWill());
 		heros.add(new VultureSam());
 		heros.add(new WillyTheKid());
+//		heros.add(new JohnnyKisch());
 		Collections.shuffle(heros);
 	}
 	public List<Hero> getHeros(int n) {
