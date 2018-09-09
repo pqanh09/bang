@@ -16,10 +16,11 @@ public class WillyTheKid extends Hero {
 	}
 
 	public WillyTheKid() {
-		this.name = "WILLY THE KID";
-		this.skillDescription = "He can play any number of BANG! cards.";
+		this.name = "WillyTheKid";
+		this.skillDescription = "Description " + name;
 		this.id = "WillyTheKid";
 		this.lifePoint = 4;
+		this.setImage("Hero-WillyTheKid.jpg");
 	}
 
 	@Override

@@ -11,11 +11,13 @@ public class VolcanicCard extends Card{
 		super();
 	}
 
-	public VolcanicCard(Suit suit, String id) {
-		super(suit, id);
+	public VolcanicCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.gun;
 		this.description = "You can play any number of BANG!";
 		this.name = "VOLCANIC";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

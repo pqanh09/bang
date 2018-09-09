@@ -9,11 +9,13 @@ public class DynamiteCard extends Card{
 		super();
 	}
 
-	public DynamiteCard(Suit suit, String id) {
-		super(suit, id);
+	public DynamiteCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.magic;
 		this.description = "";
 		this.name = "DYNAMITE";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

@@ -1,6 +1,4 @@
 package com.example.springboot.model.card;
-import java.util.Map;
-
 import com.example.springboot.model.Character;
 public class SaloonCard extends Card{
 	
@@ -11,11 +9,13 @@ public class SaloonCard extends Card{
 		super();
 	}
 
-	public SaloonCard(Suit suit, String id) {
-		super(suit, id);
+	public SaloonCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.magic;
 		this.description = "";
 		this.name = "SALOON";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

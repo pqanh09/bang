@@ -12,15 +12,16 @@ public class CalamityJanet extends Hero {
 
 	@Override
 	public void useSkill() {
-		logger.info("using VultureSam Herro's Skill");
+		logger.info("using CalamityJanet Herro's Skill");
 
 	}
 
 	public CalamityJanet() {
-		this.name = "WILLY THE KID";
-		this.skillDescription = "She can play BANG! cards as Missed! cards and vice versa.";
+		this.name = "CalamityJanet";
+		this.skillDescription = "Description " + name;
 		this.id = "CalamityJanet";
 		this.lifePoint = 4;
+		this.setImage("Hero-CalamityJanet.jpg");
 	}
 
 	@Override

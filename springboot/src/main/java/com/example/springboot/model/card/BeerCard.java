@@ -9,11 +9,13 @@ public class BeerCard extends Card{
 		super();
 	}
 
-	public BeerCard(Suit suit, String id) {
-		super(suit, id);
+	public BeerCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.magic;
 		this.description = "";
 		this.name = "BEER";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

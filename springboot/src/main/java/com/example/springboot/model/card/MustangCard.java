@@ -9,11 +9,13 @@ public class MustangCard extends Card{
 		super();
 	}
 
-	public MustangCard(Suit suit, String id) {
-		super(suit, id);
+	public MustangCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.otherviews;
 		this.description = "";
 		this.name = "MUSTANG";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

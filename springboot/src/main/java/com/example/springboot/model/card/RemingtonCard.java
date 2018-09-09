@@ -8,11 +8,13 @@ public class RemingtonCard extends Card {
 		super();
 	}
 
-	public RemingtonCard(Suit suit, String id) {
-		super(suit, id);
+	public RemingtonCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.gun;
 		this.description = "";
 		this.name = "REMINGTON";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

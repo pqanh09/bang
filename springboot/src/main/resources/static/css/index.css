@@ -7,15 +7,49 @@
 	margin: 0 3px 0 3px;
 }
 
-.item-card {
+.item-hero-card {
+	display: flow-root;
 	text-align: center;
-	border: solid;
+}
+
+.item-hero-image {
+	text-align: center;
+	/* 	border: solid; */
 	width: 100px;
-	height: 120px;
-	margin: 0 2px 0 2px;
-	padding: 5px 0 2px 0;
-	border: 3px solid;
-	border-radius: 10px;
+	/* 	height: 120px; */
+	margin: 0 2px 2px 2px;
+	/* 	padding: 5px 0 2px 0; */
+	/* 	border: 3px solid; */
+	border-radius: 7px;
+}
+
+.item-hero-image-div {
+	margin: 0 2px 2px 2px;
+}
+
+.flex-container {
+	display: flex;
+	flex-wrap: wrap;
+	height: 280px;
+}
+
+.item-dialog-image {
+	width: 200px;
+	height: 300px;
+}
+.item-card-image {
+	width: 180px;
+	height: 267px;
+}
+
+.item-hero-image1 {
+	width: 270px;
+	height: 400px;
+}
+
+.item-card-in-front-hero {
+	width: 88px;
+	height: 138px;
 }
 
 .item-card-name {

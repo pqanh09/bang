@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/css/index.css" />
 </head>
 <body>
+	<!-- <img src="/data/image/hero/Hero-BartCassidy.jpg" alt="aaa" class="img-thumbnail"> -->
 	<div ng-app="myapp">
 		<div ng-controller="FirstCtrl">
 			<!-- 			<button type="button" class="btn btn-info btn-lg" ng-click="showdialog()" -->
@@ -51,12 +52,14 @@
 							<div class="container">
 								<div class="row">
 									<div class="col-12" style="display: -webkit-box;">
-										<form class="item-card" ng-repeat="hero in heros">
-											<h7 class="item-card-name">{{hero.name}}</h7>
-											<h7 class="item-card-name">{{hero.id}}</h7>
+										<div ng-repeat="hero in heros" class="item-hero-card">
+											<div class="item-hero-image-div">
+												<img src="{{hero.image}}" alt="{{hero.name}}"
+													class="img-thumbnail item-dialog-image">
+											</div>
 											<button type="button" data-dismiss="modal"
-												ng-click="heroPickFunc(hero.id)" class="btn btn-primary">Pick</button>
-										</form>
+												ng-click="heroPickFunc(hero.id)" class="btn-sm btn-primary">Pick</button>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -72,19 +75,31 @@
 						<div class="modal-header">
 							<h4 class="modal-title">Select card to
 								{{dialogSelectCardTitle}}</h4>
-								<button type="button" class="close" data-dismiss="modal" ng-show="actionType === 'RemoveCard'" >&times;</button>
+							<button type="button" class="close" data-dismiss="modal"
+								ng-show="actionType === 'RemoveCard'">&times;</button>
 						</div>
 						<div class="modal-body">
 							<div class="container">
 								<div class="row">
 									<div class="col-12" style="display: -webkit-box;">
-										<form class="item-card" ng-repeat="card in cards">
-											<h7 class="item-card-name">{{card.name}}</h7>
+										<div ng-repeat="card in cards" class="item-hero-card">
+											<div class="item-hero-image-div">
+												<img src="{{card.image}}" alt="{{card.name}}"
+													class="img-thumbnail item-dialog-image">
+											</div>
 											<button type="button" data-dismiss="modal"
 												ng-click="pickCardToRemoveFunc(card.id)"
 												class="btn btn-primary">{{dialogSelectCardActionStr}}</button>
-										</form>
+										</div>
 									</div>
+<!-- 									<div class="col-12" style="display: -webkit-box;"> -->
+<!-- 										<form class="item-card" ng-repeat="card in cards"> -->
+<!-- 											<h7 class="item-card-name">{{card.name}}</h7> -->
+<!-- 											<button type="button" data-dismiss="modal" -->
+<!-- 												ng-click="pickCardToRemoveFunc(card.id)" -->
+<!-- 												class="btn btn-primary">{{dialogSelectCardActionStr}}</button> -->
+<!-- 										</form> -->
+<!-- 									</div> -->
 								</div>
 							</div>
 						</div>
@@ -102,28 +117,44 @@
 						<div class="modal-body">
 							<div class="container">
 								<div class="row">
-									<div class="col-12" style="display: -webkit-box;">
-										<ul class="list-group other-player">
-											<li class="list-group-item">Cards in front</li>
-											<li class="list-group-item" style="display: -webkit-box;">
-												<form class="item-card" ng-repeat="card in cards">
-													<h7 class="item-card-name">{{card.name}}</h7>
-													<button type="button" data-dismiss="modal"
+									<div class="col-9" style="display: -webkit-box;">
+										<div ng-repeat="card in cards" class="item-hero-card">
+											<div class="item-hero-image-div">
+												<img src="{{card.image}}" alt="{{card.name}}"
+													class="img-thumbnail item-dialog-image">
+											</div>
+											<button type="button" data-dismiss="modal"
 														ng-click="pickCardToRemoveFuncPC(card.id)"
 														class="btn btn-primary">{{dialogSelectCardActionStr}}</button>
-												</form>
-											</li>
-										</ul>
-										<ul class="list-group other-player">
-											<li class="list-group-item">Cards in hand (if not random
-												from front)</li>
-											<li class="list-group-item" style="display: -webkit-box;">
-												<button type="button" data-dismiss="modal"
-													ng-click="pickCardToRemoveFuncPCRandom()"
-													class="btn btn-primary">Random</button>
-											</li>
-										</ul>
+										</div>
 									</div>
+									<div class="col-3" style="display: -webkit-box;">
+									<button type="button" data-dismiss="modal"
+													ng-click="pickCardToRemoveFuncPCRandom()"
+													class="btn btn-primary">Random from Hand</button>
+									</div>
+<!-- 									<div class="col-12" style="display: -webkit-box;"> -->
+<!-- 										<ul class="list-group other-player"> -->
+<!-- 											<li class="list-group-item">Cards in front</li> -->
+<!-- 											<li class="list-group-item" style="display: -webkit-box;"> -->
+<!-- 												<form class="item-card" ng-repeat="card in cards"> -->
+<!-- 													<h7 class="item-card-name">{{card.name}}</h7> -->
+<!-- 													<button type="button" data-dismiss="modal" -->
+<!-- 														ng-click="pickCardToRemoveFuncPC(card.id)" -->
+<!-- 														class="btn btn-primary">{{dialogSelectCardActionStr}}</button> -->
+<!-- 												</form> -->
+<!-- 											</li> -->
+<!-- 										</ul> -->
+<!-- 										<ul class="list-group other-player"> -->
+<!-- 											<li class="list-group-item">Cards in hand (if not random -->
+<!-- 												from front)</li> -->
+<!-- 											<li class="list-group-item" style="display: -webkit-box;"> -->
+<!-- 												<button type="button" data-dismiss="modal" -->
+<!-- 													ng-click="pickCardToRemoveFuncPCRandom()" -->
+<!-- 													class="btn btn-primary">Random</button> -->
+<!-- 											</li> -->
+<!-- 										</ul> -->
+<!-- 									</div> -->
 								</div>
 							</div>
 						</div>
@@ -146,73 +177,142 @@
 					<div class="row">
 						<div class="col-12" style="display: -webkit-box;"
 							id="charaterListElement">
-							<div ng-repeat="character in characters">
-								<ul class="list-group other-player"
-									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''">
-									<li class="list-group-item">{{character.userName}}</li>
-									<li class="list-group-item">{{character.roleType}}</li>
-									<li class="list-group-item">{{character.hero.name}}</li>
-									<li class="list-group-item">Point: {{character.lifePoint}}</li>
-									<li class="list-group-item">Hand:{{character.numCardsInHand}}</li>
-									<li class="list-group-item">Front:{{character.cardsInFront.length}}</li>
-									<li class="list-group-item">Gun: {{character.gun}}</li>
-									<li class="list-group-item">Barrel:{{character.barrel}}</li>
-									<li class="list-group-item">View Others: {{character.viewOthers}}</li>
-									<li class="list-group-item">Others View:{{character.othersView}}</li>
-									<li class="list-group-item">Jailed:{{character.beJailed}}</li>
-									<li class="list-group-item">Has Dynamite:{{character.hasDynamite}}</li>
-								</ul>
+							<div ng-repeat="character in characters" style="width: 275px">
+								<div style="display: -webkit-box;">
+									<div ng-show="character.userName !== userName">{{character.userName}}</div>
+									<div ng-show="character.userName === userName">You</div>
+								</div>
+								<div class="container">
+								  <div class="row">
+								    <div class="col">Role</div>
+								    <div class="col">Life point</div>
+								    <div class="col">Hands</div>
+								    <div class="w-100"></div>
+								    <div class="col">
+										<div ng-show="character.roleType">
+										({{character.roleType}})</div>
+									</div>
+								    <div class="col">
+								    {{character.lifePoint}}/{{character.capacityLPoint}}
+								    </div>
+								    <div class="col">
+								    {{character.numCardsInHand}}
+								    </div>
+								  </div>
+								</div>
+
+								<div class="item-hero-image-div">
+									<img src="{{character.hero.image}}"
+										alt="{{character.hero.name}}"
+										class="img-thumbnail item-hero-image1">
+								</div>
+								<div class="flex-container">
+									<div ng-repeat="card in character.cardsInFront">
+									<img src="{{card.image}}" alt="{{card.name}}"
+										class="img-thumbnail item-card-in-front-hero">
+									</div>
+<!-- 									<div><img src="http://localhost:8080//data/image/card/8B-Winchester.jpg" class="img-thumbnail item-card-in-front-hero"></div> -->
+<!-- 									<div><img src="http://localhost:8080//data/image/card/8B-Winchester.jpg" class="img-thumbnail item-card-in-front-hero"></div> -->
+<!-- 									<div><img src="http://localhost:8080//data/image/card/8B-Winchester.jpg" class="img-thumbnail item-card-in-front-hero"></div> -->
+<!-- 									<div><img src="http://localhost:8080//data/image/card/8B-Winchester.jpg" class="img-thumbnail item-card-in-front-hero"></div> -->
+<!-- 									<div><img src="http://localhost:8080//data/image/card/8B-Winchester.jpg" class="img-thumbnail item-card-in-front-hero"></div> -->
+<!-- 									<div><img src="http://localhost:8080//data/image/card/8B-Winchester.jpg" class="img-thumbnail item-card-in-front-hero"></div> -->
+									
+								</div>
+								<!-- 								<ul class="list-group other-player" -->
+								<!-- 									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''"> -->
+								<!-- 									<li class="list-group-item">{{character.userName}}</li> -->
+								<!-- 									<li class="list-group-item">{{character.roleType}}</li> -->
+								<!-- 									<li class="list-group-item">{{character.hero.name}}</li> -->
+								<!-- 									<li class="list-group-item">Point: {{character.lifePoint}}</li> -->
+								<!-- 									<li class="list-group-item">Hand:{{character.numCardsInHand}}</li> -->
+								<!-- 									<li class="list-group-item">Front:{{character.cardsInFront.length}}</li> -->
+								<!-- 									<li class="list-group-item">Gun: {{character.gun}}</li> -->
+								<!-- 									<li class="list-group-item">Barrel:{{character.barrel}}</li> -->
+								<!-- 									<li class="list-group-item">View Others: -->
+								<!-- 										{{character.viewOthers}}</li> -->
+								<!-- 									<li class="list-group-item">Others -->
+								<!-- 										View:{{character.othersView}}</li> -->
+								<!-- 									<li class="list-group-item">Jailed:{{character.beJailed}}</li> -->
+								<!-- 									<li class="list-group-item">Has -->
+								<!-- 										Dynamite:{{character.hasDynamite}}</li> -->
+								<!-- 								</ul> -->
 							</div>
 
 						</div>
 					</div>
 					<br>
 					<div class="row">
-						<div class="col-2">
-							<h3>{{userName}}</h3>
+						<div class="col-4">
+							<div class="item-hero-card">
+								<div class="item-hero-image-div">
+									<img src="{{oldCard.image}}" alt="{{oldCard.name}}"
+										class="img-thumbnail item-dialog-image">
+								</div>
+							</div>
+<!-- 									<form class="item-card"> -->
+<!-- 										<h7>{{(oldCard.name) ? oldCard.name : ''}}</h7> -->
+<!-- 										<h6 id="elementCardUseCardId"></h6> -->
+<!-- 									</form> -->
 						</div>
-						<div class="col-2">
-							<ul class="list-group" style="text-align: center; width: 145px;">
-								<li class="list-group-item">{{actionMessage}}</li>
-								<li class="list-group-item">
-									<form class="item-card">
-										<h7>{{(oldCard.name) ? oldCard.name : ''}}</h7>
-										<h6 id="elementCardUseCardId"></h6>
-									</form>
-								</li>
-							</ul>
-						</div>
-						<div class="col-8"></div>
-					</div>
-					<br>
-					<div class="row">
-						<div class="col-12" style="display: -webkit-box;"
-							id="cardInFrontElement">
-							<form class="item-card" ng-repeat="card in cardsInFront">
-								<h7 class="item-card-name">{{card.name}}</h7>
-								<h7 class="item-card-id">{{card.id}}</h7>
-							</form>
+						<div class="col-8">
+						{{actionMessage}}
 						</div>
 					</div>
 					<br>
+<!-- 					<div class="row"> -->
+<!-- 						<div class="col-12" style="display: -webkit-box;" -->
+<!-- 							id="cardInFrontElement"> -->
+<!-- 							<form class="item-card" ng-repeat="card in cardsInFront"> -->
+<!-- 								<h7 class="item-card-name">{{card.name}}</h7> -->
+<!-- 								<h7 class="item-card-id">{{card.id}}</h7> -->
+<!-- 							</form> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+					<br>
 					<div class="row">
-						<div class="col-12" style="display: -webkit-box;"
-							id="cardInHandElement">
-							<form class="item-card" ng-repeat="card in cardsInHand">
-								<h7 class="item-card-name">{{card.name}}</h7>
-								<h7 class="item-card-id">{{card.id}}</h7>
-								
-								<button type="button" ng-show="playerUsingCard === userName"
+						<div class="col-10" style="display: -webkit-box;">
+						<div class="flex-container">
+										<div ng-repeat="card in cardsInHand" class="item-hero-card">
+											<div class="item-hero-image-div">
+												<img src="{{card.image}}" alt="{{card.name}}"
+													class="img-thumbnail item-card-image">
+											</div>
+											<button type="button" ng-show="playerUsingCard === userName"
 									ng-click="useCardFunc(card.id)" class="btn btn-primary">Use</button>
-							</form>
-							<form
-								style="text-align: center; width: 100px; height: 120px; margin: 0 2px 0 2px; padding: 5px 0 2px 0;">
-								<button type="button" ng-show="userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello')"
-									ng-click="lostLifePointFunc()" class="btn btn-primary">Lose life point</button>
-								<button type="button" ng-show="userName === playerUsingCard && userName !== characterTurn && userName === playerUsingBarrel"
-									ng-click="useBarrelCardFunc()" class="btn btn-primary">Barrel</button>
-							</form>
+										</div>
+										</div>
 						</div>
+						<div class="col-2"
+								style="display: -webkit-box; text-align: center; width: 100px; height: 120px; margin: 0 2px 0 2px; padding: 5px 0 2px 0;">
+								<button type="button"
+									ng-show="userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello')"
+									ng-click="lostLifePointFunc()" class="btn btn-primary">Lose
+									life point</button>
+								<button type="button"
+									ng-show="userName === playerUsingCard && userName !== characterTurn && userName === playerUsingBarrel"
+									ng-click="useBarrelCardFunc()" class="btn btn-primary">Barrel</button>
+							</div>
+<!-- 						<div class="col-12" style="display: -webkit-box;" -->
+<!-- 							id="cardInHandElement"> -->
+<!-- 							<form class="item-card" ng-repeat="card in cardsInHand"> -->
+<!-- 								<h7 class="item-card-name">{{card.name}}</h7> -->
+<!-- 								<h7 class="item-card-id">{{card.id}}</h7> -->
+
+<!-- 								<button type="button" ng-show="playerUsingCard === userName" -->
+<!-- 									ng-click="useCardFunc(card.id)" class="btn btn-primary">Use</button> -->
+<!-- 							</form> -->
+<!-- 							<form -->
+<!-- 								style="text-align: center; width: 100px; height: 120px; margin: 0 2px 0 2px; padding: 5px 0 2px 0;"> -->
+<!-- 								<button type="button" -->
+<!-- 									ng-show="userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello')" -->
+<!-- 									ng-click="lostLifePointFunc()" class="btn btn-primary">Lose -->
+<!-- 									life point</button> -->
+<!-- 								<button type="button" -->
+<!-- 									ng-show="userName === playerUsingCard && userName !== characterTurn && userName === playerUsingBarrel" -->
+<!-- 									ng-click="useBarrelCardFunc()" class="btn btn-primary">Barrel</button> -->
+<!-- 							</form> -->
+<!-- 						</div> -->
 					</div>
 					<br>
 
@@ -222,11 +322,13 @@
 							<!-- 						<button type="button" class="btn btn-info">Get Card</button> -->
 							<!-- 					</form> -->
 							<form id="drawsForm" class="form-group">
-								<button type="button" class="btn btn-info" ng-show="userName === playerDrawingCard && userName === characterTurn"
+								<button type="button" class="btn btn-info"
+									ng-show="userName === playerDrawingCard && userName === characterTurn"
 									ng-click="drawFunc()">Draw</button>
 							</form>
 							<form id="testForm" class="form-group">
-								<button type="button" class="btn btn-info" ng-show="userName === playerGettingCard && userName === characterTurn"
+								<button type="button" class="btn btn-info"
+									ng-show="userName === playerGettingCard && userName === characterTurn"
 									ng-click="getCardFunc()">Get Card</button>
 							</form>
 							<form id="testForm1" class="form-group">
@@ -234,7 +336,8 @@
 									ng-click="useHeroSkillFunc()">Use Hero'skill</button>
 							</form>
 							<form id="testForm2" class="form-group">
-								<button type="button" class="btn btn-info" ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"
+								<button type="button" class="btn btn-info"
+									ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"
 									ng-click="endTurnFunc()">End Turn</button>
 							</form>
 

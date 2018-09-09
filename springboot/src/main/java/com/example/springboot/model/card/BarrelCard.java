@@ -9,11 +9,13 @@ public class BarrelCard extends Card{
 		super();
 	}
 
-	public BarrelCard(Suit suit, String id) {
-		super(suit, id);
+	public BarrelCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.barrel;
 		this.description = "";
 		this.name = "BARREL";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

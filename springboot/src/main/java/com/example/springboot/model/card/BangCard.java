@@ -8,11 +8,13 @@ public class BangCard extends Card{
 		// TODO Auto-generated constructor stub
 	}
 
-	public BangCard(Suit suit, String id) {
-		super(suit, id);
+	public BangCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.physical;
 		this.description = "Bang!";
 		this.name = "BANG";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

@@ -9,11 +9,13 @@ public class IndiansCard extends Card{
 		super();
 	}
 
-	public IndiansCard(Suit suit, String id) {
-		super(suit, id);
+	public IndiansCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.magic;
 		this.description = "All other players discard a BANG! or lose 1 life point.";
 		this.name = "INDIANS";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

@@ -9,11 +9,13 @@ public class WellsFargoCard extends Card{
 		super();
 	}
 
-	public WellsFargoCard(Suit suit, String id) {
-		super(suit, id);
+	public WellsFargoCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.magic;
 		this.description = "";
 		this.name = "WELLS FARGO";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

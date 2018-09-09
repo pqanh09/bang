@@ -12,12 +12,12 @@ public abstract class Card {
 	}
 	protected Suit suit = Suit.hearts;
 	protected int number;
-	protected String image;
+	protected String image = "/data/image/card/";
 	protected String name;
 	protected String description;
 	protected CardType cardType = CardType.physical;
 	protected boolean affectAll = false;
-	private String id;
+	protected String id;
 	abstract public void run(Character character);
 	
 	
@@ -27,7 +27,7 @@ public abstract class Card {
 
 
 	public void setImage(String image) {
-		this.image = image;
+		this.image = this.image + image;
 	}
 
 
@@ -79,9 +79,8 @@ public abstract class Card {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Card(Suit suit, String id) {
+	public Card(Suit suit, int number) {
 		super();
 		this.suit = suit;
-		this.id = id;
 	} 
 }

@@ -10,7 +10,7 @@ public abstract class Hero {
 	protected String skillDescription;
 	protected int lifePoint;
 	protected String id;
-	protected String image;
+	protected String image = "/data/image/hero/";
 	abstract public void useSkill();
 	abstract public boolean useSkill(Card card);
 	
@@ -18,7 +18,7 @@ public abstract class Hero {
 		return image;
 	}
 	public void setImage(String image) {
-		this.image = image;
+		this.image = this.image + image;
 	}
 	public String getName() {
 		return name;

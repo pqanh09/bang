@@ -9,11 +9,13 @@ public class ScopeCard extends Card{
 		super();
 	}
 
-	public ScopeCard(Suit suit, String id) {
-		super(suit, id);
+	public ScopeCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.viewothers;
 		this.description = "";
 		this.name = "SCOPE";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

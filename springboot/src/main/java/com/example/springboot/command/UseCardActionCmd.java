@@ -245,15 +245,27 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					// request continue use cards
 					turnNode.requestPlayerUseCard();
 					return;
-				} else if (card instanceof JailCard || card instanceof DynamiteCard) {
+				} else if (card instanceof DynamiteCard) {
 					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
 							new UseCardResponse(userName, card, null));
-					// set jail or dynamite
-					character.setBeJailed(card instanceof JailCard);
-					character.setHasDynamite(card instanceof DynamiteCard);
+					// set dynamite
+					character.setHasDynamite(true);
 					character.getCardsInFront().add(card);
 					// notify
 					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					// request continue use cards
+					turnNode.requestPlayerUseCard();
+					return;
+				}  else if (card instanceof JailCard) {
+					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+							new UseCardResponse(userName, card, null));
+					// set jail or dynamite
+					Character targetCharacter = tableService.getCharacterMap().get(targetUser);
+					targetCharacter.setBeJailed(true);
+					targetCharacter.getCardsInFront().add(card);
+					// notify
+					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), targetCharacter, tableService.getUserMap().get(targetUser));
 					// request continue use cards
 					turnNode.requestPlayerUseCard();
 					return;

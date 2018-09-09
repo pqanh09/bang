@@ -9,11 +9,13 @@ public class CatPalouCard extends Card{
 		super();
 	}
 
-	public CatPalouCard(Suit suit, String id) {
-		super(suit, id);
+	public CatPalouCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.magic;
 		this.description = "";
 		this.name = "CAT PALOU";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override

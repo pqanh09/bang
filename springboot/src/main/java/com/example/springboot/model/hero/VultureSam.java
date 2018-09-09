@@ -15,15 +15,11 @@ public class VultureSam extends Hero {
 	}
 
 	public VultureSam() {
-		this.name = "VULTURESAM";
-		this.skillDescription = "AAAAAAAAAAAA";
-	}
-
-	public VultureSam(String name) {
-		this.name = name;
+		this.name = "VultureSam";
 		this.skillDescription = "Description " + name;
-		this.id = name;
+		this.id = "VultureSam";
 		this.lifePoint = 4;
+		this.setImage("Hero-VultureSam.jpg");
 	}
 
 	@Override

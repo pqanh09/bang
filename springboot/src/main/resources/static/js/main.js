@@ -158,7 +158,7 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 			actionType : 'Join'
 		}));
 	}
-	function onCardActionTopicReceived(payload) {
+	function onServerTopicReceived(payload) {
 		var response = JSON.parse(payload.body);
 		if (response.responseType === 'Gitf') {
 			$scope.actionMessage = response.userName + ' will receive after killing a FUORILEGGE';

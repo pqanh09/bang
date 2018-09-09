@@ -8,11 +8,13 @@ public class WinchesterCard extends Card {
 		super();
 	}
 
-	public WinchesterCard(Suit suit, String id) {
-		super(suit, id);
+	public WinchesterCard(Suit suit, int number, String image) {
+		super(suit, number);
 		this.cardType = CardType.gun;
 		this.description = "";
 		this.name = "WINCHESTER";
+		this.setImage(image);
+		this.id = name + suit.toString() + String.valueOf(number);
 	}
 
 	@Override
