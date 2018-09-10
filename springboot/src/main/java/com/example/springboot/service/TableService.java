@@ -31,18 +31,22 @@ public class TableService {
 	private boolean putInPool = false;
 	private List<Card> cardPool = new ArrayList<>();
 	private Map<String, String> userMap = new HashMap<>();
+	private Map<String, SimpMessageSendingOperations> messagingTemplateMap = new HashMap<>();
 	private Map<String, String> sessionIdMap = new HashMap<>();
 	@Autowired
 	private SimpMessageSendingOperations messagingTemplate;
 	private LinkedList<String> playerTurnQueue = new LinkedList<>();
 
 	private Map<Pair<String, String>, Integer> rangeMap = new HashMap<>();
-
+	private void notifyPrivateCharacter(String userName, Character character) {
+		String sessionId = userMap.get(userName);
+		messagingTemplateMap.get(userName).convertAndSendToUser(sessionId, "/queue/character", new CharacterResponse(ResponseType.Character, userName, character));
+	}
 	public void playerDead(String userName, boolean beKilled) {
 		Character character = characterMap.get(userName);
-		character.setRoleType(character.getRole().getRoleType());
+		character.setRoleImage(character.getRole().getImage());
 		messagingTemplate.convertAndSend("/topic/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
-		BangUtils.notifyCharacter(messagingTemplate, character,userMap.get(userName));
+//		BangUtils.notifyCharacter(messagingTemplate, character,userMap.get(userName));
 		playerTurnQueue.remove(userName);
 		addToOldCardList(character.getCardsInFront());
 		addToOldCardList(character.getCardsInHand());
@@ -51,8 +55,7 @@ public class TableService {
 		if(beKilled) {
 			String killingPlayer = playerTurnQueue.peek();
 			Character killerCharacter = characterMap.get(killingPlayer);
-			String sessionIdKiller = userMap.get(userName);
-			RoleType roleTypeDeathPlayer = character.getRoleType();
+			RoleType roleTypeDeathPlayer = character.getRole().getRoleType();
 			
 			if(RoleType.FUORILEGGE.equals(roleTypeDeathPlayer)) {
 				messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Gitf, killerCharacter.getUserName()));
@@ -61,13 +64,13 @@ public class TableService {
 				killerCharacter.getCardsInHand().addAll(cards);
 				killerCharacter.setNumCardsInHand(killerCharacter.getCardsInHand().size());
 				//udpate character for user 
-				BangUtils.notifyCharacter(messagingTemplate, killerCharacter, sessionIdKiller);
+				notifyPrivateCharacter(killingPlayer, killerCharacter);
 			} else if(RoleType.VICE.equals(roleTypeDeathPlayer) && RoleType.SCERIFFO.equals(killerCharacter.getRole().getRoleType())) {
 				messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.LoseCard, killerCharacter.getUserName()));
 				addToOldCardList(killerCharacter.getCardsInFront());
 				addToOldCardList(killerCharacter.getCardsInHand());
 				//udpate character for user 
-				BangUtils.notifyCharacter(messagingTemplate, killerCharacter, sessionIdKiller);
+				notifyPrivateCharacter(killingPlayer, killerCharacter);
 			} else if(RoleType.SCERIFFO.equals(roleTypeDeathPlayer)) {
 				List<String> remainPlayers = new ArrayList<>(playerTurnQueue);
 				boolean hasFuorilegge = false;
@@ -107,6 +110,17 @@ public class TableService {
 			}
 		}
 	}
+
+	
+	public Map<String, SimpMessageSendingOperations> getMessagingTemplateMap() {
+		return messagingTemplateMap;
+	}
+
+
+	public void setMessagingTemplateMap(Map<String, SimpMessageSendingOperations> messagingTemplateMap) {
+		this.messagingTemplateMap = messagingTemplateMap;
+	}
+
 
 	public Map<Pair<String, String>, Integer> getRangeMap() {
 		return rangeMap;

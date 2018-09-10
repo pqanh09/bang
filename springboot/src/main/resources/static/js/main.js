@@ -34,7 +34,7 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	$scope.usernamePage = true;
 	$scope.waitingPage = false;
 	$scope.mainPage = false;
-	$scope.messages = [];
+//	$scope.messages = [];
 	$scope.notifyMessage = '';
 	$scope.dialogTitle = '';
 	$scope.useBarrelCardFunc = function(cardId) {
@@ -44,6 +44,14 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 		}));
 		$scope.playerUsingBarrel = '';
 	};
+//	$scope.showdialog = function() {
+//		var messageArea = document.querySelector('#messageArea');
+//		var messageElement = document.createElement('li');
+//		messageElement.innerHTML = 'hello';
+//		messageElement.classList.add('li-server-notification');
+//		messageArea.appendChild(messageElement);
+//		messageArea.scrollTop = messageArea.scrollHeight;
+//	};
 	$scope.getCardFunc = function() {
 		stompClient.send("/app/game.execute", {}, JSON.stringify({
 			actionType : 'GetCard'
@@ -164,12 +172,17 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 		}));
 	}
 	function addMessage(message){
-		$scope.messages.unshift(message);
+		var messageArea = document.querySelector('#messageArea');
+		var messageElement = document.createElement('li');
+		messageElement.innerHTML = message;
+		messageElement.classList.add('li-server-notification');
+		messageArea.appendChild(messageElement);
+		messageArea.scrollTop = messageArea.scrollHeight;
 	}
 	function onServerTopicReceived(payload) {
 		var response = JSON.parse(payload.body);
 		if (response.responseType === 'Gitf') {
-			addMessage(response.userName + ' will receive after killing a FUORILEGGE');
+			addMessage(response.userName + ' will receive 3 cards after killing a FUORILEGGE');
 		} else if (response.responseType === 'LoseCard'){
 			addMessage(response.userName + ' will lose all his cards after killing a VICE');
 			

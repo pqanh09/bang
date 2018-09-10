@@ -21,22 +21,26 @@ public class RoleService {
 	public List<Role> getRoles(int numberPlayer) {
 		List<Role> roles = new ArrayList<>();
 		if(numberPlayer < 4) return roles;
-		roles.add(new SceriffoRole("SCERIFFO", "SceriffoRole"));
-		roles.add(new ViceRole("VICE", "ViceRole"));
-		roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
-		roles.add(new RinnegatoRole("RINNEGATO", "RinnegatoRole"));
+		SceriffoRole sceriffoRole = new SceriffoRole("SCERIFFO", "SceriffoRole", "/data/image/role/Sceriffo.jpg");
+		ViceRole viceRole = new ViceRole("VICE", "ViceRole", "/data/image/role/Vice.jpg");
+		FuorileggeRole fuorileggeRole = new FuorileggeRole("FUORILEGGE", "FuorileggeRole", "/data/image/role/Fuorilegge.jpg");
+		RinnegatoRole rinnegatoRole = new RinnegatoRole("RINNEGATO", "RinnegatoRole", "/data/image/role/Rinnegato.jpg");
+		roles.add(sceriffoRole);
+		roles.add(rinnegatoRole);
+		roles.add(fuorileggeRole);
+		roles.add(fuorileggeRole);
 		switch (numberPlayer) {
 		case 5:
-			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
+			roles.add(viceRole);
 			break;
 		case 6:
-			roles.add(new ViceRole("VICE", "ViceRole"));
-			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
+			roles.add(rinnegatoRole);
+			roles.add(viceRole);
 			break;
 		case 7:
-			roles.add(new ViceRole("VICE", "ViceRole"));
-			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
-			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
+			roles.add(rinnegatoRole);
+			roles.add(viceRole);
+			roles.add(viceRole);
 			break;
 		default:
 			break;

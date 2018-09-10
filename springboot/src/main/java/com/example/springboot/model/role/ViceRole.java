@@ -4,8 +4,8 @@ import com.example.springboot.model.hero.Hero;
 
 public class ViceRole extends Role {
 
-	public ViceRole(String name, String description) {
-		super(name, RoleType.VICE, description);
+	public ViceRole(String name, String description, String image) {
+		super(name, RoleType.VICE, description, image);
 	}
 
 	@Override

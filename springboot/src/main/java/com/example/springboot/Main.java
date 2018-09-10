@@ -22,9 +22,9 @@ public class Main {
 //		        System.out.println("Hello !!");
 //		      }
 //		    };
-		    ScheduledExecutorService service = Executors
-		                    .newSingleThreadScheduledExecutor();
-		    service.scheduleAtFixedRate(new WorkerThread(10, service), 10, 1, TimeUnit.SECONDS);
+//		    ScheduledExecutorService service = Executors
+//		                    .newSingleThreadScheduledExecutor();
+//		    service.scheduleAtFixedRate(new WorkerThread(10, service), 10, 1, TimeUnit.SECONDS);
 //		try {
 //			ObjectMapper mapper = new ObjectMapper();
 //			mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);

@@ -3,6 +3,7 @@ package com.example.springboot.controller;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -80,6 +81,7 @@ public class BangController {
 			sha.getSessionAttributes().put(Constants.HEADER_ACCESSOR_USER, userName);
 			// TODO check userName(request.getId()) existed
 			tableService.getUserMap().put(userName, sha.getUser().getName());
+			tableService.getMessagingTemplateMap().put(userName, messagingTemplate);
 			tableService.getSessionIdMap().put(sha.getUser().getName(), userName);
 			UserResponse joinResponse = new UserResponse(ResponseType.Join, userName);
 			messagingTemplate.convertAndSendToUser(sessionId, "/queue/join", joinResponse);

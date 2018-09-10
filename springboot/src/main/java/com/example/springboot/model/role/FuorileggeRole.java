@@ -4,8 +4,8 @@ import com.example.springboot.model.hero.Hero;
 
 public class FuorileggeRole extends Role {
 
-	public FuorileggeRole(String name, String description) {
-		super(name, RoleType.FUORILEGGE, description);
+	public FuorileggeRole(String name, String description, String image) {
+		super(name, RoleType.FUORILEGGE, description, image);
 	}
 
 	@Override

@@ -4,8 +4,8 @@ import com.example.springboot.model.hero.Hero;
 
 public class SceriffoRole extends Role {
 
-	public SceriffoRole(String name, String description) {
-		super(name, RoleType.SCERIFFO, description);
+	public SceriffoRole(String name, String description, String image) {
+		super(name, RoleType.SCERIFFO, description, image);
 	}
 
 	@Override

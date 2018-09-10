@@ -23,7 +23,42 @@
 	border-radius: 7px;
 }
 
+.li-server-notification {
+	border-bottom: 1px solid #f4f4f4;
+	padding: 3px 0px 3px 0px;
+	font-size: 17px;
+}
+
+.ul-server-notification {
+	height: 208px;
+	width: 360px;
+	overflow: auto;
+	overflow-y: scroll;
+	list-style-type: none;
+}
+
 .item-hero-image-div {
+	margin: 0 2px 2px 2px;
+	display: -webkit-box;
+	height: 183px;
+	border: solid;
+	border-color: #dee2e6;
+	border-radius: 0.35rem;
+}
+.random-from-hand-button{
+	width: 200px;
+    text-align: center;
+    padding-top: 125px;
+}
+.item-hero-image-dialog {
+	margin: 0 2px 2px 2px;
+	display: -webkit-box;
+	border: solid;
+	border-color: #dee2e6;
+	border-radius: 0.35rem;
+}
+
+.item-card-hand-image-div {
 	margin: 0 2px 2px 2px;
 }
 
@@ -44,13 +79,25 @@
 }
 
 .item-card-image {
-	width: 140px;
-	height: 210px;
+	width: 120px;
+	height: 177px;
 }
 
 .item-hero-image1 {
 	width: 120px;
-	height: 180px;
+	height: 177px;
+}
+
+.item-role-mage {
+	width: 53px;
+	margin-top: 0px;
+	height: 59px;
+}
+
+.hero-info-card-hand-td {
+	padding: 0rem;
+	text-align: center;
+	border-top: 1px solid #dee2e6;
 }
 
 .life-point {
@@ -106,5 +153,5 @@
 	font-size: 14px;
 	word-wrap: break-word;
 	margin-top: 0;
-    margin-bottom: 0;
+	margin-bottom: 0;
 }

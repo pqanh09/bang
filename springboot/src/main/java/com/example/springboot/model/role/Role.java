@@ -5,11 +5,21 @@ import com.example.springboot.model.hero.Hero;
 public abstract class Role {
 	protected String name;
 	protected String description;
+	protected String image;
 	protected RoleType roleType = RoleType.UNKNOWN;
 
 	abstract public void mission();
 
 	abstract public void benefit(Hero hero);
+
+	
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
 
 	public String getName() {
 		return name;
@@ -36,11 +46,12 @@ public abstract class Role {
 		this.roleType = roleType;
 	}
 
-	public Role(String name, RoleType roleType, String description) {
+	public Role(String name, RoleType roleType, String description, String image) {
 		super();
 		this.name = name;
 		this.description = description;
 		this.roleType = roleType;
+		this.image = image;
 	}
 
 	@Override

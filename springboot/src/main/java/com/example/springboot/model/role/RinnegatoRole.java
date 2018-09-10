@@ -4,8 +4,8 @@ import com.example.springboot.model.hero.Hero;
 
 public class RinnegatoRole extends Role {
 
-	public RinnegatoRole(String name, String description) {
-		super(name, RoleType.RINNEGATO, description);
+	public RinnegatoRole(String name, String description, String image) {
+		super(name, RoleType.RINNEGATO, description, image);
 	}
 
 	@Override

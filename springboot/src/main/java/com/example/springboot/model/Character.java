@@ -26,7 +26,7 @@ public class Character extends CharacterVO {
 	public void setRole(Role role) {
 		this.role = role;
 		if(RoleType.SCERIFFO.equals(role.getRoleType())) {
-			this.roleType = RoleType.SCERIFFO; 
+			this.roleImage = role.getImage(); 
 		}
 	}
 
@@ -40,7 +40,7 @@ public class Character extends CharacterVO {
 	}
 
 	public CharacterVO getVO() {
-		return new CharacterVO(this.id, this.userName, this.hero, this.cardsInFront, this.numCardsInHand, this.gun, this.lifePoint, this.capacityLPoint, this.viewOthers, this.othersView, this.barrel, this.roleType, this.beJailed, this.hasDynamite);
+		return new CharacterVO(this.id, this.userName, this.hero, this.cardsInFront, this.numCardsInHand, this.gun, this.lifePoint, this.capacityLPoint, this.viewOthers, this.othersView, this.barrel, this.roleImage, this.beJailed, this.hasDynamite);
 	}
 
 }
