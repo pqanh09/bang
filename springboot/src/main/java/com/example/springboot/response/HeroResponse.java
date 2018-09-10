@@ -13,7 +13,7 @@ public class HeroResponse extends Response{
 
 	public HeroResponse(List<Hero> heros) {
 		super();
-		this.responseType = ResponseType.PickHero;
+		this.responseType = ResponseType.Hero;
 		this.heros = heros;
 	}
 

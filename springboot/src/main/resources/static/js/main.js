@@ -8,6 +8,7 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	var dialogSelectHero = angular.element('#dialogSelectHero');
 	var dialogSelectCard = angular.element('#dialogSelectCard');
 	var dialogSelectCardPC = angular.element('#dialogSelectCardPC');
+	$scope.modeImage = true;
 	$scope.dialogSelectCardTitle = '';
 	$scope.dialogSelectCardActionType = '';
 	$scope.dialogSelectCardActionStr = '';
@@ -20,6 +21,7 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	$scope.cardsInFront = [];
 	$scope.cardsInHand = [];
 	$scope.characters = [];
+	$scope.role = null;
 	$scope.heros = [];
 	$scope.cards = [];
 	$scope.characterTurn = '';
@@ -27,13 +29,14 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	$scope.playerGettingCard = '';
 	$scope.playerDrawingCard = '';
 	$scope.playerUsingBarrel = '';
+	$scope.playerUsingSkill = false;
 	$scope.actionType = '';
 	$scope.usernamePage = true;
 	$scope.waitingPage = false;
 	$scope.mainPage = false;
+	$scope.messages = [];
 	$scope.notifyMessage = '';
-	$scope.actionMessage = '';
-	$scope.actionType = '';
+	$scope.dialogTitle = '';
 	$scope.useBarrelCardFunc = function(cardId) {
 		stompClient.send("/app/game.execute", {}, JSON.stringify({
 			id : cardId,
@@ -86,6 +89,7 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 			id : heroId,
 			actionType : 'PickHero'
 		}));
+		$scope.dialogTitle = '';
 	};
 	$scope.pickCardToRemoveFunc = function(cardId) {
 		if($scope.dialogSelectCardActionType === 'RemoveCard'){
@@ -140,6 +144,7 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 		// ok
 		stompClient.subscribe('/user/queue/join', onJoinQueueReceived);
 		stompClient.subscribe('/user/queue/hero', onHeroQueueReceived);
+		stompClient.subscribe('/user/queue/role', onRoleQueueReceived);
 		stompClient.subscribe('/user/queue/character', onCharacterQueueReceived);
 		stompClient.subscribe('/topic/character', onCharacterTopicReceived);
 		stompClient.subscribe('/user/queue/checkcard', onCheckCardQueueReceived);
@@ -158,47 +163,60 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 			actionType : 'Join'
 		}));
 	}
+	function addMessage(message){
+		$scope.messages.unshift(message);
+	}
 	function onServerTopicReceived(payload) {
 		var response = JSON.parse(payload.body);
 		if (response.responseType === 'Gitf') {
-			$scope.actionMessage = response.userName + ' will receive after killing a FUORILEGGE';
+			addMessage(response.userName + ' will receive after killing a FUORILEGGE');
 		} else if (response.responseType === 'LoseCard'){
-			$scope.actionMessage = response.userName + ' will lose all his cards after killing a VICE';
+			addMessage(response.userName + ' will lose all his cards after killing a VICE');
+			
 		} else if (response.responseType === 'Winner'){
-			$scope.actionMessage = response.userName + ' win!!!!!';
+			addMessage(response.userName + ' win!!!!!');
+			
+			$scope.characterTurn = '';
+			$scope.playerUsingCard = '';
+			$scope.playerGettingCard = '';
+			$scope.playerDrawingCard = '';
+			$scope.playerUsingBarrel = '';
+			$scope.playerUsingSkill = false;
+			$scope.actionType = '';
 		} else {
 			console.log('ERROR');
 			alert(JSON.stringify(response));
 		}
+		$scope.$apply();
 	}
 	function onCardActionTopicReceived(payload) {
 		var response = JSON.parse(payload.body);
 		if (response.responseType === 'GetCard') {
-			$scope.actionMessage = response.userName + ' will get card......';
-			console.log($scope.actionMessage);
+			addMessage(response.userName + ' will get card......');
+			
 			$scope.playerGettingCard = response.userName;
 			$scope.playerUsingCard = '';
 			$scope.playerDrawingCard = '';
 			$scope.$apply();
 		} else if (response.responseType === 'UseCard') {
-			$scope.actionMessage = response.userName + ' will use card......';
-			console.log($scope.actionMessage);
+			addMessage(response.userName + ' will use card......');
+			
 			$scope.playerUsingCard = response.userName;
 			$scope.actionType = response.responseType;
 			$scope.playerGettingCard = ''
 			$scope.playerDrawingCard = '';
 			$scope.$apply();
 		}  else if (response.responseType === 'DrawCardJail') {
-			$scope.actionMessage = response.userName + ' will draw card for escaping the Jail......';
-			console.log($scope.actionMessage);
+			addMessage(response.userName + ' will draw card for escaping the Jail......');
+			
 			$scope.playerDrawingCard = response.userName;
 			$scope.actionType = response.responseType;
 			$scope.playerUsingCard = '';
 			$scope.playerGettingCard = '';
 			$scope.$apply();
 		}  else if (response.responseType === 'DrawCardDynamite') {
-			$scope.actionMessage = response.userName + ' will draw card for escaping dynamite......';
-			console.log($scope.actionMessage);
+			addMessage(response.userName + ' will draw card for escaping dynamite......');
+			
 			$scope.playerDrawingCard = response.userName;
 			$scope.actionType = response.responseType;
 			$scope.playerUsingCard = '';
@@ -282,8 +300,8 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	function onRemoveCardBeforeEndTurnTopicReceived(payload) {
 		var response = JSON.parse(payload.body);
 		if (response.responseType === 'RemoveCard') {
-			$scope.actionMessage = response.userName + ' has just removed card ' + response.cards[0].name + ' before ending turn!';
-			console.log($scope.actionMessage);
+			addMessage(response.userName + ' has just removed card ' + response.cards[0].name + ' before ending turn!');
+			
 			$scope.$apply();
 		} else {
 			console.log('ERROR');
@@ -293,28 +311,32 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	function onUsedCardTopicReceived(payload) {
 		var response = JSON.parse(payload.body);
 		if (response.responseType === 'UseCard') {
-			$scope.actionMessage = response.userName;
+			var msg = response.userName;
 			if(response.card){
-				$scope.actionMessage = $scope.actionMessage + ' - ' + response.card.name;
+				msg = msg + ' - ' + response.card.name;
 				if(response.targetuser){
-					$scope.actionMessage = $scope.actionMessage + ' - ' + response.targetuser;
+					msg = msg + ' - ' + response.targetuser;
 				}
-				console.log($scope.actionMessage);
+				
 			} else {
-				$scope.actionMessage = $scope.actionMessage + ' accept losing life point';
-				console.log($scope.actionMessage);
+				msg = msg + ' accept losing life point';
+				
 			}
+			addMessage(msg);
 			$scope.$apply();
 		} else if (response.responseType === 'DrawCardJail') {
-			$scope.actionMessage = response.userName + ' - draw card ' + response.card.name + ' to escape the Jail';
+			addMessage(response.userName + ' - draw card ' + response.card.name + ' to escape the Jail');
+			
 			$scope.playerDrawingCard = '';
 			$scope.$apply();
 		} else if (response.responseType === 'DrawCardDynamite') {
-			$scope.actionMessage = response.userName + ' - draw card ' + response.card.name + ' to escape the Dynamite';
+			addMessage(response.userName + ' - draw card ' + response.card.name + ' to escape the Dynamite');
+			
 			$scope.playerDrawingCard = '';
 			$scope.$apply();
 		} else if (response.responseType === 'UseBarrel') {
-			$scope.actionMessage = response.userName + ' - draw card ' + response.card.name + ' to escape the bang/gatlling';
+			addMessage(response.userName + ' - draw card ' + response.card.name + ' to escape the bang/gatlling');
+			
 			$scope.playerDrawingCard = '';
 			$scope.$apply();
 		} else {
@@ -378,11 +400,20 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	}
 	function onHeroQueueReceived(payload) {
 		var response = JSON.parse(payload.body);
-		if (response.responseType === 'PickHero') {
+		if (response.responseType === 'Hero') {
 			$timeout(function() {
 				$scope.heros =  response.heros;
+				$scope.dialogTitle =  'Your role is '+ $scope.role.name +'. Please select hero...';
 				dialogSelectHero.modal('show');
 			},200);
+		}
+		
+	}
+	function onRoleQueueReceived(payload) {
+		var response = JSON.parse(payload.body);
+		if (response.responseType === 'Role') {
+			$scope.role = response.role;
+			$scope.$apply();
 		}
 		
 	}
@@ -401,19 +432,15 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 	function onTurnTopicReceived(payload) {
 		var response = JSON.parse(payload.body);
 		if (response.responseType === 'Turn') {
-			$scope.actionMessage = ' Turn of '+ response.userName + ' is started! ';
-			console.log($scope.actionMessage);
+			addMessage(' Turn of '+ response.userName + ' is started! ');
+			
 			$scope.characterTurn = response.userName;
 			$scope.$apply();
 		} else if (response.responseType === 'EndTurn') {
-			$scope.actionMessage = ' Turn of '+ response.userName + ' is finished! ';$scope.playerUsingCard = '';
-			console.log($scope.actionMessage);
+			addMessage(' Turn of '+ response.userName + ' is finished! ');
+			$scope.playerUsingCard = '';
 			$scope.$apply();
-		} else if (response.responseType === 'Winner') {
-			$scope.actionMessage = response.userName + ' win! ';
-			console.log($scope.actionMessage);
-			$scope.$apply();
-		} 
+		}  
 		else {
 			console.log('Error');
 			alert(JSON.stringify(response));
@@ -450,8 +477,8 @@ myapp.controller('FirstCtrl', function($scope, $timeout) {
 				$scope.$apply();
 			}
 		} else if (response.responseType === 'Dead') {
-			$scope.actionMessage = response.userName + ' is dead!!!';
-			console.log($scope.actionMessage);
+			addMessage(response.userName + ' is dead!!!');
+			
 			$scope.$apply();
 		} else {
 			console.log('Error');

@@ -31,6 +31,7 @@
 	display: flex;
 	flex-wrap: wrap;
 }
+
 .flex-container-weapon {
 	display: flex;
 	flex-wrap: wrap;
@@ -44,19 +45,21 @@
 
 .item-card-image {
 	width: 140px;
-    height: 210px;
+	height: 210px;
 }
 
 .item-hero-image1 {
-	    width: 180px;
-    height: 270px;
+	width: 120px;
+	height: 180px;
 }
-.life-point{
+
+.life-point {
 	padding: 0rem;
 }
+
 .item-card-in-front-hero {
 	width: 60px;
-    height: 90px;
+	height: 90px;
 }
 
 .item-card-name {
@@ -79,4 +82,29 @@
 .notify-charater {
 	border: solid;
 	border-color: blue;
+}
+
+.message-li {
+	width: 100%;
+	padding: 3px 3px 3px 3px;
+	border-bottom: 1px solid #f4f4f4;
+}
+
+.message-ul {
+	list-style-type: none;
+	margin: 0;
+	overflow: auto;
+	overflow-y: scroll;
+	height: 100px;
+	padding: 0 20px 0px 20px;
+	width: 100%;
+	/* 	        height: calc(100% - 150px); */
+}
+
+.message-p {
+	color: #777;
+	font-size: 14px;
+	word-wrap: break-word;
+	margin-top: 0;
+    margin-bottom: 0;
 }

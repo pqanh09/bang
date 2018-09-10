@@ -27,16 +27,16 @@ public class RoleService {
 		roles.add(new RinnegatoRole("RINNEGATO", "RinnegatoRole"));
 		switch (numberPlayer) {
 		case 5:
-			
+			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
 			break;
 		case 6:
-
+			roles.add(new ViceRole("VICE", "ViceRole"));
+			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
 			break;
 		case 7:
-
-			break;
-		case 8:
-
+			roles.add(new ViceRole("VICE", "ViceRole"));
+			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
+			roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole"));
 			break;
 		default:
 			break;

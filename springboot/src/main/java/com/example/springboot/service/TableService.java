@@ -17,7 +17,6 @@ import com.example.springboot.model.Character;
 import com.example.springboot.model.Constants;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.role.RoleType;
-import com.example.springboot.response.CardResponse;
 import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.ResponseType;
@@ -45,6 +44,8 @@ public class TableService {
 		messagingTemplate.convertAndSend("/topic/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
 		BangUtils.notifyCharacter(messagingTemplate, character,userMap.get(userName));
 		playerTurnQueue.remove(userName);
+		addToOldCardList(character.getCardsInFront());
+		addToOldCardList(character.getCardsInHand());
 		updateRangeMap();
 		
 		if(beKilled) {
@@ -81,9 +82,29 @@ public class TableService {
 				} else {
 					messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.RINNEGATO.toString()));
 				}
-				
+				//TODO notify end
+				return;
 			}
-			
+			// check end game
+			List<String> remainPlayers = new ArrayList<>(playerTurnQueue);
+			boolean hasFuorilegge = false;
+			boolean hasRinnegato = false;
+			for (String player : remainPlayers) {
+				if(characterMap.get(player).getRole().getRoleType().equals(RoleType.FUORILEGGE)) {
+					hasFuorilegge = true;
+					break;
+				}
+				if(characterMap.get(player).getRole().getRoleType().equals(RoleType.RINNEGATO)) {
+					hasRinnegato = true;
+					break;
+				}
+			}
+			if(!hasFuorilegge && hasRinnegato) {
+				//continue the match between SCERIFFO and RINNEGATO
+			} else if (!hasFuorilegge && !hasRinnegato){
+				messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.SCERIFFO.toString()));
+				//TODO notify end
+			}
 		}
 	}
 

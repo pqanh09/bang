@@ -4,8 +4,8 @@ public enum ResponseType {
 	Unknown,
 	Join,
 	Leave,
-	RoleReceived,
-	PickHero,
+	Role,
+	Hero,
 	//
 	CheckCard,
 	GetCard,

@@ -1,25 +1,14 @@
 package com.example.springboot;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.assertj.core.internal.Maps;
 import org.springframework.util.ResourceUtils;
 
-import com.example.springboot.model.card.BangCard;
-import com.example.springboot.model.card.BarrelCard;
-import com.example.springboot.model.card.Card;
-import com.example.springboot.model.card.CatPalouCard;
-import com.example.springboot.model.card.GeneralStoreCard;
-import com.example.springboot.model.card.MissedCard;
-import com.example.springboot.model.card.PanicCard;
-import com.example.springboot.model.card.VolcanicCard;
-import com.example.springboot.model.card.Card.Suit;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,15 +16,24 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
-			//System User
-			File systemUserFile = ResourceUtils.getFile("classpath:cards.properties");
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		Runnable runnable = new Runnable() {
+//		      public void run() {
+//		        // task to run goes here
+//		        System.out.println("Hello !!");
+//		      }
+//		    };
+		    ScheduledExecutorService service = Executors
+		                    .newSingleThreadScheduledExecutor();
+		    service.scheduleAtFixedRate(new WorkerThread(10, service), 10, 1, TimeUnit.SECONDS);
+//		try {
+//			ObjectMapper mapper = new ObjectMapper();
+//			mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
+//			//System User
+//			File systemUserFile = ResourceUtils.getFile("classpath:cards.properties");
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		// TODO Auto-generated method stub
 //		List<String> l = new ArrayList<>();
 //		l.add("1");

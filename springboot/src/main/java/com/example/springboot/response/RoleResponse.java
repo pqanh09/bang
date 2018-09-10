@@ -5,7 +5,7 @@ import com.example.springboot.model.role.Role;
  * Response the role, which be set for player
  * 
  */
-public class RoleResponse extends Response{
+public class RoleResponse extends UserResponse{
 	private Role role;
 
 	public Role getRole() {
@@ -16,10 +16,11 @@ public class RoleResponse extends Response{
 		this.role = role;
 	}
 
-	public RoleResponse(Role role) {
+	public RoleResponse(String userName, Role role) {
 		super();
-		this.responseType = ResponseType.RoleReceived;
+		this.responseType = ResponseType.Role;
 		this.role = role;
+		this.userName = userName;
 	}
 
 	public RoleResponse() {

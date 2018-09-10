@@ -1,7 +1,5 @@
 package com.example.springboot.command;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.example.springboot.model.Character;

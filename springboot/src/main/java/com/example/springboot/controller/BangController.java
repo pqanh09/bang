@@ -138,7 +138,8 @@ public class BangController {
 			Role role = roles.get(n);
 			character.setRole(role);
 			// send role for user
-			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+			messagingTemplate.convertAndSendToUser(sessionId, "/queue/role", new RoleResponse(userName, role));
+//			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
 			// notify for all user if found Sceriffo
 			if (foundSceriffo) {
 				tableService.getPlayerTurnQueue().add(userName);
