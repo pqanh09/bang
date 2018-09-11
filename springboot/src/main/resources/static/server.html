@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<title>Server</title>
+<link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="/css/index.css" />
+</head>
+<body>
+	<!-- <img src="/data/image/hero/Hero-BartCassidy.jpg" alt="aaa" class="img-thumbnail"> -->
+	<div ng-app="myapp">
+		<div ng-controller="FirstCtrl">
+			<button type="button" class="btn btn-info btn-lg" ng-click="showdialog()">Clear</button>
+		</div>
+	</div>
+	<script src="/js/stomp.min.js"></script>
+	<script src="/js/sockjs.min.js"></script>
+	<script src="/vendor/jquery/dist/jquery.js"></script>
+	<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="/vendor/angular/angular.js"></script>
+	<script src="/js/server.js"></script>
+</body>
+</html>

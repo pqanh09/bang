@@ -78,6 +78,13 @@
 	height: 300px;
 }
 
+.item-dialog-image-zoom {
+	width: 400px;
+	height: 600px;
+	margin-left: 7px;
+}
+
+
 .item-card-image {
 	width: 120px;
 	height: 177px;

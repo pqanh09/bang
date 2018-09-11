@@ -11,12 +11,27 @@
 	<!-- <img src="/data/image/hero/Hero-BartCassidy.jpg" alt="aaa" class="img-thumbnail"> -->
 	<div ng-app="myapp">
 		<div ng-controller="FirstCtrl">
-			<!-- 			<button type="button" class="btn btn-info btn-lg" ng-click="showdialog()" -->
-			<!-- 				data-target="#dialogSelectHero">Open Modal</button> -->
+<!-- 			<button type="button" class="btn btn-info btn-lg" -->
+<!-- 				ng-click="showdialog()" data-target="#dialogSelectHero">Open -->
+<!-- 				Modal</button> -->
 			<!-- 				<button type="button" class="btn btn-info btn-lg" ng-click="closedialog() -->
 			<!-- 				data-target="#dialogSelectHero">Close Modal</button> -->
 
 			<!-- 			Modal -->
+			<div id="dialogFullImage" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<!-- 					Modal content -->
+					<div class="modal-content"
+						style="width: 450px; justify-content: center;">
+						<div class="modal-header">
+							<img ng-src="{{image}}"
+								class="img-thumbnail item-dialog-image-zoom">
+								<button type="button"  class="close" data-dismiss="modal" style="padding: 0px 5px 2px 2px;">&times;</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
 			<div id="dialogSelectUser" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 
@@ -167,7 +182,8 @@
 									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''">
 									<img ng-show="modeImage" ng-src="{{character.hero.image}}"
 										alt="{{character.hero.name}}"
-										class="img-thumbnail item-hero-image1">
+										class="img-thumbnail item-hero-image1"
+										ng-click="zoomImage(character.hero.image)">
 									<div style="display: flow-root;">
 										<img ng-src="{{character.roleImage}}"
 											class="img-thumbnail item-role-mage">
@@ -228,7 +244,8 @@
 								<div style="width: 121px; height: 180px;">
 									<h2 ng-show="!modeImage">{{oldCard.name}}</h2>
 									<img ng-show="modeImage" ng-src="{{oldCard.image}}"
-										alt="{{oldCard.name}}" class="img-thumbnail item-card-image">
+										alt="{{oldCard.name}}" class="img-thumbnail item-card-image"
+										ng-click="zoomImage(oldCard.image)">
 								</div>
 							</div>
 							<div>
@@ -284,70 +301,29 @@
 										<div class="item-hero-image-div">
 											<h2 ng-show="!modeImage">{{card.name}}</h2>
 											<img ng-show="modeImage" ng-src="{{card.image}}"
-												alt="{{card.name}}" class="img-thumbnail item-card-image">
+												alt="{{card.name}}" class="img-thumbnail item-card-image"
+												ng-click="zoomImage(card.image)">
 										</div>
-										<button type="button" ng-show="playerUsingCard === userName"
-											ng-click="useCardFunc(card.id)" class="btn btn-primary">Use</button>
+										<button type="
+												button" ng-show="playerUsingCard === userName"
+												ng-click="useCardFunc(card.id)" class="btn btn-primary">Use
+											</button>
 
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<!-- 					<div class="row"> -->
-					<!-- 						<div class="col-10" style="display: -webkit-box;"> -->
-
-					<!-- 						</div> -->
-					<!-- 						<div class="col-2" -->
-					<!-- 							style="display: -webkit-box; text-align: center; width: 100px; height: 120px; margin: 0 2px 0 2px; padding: 5px 0 2px 0;"> -->
-					<!-- 							<button type="button" -->
-					<!-- 								ng-show="userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello')" -->
-					<!-- 								ng-click="lostLifePointFunc()" class="btn btn-primary">Lose -->
-					<!-- 								life point</button> -->
-					<!-- 							<button type="button" -->
-					<!-- 								ng-show="userName === playerUsingCard && userName !== characterTurn && userName === playerUsingBarrel" -->
-					<!-- 								ng-click="useBarrelCardFunc()" class="btn btn-primary">Barrel</button> -->
-					<!-- 						</div> -->
-					<!-- 					</div> -->
-					<!-- 					<br> -->
-
-					<!-- 					<div class="row"> -->
-					<!-- 						<div class="col-12" style="display: -webkit-box;"> -->
-					<!-- 												<form id="formGetCard" class="form-group hidden"> -->
-					<!-- 													<button type="button" class="btn btn-info">Get Card</button> -->
-					<!-- 												</form> -->
-					<!-- 							<form id="drawsForm" class="form-group"> -->
-					<!-- 								<button type="button" class="btn btn-info" -->
-					<!-- 									ng-show="userName === playerDrawingCard && userName === characterTurn" -->
-					<!-- 									ng-click="drawFunc()">Draw</button> -->
-					<!-- 							</form> -->
-					<!-- 							<form id="testForm" class="form-group"> -->
-					<!-- 								<button type="button" class="btn btn-info" -->
-					<!-- 									ng-show="userName === playerGettingCard && userName === characterTurn" -->
-					<!-- 									ng-click="getCardFunc()">Get Card</button> -->
-					<!-- 							</form> -->
-					<!-- 							<form id="testForm1" class="form-group"> -->
-					<!-- 								<button type="button" class="btn btn-info" -->
-					<!-- 									ng-click="useHeroSkillFunc()">Use Hero'skill</button> -->
-					<!-- 							</form> -->
-					<!-- 							<form id="testForm2" class="form-group"> -->
-					<!-- 								<button type="button" class="btn btn-info" -->
-					<!-- 									ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'" -->
-					<!-- 									ng-click="endTurnFunc()">End Turn</button> -->
-					<!-- 							</form> -->
-
-					<!-- 						</div> -->
-					<!-- 					</div> -->
 				</div>
 			</div>
-		</div>
 
-	</div>
-	<script src="/js/stomp.min.js"></script>
-	<script src="/js/sockjs.min.js"></script>
-	<script src="/vendor/jquery/dist/jquery.js"></script>
-	<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
-	<script src="/vendor/angular/angular.js"></script>
-	<script src="/js/main.js"></script>
+		</div>
+		<script src="/js/stomp.min.js"></script>
+		<script src="/js/sockjs.min.js"></script>
+		<script src="/vendor/jquery/dist/jquery.js"></script>
+		<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
+		<script src="/vendor/angular/angular.js"></script>
+		<script src="/js/main.js"></script>
 </body>
 </html>

@@ -86,6 +86,7 @@ public class TableService {
 					messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.RINNEGATO.toString()));
 				}
 				//TODO notify end
+				playerTurnQueue.clear();
 				return;
 			}
 			// check end game
@@ -107,6 +108,7 @@ public class TableService {
 			} else if (!hasFuorilegge && !hasRinnegato){
 				messagingTemplate.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.SCERIFFO.toString()));
 				//TODO notify end
+				playerTurnQueue.clear();
 			}
 		}
 	}

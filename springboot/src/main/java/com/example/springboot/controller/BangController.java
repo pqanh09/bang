@@ -88,7 +88,7 @@ public class BangController {
 			messagingTemplate.convertAndSend("/topic/join", joinResponse);
 			
 			
-			if(tableService.getUserMap().size() >= 4) {
+			if(tableService.getUserMap().size() >= 2) {
 				getHero();
 			}
 		}
