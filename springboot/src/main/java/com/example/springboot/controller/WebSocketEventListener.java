@@ -1,5 +1,6 @@
 package com.example.springboot.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,11 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.springboot.model.Constants;
+import com.example.springboot.model.Match;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UserResponse;
+import com.example.springboot.service.MatchService;
+import com.example.springboot.service.UserService;
 
 /**
  * Created by rajeevkumarsingh on 25/07/17.
@@ -25,6 +29,12 @@ public class WebSocketEventListener {
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	MatchService matchService;
+	
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         logger.info("Received a new web socket connection");
@@ -43,8 +53,17 @@ public class WebSocketEventListener {
         String username = (String) stompHeaderAccessor.getSessionAttributes().get(Constants.HEADER_ACCESSOR_USER);
         if(username != null) {
             logger.info("User Disconnected : " + username);
-
-            messagingTemplate.convertAndSend("/topic/turn", new UserResponse(ResponseType.Leave, username));
+            String matchId = matchService.getUserMap().get(username);
+            if(StringUtils.isNotBlank(matchId)) {
+            	Match match = matchService.getMatchMap().get(matchId);
+            	match.disconnecPlayer(messagingTemplate, username);
+            	if(match.getPlayerTurnQueue().isEmpty()) {
+            		matchService.getMatchMap().remove(matchId);
+            	}
+            	matchService.getUserMap().remove(username);
+            }
+            userService.getSessionIdMap().remove(userService.getUserMap().get(username));
+            userService.getUserMap().remove(username);
         }
     }
 }

@@ -1,20 +1,16 @@
 package com.example.springboot;
 
-import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.util.ResourceUtils;
-
-import com.fasterxml.jackson.core.JsonParser.Feature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Main {
 
 	public static void main(String[] args) {
+		int a = 25;
+		int b = 7;
+		int c = 25/7;
+		Date dt = new Date();
+		System.out.println(Calendar.getInstance().getTime().getTime());
 		
 //		Runnable runnable = new Runnable() {
 //		      public void run() {

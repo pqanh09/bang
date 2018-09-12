@@ -2,6 +2,7 @@ package com.example.springboot.request;
 
 public enum RequestType {
 	Join,
+	Create,
 	PickHero,
 	UseSkill,
 	GetCard,

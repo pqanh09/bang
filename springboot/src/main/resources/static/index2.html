@@ -12,45 +12,18 @@
 	<div ng-app="myapp">
 		<div ng-controller="FirstCtrl">
 
-			<div id="hallPage" ng-show="hallPage">
-<!-- 				<div ng-show="createUserArea"> -->
-<!-- 					<input type="text" class="form-control" id="name" -->
-<!-- 						ng-model="userName" placeholder="Username" autocomplete="off"> -->
-<!-- 					<button type="submit" ng-click="createUserFunc()" -->
-<!-- 						class="btn btn-success">Create userName</button> -->
-<!-- 				</div> -->
-				<div>
-					<div class="container">
-						<h2>Hello {{userName}}</h2>
-						<button type="submit" ng-click="createNewMatchFunc()"
-							class="btn btn-success">New Match</button>
-						<button type="submit" ng-click="refreshMatchFunc()"
-							class="btn btn-success">Refresh</button>
-						<table class="table table-hover">
-							<thead>
-								<tr>
-									<th>Game</th>
-									<th>Players</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="match in matches">
-									<td>{{match.matchId}}</td>
-									<td>{{match.status}}</td>
-									<td>{{match.players}}</td>
-									<td><button ng-show="match.status === 'waiting'"
-											type="submit" ng-click="joinMatchFunc(match.matchId)"
-											class="btn btn-success">Join</button></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
+			<div id="usernamePage" ng-show="usernamePage">
+				<input type="text" class="form-control" id="name"
+					ng-model="userName" placeholder="Username" autocomplete="off">
+				<button type="submit" ng-click="joinFunc()" class="btn btn-success">Join</button>
 			</div>
-			<div id="gamePage" ng-show="gamePage">
-				<button type="submit" ng-show="host" ng-click="startGameFunc()"
-					class="btn btn-success">Start</button>
+
+			<div id="waitingPage" ng-show="waitingPage">
+				<h4>{{notifyMessage}}</h4>
+			</div>
+			<div id="serverPage" ng-show="serverPage"></div>
+
+			<div id="mainPage" ng-show="mainPage">
 				<div class="container" style="max-width: 100%;">
 					<div class="row">
 						<div class="col-12"
@@ -111,7 +84,7 @@
 								</div>
 								<div class="flex-container-weapon">
 									<div ng-repeat="card in character.cardsInFront">
-										<h2 >{{card.name}}</h2>
+										<h2 ng-show="!modeImage">{{card.name}}</h2>
 										<img ng-show="modeImage" ng-src="{{card.image}}"
 											alt="{{card.name}}"
 											class="img-thumbnail item-card-in-front-hero">
@@ -130,7 +103,7 @@
 									<h5 style="margin-bottom: 0;">OldCard</h5>
 								</div>
 								<div style="width: 121px; height: 180px;">
-									<h2 >{{oldCard.name}}</h2>
+									<h2 ng-show="!modeImage">{{oldCard.name}}</h2>
 									<img ng-show="modeImage" ng-src="{{oldCard.image}}"
 										alt="{{oldCard.name}}" class="img-thumbnail item-card-image"
 										ng-click="zoomImage(oldCard.image)">
@@ -187,7 +160,7 @@
 								<div class="flex-container">
 									<div ng-repeat="card in cardsInHand" class="item-hero-card">
 										<div class="item-hero-image-div">
-											<h2 >{{card.name}}</h2>
+											<h2 ng-show="!modeImage">{{card.name}}</h2>
 											<img ng-show="modeImage" ng-src="{{card.image}}"
 												alt="{{card.name}}" class="img-thumbnail item-card-image"
 												ng-click="zoomImage(card.image)">
@@ -203,30 +176,18 @@
 							</div>
 						</div>
 					</div>
-
-			</div>
-			<!-- 			Modal -->
-			<div id="dialogInputUserName" class="modal fade" role="dialog">
-				<div class="modal-dialog">
-
-					<!-- Modal content-->
-					<div class="modal-content" style="width: max-content;">
-						<div class="modal-header">
-							<h4 class="modal-title">Type your username</h4>
-
-						</div>
-						<div class="modal-body">
-							<input type="text" class="form-control" id="name"
-								ng-model="userName" placeholder="Username" autocomplete="off">
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-success"
-								data-dismiss="modal" ng-click="createUserFunc()">Create</button>
-						</div>
-					</div>
-
 				</div>
-			</div>
+				
+				<!-- asdddddddddddddddddddddddddddd -->
+				
+				
+				<!-- 			<button type="button" class="btn btn-info btn-lg" -->
+<!-- 				ng-click="showdialog()" data-target="#dialogSelectHero">Open -->
+<!-- 				Modal</button> -->
+			<!-- 				<button type="button" class="btn btn-info btn-lg" ng-click="closedialog() -->
+			<!-- 				data-target="#dialogSelectHero">Close Modal</button> -->
+
+			<!-- 			Modal -->
 			<div id="dialogFullImage" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 					<!-- 					Modal content -->
@@ -235,8 +196,7 @@
 						<div class="modal-header">
 							<img ng-src="{{image}}"
 								class="img-thumbnail item-dialog-image-zoom">
-							<button type="button" class="close" data-dismiss="modal"
-								style="padding: 0px 5px 2px 2px;">&times;</button>
+								<button type="button"  class="close" data-dismiss="modal" style="padding: 0px 5px 2px 2px;">&times;</button>
 						</div>
 					</div>
 
@@ -279,6 +239,7 @@
 									<div class="col-12" style="display: -webkit-box;">
 										<div ng-repeat="hero in heros" class="item-hero-card">
 											<div class="item-hero-image-dialog">
+												<h2 ng-show="!modeImage">{{hero.name}}</h2>
 												<img ng-show="modeImage" ng-src="{{hero.image}}"
 													alt="{{hero.name}}" class="img-thumbnail item-dialog-image">
 											</div>
@@ -339,7 +300,7 @@
 									<div class="col-12" style="display: -webkit-box;">
 										<div ng-repeat="card in cards" class="item-hero-card">
 											<div class="item-hero-image-dialog">
-												<h2 >{{card.name}}</h2>
+												<h2 ng-show="!modeImage">{{card.name}}</h2>
 												<img ng-show="modeImage" ng-src="{{card.image}}"
 													alt="{{card.name}}" class="img-thumbnail item-dialog-image">
 											</div>
@@ -360,15 +321,20 @@
 					</div>
 				</div>
 			</div>
+				
+				
+				
+				
+				
+				
+			</div>
 
 		</div>
-
-	</div>
-	<script src="/js/stomp.min.js"></script>
-	<script src="/js/sockjs.min.js"></script>
-	<script src="/vendor/jquery/dist/jquery.js"></script>
-	<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
-	<script src="/vendor/angular/angular.js"></script>
-	<script src="/js/main.js"></script>
+		<script src="/js/stomp.min.js"></script>
+		<script src="/js/sockjs.min.js"></script>
+		<script src="/vendor/jquery/dist/jquery.js"></script>
+		<script src="/vendor/bootstrap/dist/js/bootstrap.js"></script>
+		<script src="/vendor/angular/angular.js"></script>
+		<script src="/js/main.js"></script>
 </body>
 </html>

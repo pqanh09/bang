@@ -15,7 +15,8 @@ public class CustomHandshakeHandler extends DefaultHandshakeHandler {
                                       WebSocketHandler wsHandler,
                                       Map<String, Object> attributes) {
         // Generate principal with UUID as name
-        return new StompPrincipal(UUID.randomUUID().toString());
+    	String uuid = UUID.randomUUID().toString();
+        return new StompPrincipal(uuid);
 //        return new StompPrincipal("b53e1cc0-7622-4335-9464-8c5467b3db09");
     }
 }

@@ -18,6 +18,9 @@ import com.example.springboot.response.ResponseType;
 import com.example.springboot.model.card.*;
 
 public class BangUtils {
+	public static void sendRole() {
+		
+	}
 	public static Card findCardInHand(Character character, String id) {
 		for (Card card : character.getCardsInHand()) {
 			if(card.getId().equals(id)) {

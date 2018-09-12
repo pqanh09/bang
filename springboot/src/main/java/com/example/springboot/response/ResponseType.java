@@ -3,6 +3,9 @@ package com.example.springboot.response;
 public enum ResponseType {
 	Unknown,
 	Join,
+	Create,
+	Existed,
+	Get,
 	Leave,
 	Role,
 	Hero,
