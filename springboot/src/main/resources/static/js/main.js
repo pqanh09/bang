@@ -42,7 +42,18 @@ myapp.controller('FirstCtrl',
 		$scope.playerUsingSkill = false;
 		$scope.actionType = '';
 		$scope.dialogTitle = '';
+		$scope.chattingMsg = '';
 		
+		$scope.sendMessage = function(keyEvent) {
+			 if (keyEvent.which === 13){
+				 stompClient.send("/app/game.execute", {}, JSON
+							.stringify({
+								id : $scope.chattingMsg,
+								actionType : 'Chatting'
+							}));
+				 $scope.chattingMsg = '';
+			 }
+		};
 		$scope.useBarrelCardFunc = function(cardId) {
 			stompClient.send("/app/game.execute", {}, JSON
 					.stringify({
@@ -103,7 +114,6 @@ myapp.controller('FirstCtrl',
 		};
 
 		$scope.heroPickFunc = function(heroId) {
-			console.log(heroId);
 			stompClient.send("/app/game.execute", {}, JSON
 					.stringify({
 						id : heroId,
@@ -151,7 +161,6 @@ myapp.controller('FirstCtrl',
 		
 		$scope.createUserFunc = function() {
 			if ($scope.userName) {
-				console.log($scope.userName);
 				socket = new SockJS('/ws');
 				stompClient = Stomp.over(socket);
 				stompClient.connect({}, onConnected, onError);
@@ -184,6 +193,7 @@ myapp.controller('FirstCtrl',
 			stompClient.subscribe('/user/queue/user', onUserReceived);
 			stompClient.subscribe('/user/queue/game', onGameReceived);
 			
+			$scope.userName = $scope.userName.replace(/ /g,'');
 			// Tell your username to the server
 			stompClient.send("/app/user.create", {}, JSON.stringify({
 				id : $scope.userName,
@@ -218,6 +228,7 @@ myapp.controller('FirstCtrl',
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/cardaction',onCardActionTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/oldcard',onOldCardTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/action',onActionTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.matchId +'/chatting',onChattingTopicReceived);
 				
 			} else {
 				console.log('ERROR');
@@ -423,10 +434,10 @@ myapp.controller('FirstCtrl',
 						+ response.card.name);
 				$scope.playerDrawingCard = '';
 			} else if (response.responseType === 'EscapeJail') {
-				addMessage(response.userName + ' - escapes the Jail. ';
+				addMessage(response.userName + ' - escapes the Jail. ');
 				$scope.playerDrawingCard = '';
 			} else if (response.responseType === 'EscapeDynamite') {
-				addMessage(response.userName + ' - escapes the Dynamite. It's transfered to'
+				addMessage(response.userName + ' - escapes the Dynamite. It is transfered to'
 						+ response.card.targetUser);
 				$scope.playerDrawingCard = '';
 			} else if (response.responseType === 'LostTurn') {
@@ -457,6 +468,18 @@ myapp.controller('FirstCtrl',
 			if (response.responseType === 'OldCard') {
 				$scope.oldCard = response.cards[0];
 				$scope.$apply();
+			} else {
+				console.log('Error');
+				alert(JSON.stringify(response));
+			}
+		}
+		function onChattingTopicReceived(payload) {
+			var response = JSON.parse(payload.body);
+			if (response.responseType === 'Chatting') {
+				addChattingMessage(response.userName + ': ' +response.message);
+			} else {
+				console.log('Error');
+				alert(JSON.stringify(response));
 			}
 		}
 		function onTurnTopicReceived(payload) {
@@ -603,7 +626,7 @@ myapp.controller('FirstCtrl',
 			} else if (response.responseType === 'Join') {
 				addMessage(response.userName + 'has joined!');
 			}  else if (response.responseType === 'Leave') {
-				addMessage(response.userName + 'has leaved!');
+				addMessage(response.userName + ' has leaved!');
 			} else if (response.responseType === 'Winner') {
 				addMessage(response.userName + ' win!!!!!');
 				$scope.characterTurn = '';
@@ -623,6 +646,15 @@ myapp.controller('FirstCtrl',
 		function addMessage(message) {
 			var messageArea = document
 					.querySelector('#messageArea');
+			var messageElement = document.createElement('li');
+			messageElement.innerHTML = message;
+			messageElement.classList.add('li-server-notification');
+			messageArea.appendChild(messageElement);
+			messageArea.scrollTop = messageArea.scrollHeight;
+		}
+		function addChattingMessage(message) {
+			var messageArea = document
+					.querySelector('#chattingArea');
 			var messageElement = document.createElement('li');
 			messageElement.innerHTML = message;
 			messageElement.classList.add('li-server-notification');

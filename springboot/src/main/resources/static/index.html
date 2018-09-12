@@ -13,12 +13,12 @@
 		<div ng-controller="FirstCtrl">
 
 			<div id="hallPage" ng-show="hallPage">
-<!-- 				<div ng-show="createUserArea"> -->
-<!-- 					<input type="text" class="form-control" id="name" -->
-<!-- 						ng-model="userName" placeholder="Username" autocomplete="off"> -->
-<!-- 					<button type="submit" ng-click="createUserFunc()" -->
-<!-- 						class="btn btn-success">Create userName</button> -->
-<!-- 				</div> -->
+				<!-- 				<div ng-show="createUserArea"> -->
+				<!-- 					<input type="text" class="form-control" id="name" -->
+				<!-- 						ng-model="userName" placeholder="Username" autocomplete="off"> -->
+				<!-- 					<button type="submit" ng-click="createUserFunc()" -->
+				<!-- 						class="btn btn-success">Create userName</button> -->
+				<!-- 				</div> -->
 				<div>
 					<div class="container">
 						<h2>Hello {{userName}}</h2>
@@ -68,7 +68,7 @@
 								</div>
 								<div class="item-hero-image-div"
 									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''">
-									<img  ng-src="{{character.hero.image}}"
+									<img ng-src="{{character.hero.image}}"
 										alt="{{character.hero.name}}"
 										class="img-thumbnail item-hero-image1"
 										ng-click="zoomImage(character.hero.image)">
@@ -111,8 +111,7 @@
 								</div>
 								<div class="flex-container-weapon">
 									<div ng-repeat="card in character.cardsInFront">
-										<img  ng-src="{{card.image}}"
-											alt="{{card.name}}"
+										<img ng-src="{{card.image}}" alt="{{card.name}}"
 											class="img-thumbnail item-card-in-front-hero">
 									</div>
 								</div>
@@ -129,8 +128,8 @@
 									<h5 style="margin-bottom: 0;">OldCard</h5>
 								</div>
 								<div style="width: 121px; height: 180px;">
-									<img  ng-src="{{oldCard.image}}"
-										alt="{{oldCard.name}}" class="img-thumbnail item-card-image"
+									<img ng-src="{{oldCard.image}}" alt="{{oldCard.name}}"
+										class="img-thumbnail item-card-image"
 										ng-click="zoomImage(oldCard.image)">
 								</div>
 							</div>
@@ -147,8 +146,11 @@
 									style="text-align: center; color: brown;">
 									<h5 style="margin-bottom: 0;">Chatting</h5>
 								</div>
-								<ul id="chattingArea" class="ul-server-notification">
+								<ul id="chattingArea" class="ul-chating-notification">
 								</ul>
+								<div class="form-group">
+									<input type="text" class="form-control" ng-model="chattingMsg" id="chatting" ng-keypress="sendMessage($event)">
+								</div>
 							</div>
 
 						</div>
@@ -185,21 +187,22 @@
 								<div class="flex-container">
 									<div ng-repeat="card in cardsInHand" class="item-hero-card">
 										<div class="item-hero-image-div">
-											<img  ng-src="{{card.image}}"
-												alt="{{card.name}}" class="img-thumbnail item-card-image"
+											<img ng-src="{{card.image}}" alt="{{card.name}}"
+												class="img-thumbnail item-card-image"
 												ng-click="zoomImage(card.image)">
 										</div>
 										<button type="
-												button" ng-show="playerUsingCard === userName"
-												ng-click="useCardFunc(card.id)" class="btn btn-primary">Use
-											</button>
+												button"
+											ng-show="playerUsingCard === userName"
+											ng-click="useCardFunc(card.id)" class="btn btn-primary">Use
+										</button>
 
-										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
+				</div>
 
 			</div>
 			<!-- 			Modal -->
@@ -276,8 +279,8 @@
 									<div class="col-12" style="display: -webkit-box;">
 										<div ng-repeat="hero in heros" class="item-hero-card">
 											<div class="item-hero-image-dialog">
-												<img  ng-src="{{hero.image}}"
-													alt="{{hero.name}}" class="img-thumbnail item-dialog-image">
+												<img ng-src="{{hero.image}}" alt="{{hero.name}}"
+													class="img-thumbnail item-dialog-image">
 											</div>
 											<button type="button" data-dismiss="modal"
 												ng-click="heroPickFunc(hero.id)" class="btn-sm btn-primary">Pick</button>
@@ -308,8 +311,8 @@
 										style="display: flex; justify-content: center; width: max-content;">
 										<div ng-repeat="card in cards" class="item-hero-card">
 											<div class="item-card-hand-image-div">
-												<img  ng-src="{{card.image}}"
-													alt="{{card.name}}" class="img-thumbnail item-dialog-image">
+												<img ng-src="{{card.image}}" alt="{{card.name}}"
+													class="img-thumbnail item-dialog-image">
 											</div>
 											<button type="button" data-dismiss="modal"
 												ng-click="pickCardToRemoveFunc(card.id)"
@@ -336,8 +339,8 @@
 									<div class="col-12" style="display: -webkit-box;">
 										<div ng-repeat="card in cards" class="item-hero-card">
 											<div class="item-hero-image-dialog">
-												<img  ng-src="{{card.image}}"
-													alt="{{card.name}}" class="img-thumbnail item-dialog-image">
+												<img ng-src="{{card.image}}" alt="{{card.name}}"
+													class="img-thumbnail item-dialog-image">
 											</div>
 											<button type="button" data-dismiss="modal"
 												ng-click="pickCardToRemoveFuncPC(card.id)"

@@ -55,6 +55,7 @@ public class Dispatcher {
 			actionMap.put(RequestType.CheckCard, new CheckCardActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.EndTurn, new EndTurnActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.DrawCardJail, new JailActionCmd(commonService, simpMessageSendingOperations));
+			actionMap.put(RequestType.Chatting, new ChattingActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.DrawCardDynamite,
 					new DynamiteActionCmd(commonService, simpMessageSendingOperations));
 

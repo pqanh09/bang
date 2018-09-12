@@ -15,6 +15,11 @@ package com.example.springboot.response;
 		super(responseType);
 		this.userName = userName;
 	}
+	public UserResponse(ResponseType responseType, String userName, String message) {
+		super(responseType);
+		this.userName = userName;
+		this.message = message;
+	}
 
 	public UserResponse() {
 		super();

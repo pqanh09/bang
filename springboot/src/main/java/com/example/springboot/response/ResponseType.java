@@ -9,6 +9,7 @@ public enum ResponseType {
 	Leave,
 	Role,
 	Hero,
+	Chatting,
 	//
 	CheckCard,
 	GetCard,

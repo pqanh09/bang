@@ -16,5 +16,6 @@ public enum RequestType {
 	EndTurn,
 	DrawCardJail,
 	DrawCardDynamite,
+	Chatting
 	
 }

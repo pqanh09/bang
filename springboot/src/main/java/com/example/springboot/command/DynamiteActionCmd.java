@@ -59,6 +59,10 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 			if (character.getLifePoint() <= 0) {
 				commonService.playerDead(userName, false, match);
+				if(match.getPlayerTurnQueue().size() <=1) {
+					//end game
+					return;
+				}
 				commonService.callNextPlayerTurn(match);
 			} else {
 				match.getCurrentTurn().run();

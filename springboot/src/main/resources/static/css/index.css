@@ -37,6 +37,15 @@
 	list-style-type: none;
 }
 
+.ul-chating-notification {
+	margin-bottom: 0px;
+	height: 170px;
+	width: 360px;
+	overflow: auto;
+	overflow-y: scroll;
+	list-style-type: none;
+}
+
 .item-hero-image-div {
 	margin: 0 2px 2px 2px;
 	display: -webkit-box;
@@ -45,11 +54,13 @@
 	border-color: #dee2e6;
 	border-radius: 0.35rem;
 }
-.random-from-hand-button{
+
+.random-from-hand-button {
 	width: 200px;
-    text-align: center;
-    padding-top: 125px;
+	text-align: center;
+	padding-top: 125px;
 }
+
 .item-hero-image-dialog {
 	margin: 0 2px 2px 2px;
 	display: -webkit-box;
@@ -83,7 +94,6 @@
 	height: 600px;
 	margin-left: 7px;
 }
-
 
 .item-card-image {
 	width: 120px;

@@ -188,8 +188,12 @@ public class BangController {
 		// get roles
 		List<Role> roles = roleService.getRoles(nRole);
 		// get heros for user pick
-		int nHero = (heroService.getHeros().size()/nRole) * nRole;
+		int numHeroPerPlayer = (heroService.getHeros().size()/nRole);
+		int nHero = numHeroPerPlayer * nRole;
 		List<Hero> heros = heroService.getHerosByNumber(nHero);
+		if(numHeroPerPlayer > 4) {
+			numHeroPerPlayer = 4;
+		}
 		// get cards
 		match.setNewCards(new LinkedList<>(cardService.getCards()));
 		boolean foundSceriffo = false;
@@ -219,7 +223,7 @@ public class BangController {
 				}
 			}
 			// send heros for user
-			List<Hero> hrs = heros.subList(4 * n, 4 * (n + 1));
+			List<Hero> hrs = heros.subList(numHeroPerPlayer * n, numHeroPerPlayer * (n + 1));
 			simpMessageSendingOperations.convertAndSendToUser(plSessionId, "/queue/"+ matchId +"/hero", new HeroResponse(hrs));
 			n++;
 		}

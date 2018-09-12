@@ -47,6 +47,12 @@ public class CommonService {
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
 //		BangUtils.notifyCharacter(simpMessageSendingOperations, character,userMap.get(userName));
 		match.getPlayerTurnQueue().remove(userName);
+		if(match.getPlayerTurnQueue().size() == 1) {
+			String lastPlayer = match.getPlayerTurnQueue().peek();
+			Character lastCharacter = match.getCharacterMap().get(lastPlayer);
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, lastCharacter.getRole().getRoleType().toString()));
+			return;
+		}
 		addToOldCardList(character.getCardsInFront(), match);
 		addToOldCardList(character.getCardsInHand(), match);
 		updateRangeMap(match);
@@ -58,16 +64,16 @@ public class CommonService {
 			RoleType roleTypeDeathPlayer = character.getRole().getRoleType();
 			
 			if(RoleType.FUORILEGGE.equals(roleTypeDeathPlayer)) {
-				simpMessageSendingOperations.convertAndSend("/topic/server", new UserResponse(ResponseType.Gitf, killerCharacter.getUserName()));
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Gitf, killerCharacter.getUserName()));
 				// get cards for character;
-				List<Card> cards = getFromNewCardList(match, Constants.DEFAULT_CARD);
+				List<Card> cards = getFromNewCardList(match, 3);
 				killerCharacter.getCardsInHand().addAll(cards);
 				killerCharacter.setNumCardsInHand(killerCharacter.getCardsInHand().size());
 				//udpate character for user 
 //				notifyPrivateCharacter(killingPlayer, killerCharacter);
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), killerCharacter, killerSessionId);
 			} else if(RoleType.VICE.equals(roleTypeDeathPlayer) && RoleType.SCERIFFO.equals(killerCharacter.getRole().getRoleType())) {
-				simpMessageSendingOperations.convertAndSend("/topic/server", new UserResponse(ResponseType.LoseCard, killerCharacter.getUserName()));
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.LoseCard, killerCharacter.getUserName()));
 				addToOldCardList(killerCharacter.getCardsInFront(), match);
 				addToOldCardList(killerCharacter.getCardsInHand(), match);
 				//udpate character for user 
@@ -82,34 +88,13 @@ public class CommonService {
 					}
 				}
 				if(hasFuorilegge) {
-					simpMessageSendingOperations.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
 				} else {
-					simpMessageSendingOperations.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.RINNEGATO.toString()));
+					logger.error("Not yet handled 93 CommonService ");
 				}
 				//TODO notify end
 				match.getPlayerTurnQueue().clear();
 				return;
-			}
-			// check end game
-			List<String> remainPlayers = new ArrayList<>(match.getPlayerTurnQueue());
-			boolean hasFuorilegge = false;
-			boolean hasRinnegato = false;
-			for (String player : remainPlayers) {
-				if(match.getCharacterMap().get(player).getRole().getRoleType().equals(RoleType.FUORILEGGE)) {
-					hasFuorilegge = true;
-					break;
-				}
-				if(match.getCharacterMap().get(player).getRole().getRoleType().equals(RoleType.RINNEGATO)) {
-					hasRinnegato = true;
-					break;
-				}
-			}
-			if(!hasFuorilegge && hasRinnegato) {
-				//continue the match between SCERIFFO and RINNEGATO
-			} else if (!hasFuorilegge && !hasRinnegato){
-				simpMessageSendingOperations.convertAndSend("/topic/server", new UserResponse(ResponseType.Winner, RoleType.SCERIFFO.toString()));
-				//TODO notify end
-				match.getPlayerTurnQueue().clear();
 			}
 		}
 	}
@@ -164,7 +149,7 @@ public class CommonService {
 		while (match.getOldCards().size() > 2) {
 			match.getCardPool().add(match.getOldCards().poll());
 		}
-		simpMessageSendingOperations.convertAndSend("/topic/oldcard", new OldCardResponse(cards));
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", new OldCardResponse(cards));
 	}
 	public List<Card> getFromNewCardList(Match match, int n) {
 		List<Card> cards = new ArrayList<>();
@@ -187,7 +172,7 @@ public class CommonService {
 	}
 	public void endTurn(String userName, Match match) {
 		if(match.getPlayerTurnQueue().peek().equals(userName)){
-			simpMessageSendingOperations.convertAndSend("/topic/turn", new TurnResponse(ResponseType.EndTurn, userName));
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/turn", new TurnResponse(ResponseType.EndTurn, userName));
 			match.getPlayerTurnQueue().poll();
 			callNextPlayerTurn(match);
 			match.getPlayerTurnQueue().add(userName);
