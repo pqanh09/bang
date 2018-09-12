@@ -1,5 +1,7 @@
 package com.example.springboot.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -14,7 +16,7 @@ import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class JailActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(JailActionCmd.class);
 	
 
 	public JailActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
@@ -49,12 +51,14 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		character.getCardsInFront().remove(jailCard);
 		
-		BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
+		BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 		
 		commonService.addToOldCardList(jailCard, match);
 		if(Suit.hearts.equals(card.getSuit())) {
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeJail, null, null));
 			match.getCurrentTurn().run();
 		} else {
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostTurn, null, null));
 			commonService.endTurn(userName, match);
 		}
 	}

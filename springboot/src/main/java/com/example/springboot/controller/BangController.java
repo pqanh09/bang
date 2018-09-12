@@ -193,6 +193,7 @@ public class BangController {
 		// get cards
 		match.setNewCards(new LinkedList<>(cardService.getCards()));
 		boolean foundSceriffo = false;
+		match.getPlayerTurnQueue().clear();
 		List<String> playerNotYetInTurn = new ArrayList<>();
 		int n = 0;
 		for (String plName : match.getUserMap().keySet()) {

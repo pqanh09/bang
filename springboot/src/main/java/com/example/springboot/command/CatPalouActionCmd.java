@@ -1,6 +1,8 @@
 package com.example.springboot.command;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -17,7 +19,7 @@ import com.example.springboot.service.TurnService;
 import com.example.springboot.utils.BangUtils;
 
 public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
-	
+	private static final Logger logger = LoggerFactory.getLogger(CatPalouActionCmd.class);
 	public CatPalouActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
 		super(commonService, simpMessageSendingOperations);
 	}
@@ -56,7 +58,7 @@ public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
 			} else if(card instanceof DynamiteCard) {
 				targetCharacter.setHasDynamite(false);
 			}
-			BangUtils.notifyCharacter(simpMessageSendingOperations, targetCharacter, sessionTargetId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 			commonService.addToOldCardList(card, match);
 			turnNode.getNextPlayer().poll();
 			if (turnNode.getNextPlayer().peek() == null) {

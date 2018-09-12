@@ -97,6 +97,7 @@ myapp.controller('FirstCtrl',
 						actionType : 'UseCard',
 						noneResponse : true
 					}));
+			$scope.playerUsingCard = '';
 		};
 		$scope.canceUserDialoglFunc = function() {
 		};
@@ -402,9 +403,9 @@ myapp.controller('FirstCtrl',
 			if (response.responseType === 'UseCard') {
 				var msg = response.userName;
 				if (response.card) {
-					msg = msg + ' - ' + response.card.name;
+					msg = msg + ' use ' + response.card.name;
 					if (response.targetuser) {
-						msg = msg + ' - ' + response.targetuser;
+						msg = msg + ' on ' + response.targetuser;
 					}
 
 				} else {
@@ -412,32 +413,44 @@ myapp.controller('FirstCtrl',
 
 				}
 				addMessage(msg);
-				$scope.$apply();
 			} else if (response.responseType === 'DrawCardJail') {
-				addMessage(response.userName + ' - draw card '
-						+ response.card.name
-						+ ' to escape the Jail');
+				addMessage(response.userName + ' - drawed card '
+						+ response.card.name);
 
 				$scope.playerDrawingCard = '';
-				$scope.$apply();
 			} else if (response.responseType === 'DrawCardDynamite') {
-				addMessage(response.userName + ' - draw card '
-						+ response.card.name
-						+ ' to escape the Dynamite');
-
+				addMessage(response.userName + ' - drawed card '
+						+ response.card.name);
 				$scope.playerDrawingCard = '';
-				$scope.$apply();
+			} else if (response.responseType === 'EscapeJail') {
+				addMessage(response.userName + ' - escapes the Jail. ';
+				$scope.playerDrawingCard = '';
+			} else if (response.responseType === 'EscapeDynamite') {
+				addMessage(response.userName + ' - escapes the Dynamite. It's transfered to'
+						+ response.card.targetUser);
+				$scope.playerDrawingCard = '';
+			} else if (response.responseType === 'LostTurn') {
+				addMessage(response.userName + ' - lost his/her turn.');
+				$scope.playerDrawingCard = '';
+			} else if (response.responseType === 'LostLifePoint') {
+				addMessage(response.userName + ' - lost 3 life point because Dynamite.');
+				$scope.playerDrawingCard = '';
 			} else if (response.responseType === 'UseBarrel') {
-				addMessage(response.userName + ' - draw card '
-						+ response.card.name
-						+ ' to escape the bang/gatlling');
-
+				if(response.canUseBarrel === undefined){
+					addMessage(response.userName + ' - drawed card ' + response.card.name);
+				} else {
+					if(response.canUseBarrel){
+						addMessage(response.userName + ' uses successfully the Barrel. ');
+					} else {
+						addMessage(response.userName + ' does not use successfully the Barrel');
+					}
+				}
 				$scope.playerDrawingCard = '';
-				$scope.$apply();
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
 			}
+			$scope.$apply();
 		}
 		function onOldCardTopicReceived(payload) {
 			var response = JSON.parse(payload.body);

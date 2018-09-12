@@ -1,5 +1,7 @@
 package com.example.springboot.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -10,7 +12,7 @@ import com.example.springboot.response.RemoveCardResponse;
 import com.example.springboot.service.CommonService;
 
 public class EndTurnActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(EndTurnActionCmd.class);
 	public EndTurnActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
 		super(commonService, simpMessageSendingOperations);
 	}

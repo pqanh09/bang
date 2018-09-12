@@ -17,7 +17,11 @@ public enum ResponseType {
 	UseCard,
 	UseBarrel,
 	DrawCardJail,
+	EscapeJail,
+	LostTurn,
 	DrawCardDynamite,
+	EscapeDynamite,
+	LostLifePoint,
 	//
 	Character,
 	Dead,

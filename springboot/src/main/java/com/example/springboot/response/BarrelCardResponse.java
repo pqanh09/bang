@@ -2,7 +2,7 @@ package com.example.springboot.response;
 
 public class BarrelCardResponse extends CardResponse {
 
-private boolean canUseBarrel = false;
+	private boolean canUseBarrel = false;
 	
 	public boolean isCanUseBarrel() {
 		return canUseBarrel;

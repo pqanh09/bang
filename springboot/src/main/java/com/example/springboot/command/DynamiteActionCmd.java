@@ -1,5 +1,7 @@
 package com.example.springboot.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -14,7 +16,7 @@ import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(DynamiteActionCmd.class);
 	
 
 	public DynamiteActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
@@ -50,11 +52,11 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		character.getCardsInFront().remove(dynamiteCard);
 		
-		if(Suit.spades.equals(card.getSuit())) {
+		if(Suit.spades.equals(card.getSuit()) && card.getNumber() >= 2 && card.getNumber() <=9) {
 			commonService.addToOldCardList(dynamiteCard, match);
-			 
 			character.setLifePoint(character.getLifePoint() - 3);
-			BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostLifePoint, null, null));
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 			if (character.getLifePoint() <= 0) {
 				commonService.playerDead(userName, false, match);
 				commonService.callNextPlayerTurn(match);
@@ -62,17 +64,16 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 				match.getCurrentTurn().run();
 			}
 		} else {
-			
-			BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
-			
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 			match.getPlayerTurnQueue().poll();
 			String nextPlayer = match.getPlayerTurnQueue().peek();
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeDynamite, null, nextPlayer));
 			match.getPlayerTurnQueue().addFirst(userName);
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			nextCharacter.getCardsInFront().add(dynamiteCard);
 			nextCharacter.setHasDynamite(true);
 			String sessionIdNextPlayer = match.getUserMap().get(nextPlayer);
-			BangUtils.notifyCharacter(simpMessageSendingOperations, nextCharacter, sessionIdNextPlayer);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), nextCharacter, sessionIdNextPlayer);
 			match.getCurrentTurn().run();
 		}
 	}

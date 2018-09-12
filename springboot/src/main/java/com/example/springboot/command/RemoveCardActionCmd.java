@@ -3,6 +3,8 @@ package com.example.springboot.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -14,7 +16,7 @@ import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class RemoveCardActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(RemoveCardActionCmd.class);
 	
 
 	public RemoveCardActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
@@ -34,7 +36,7 @@ public class RemoveCardActionCmd extends AbsActionCmd implements ActionCmd {
 			cards.add(card);
 			commonService.addToOldCardList(card, match);
 		}
-		BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
+		BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, cards));
 		
 		//check number card is  not ok

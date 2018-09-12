@@ -1,6 +1,8 @@
 package com.example.springboot.command;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -15,7 +17,7 @@ import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(PanicCardActionCmd.class);
 	public PanicCardActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
 		super(commonService, simpMessageSendingOperations);
 	}
@@ -57,18 +59,18 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 			} else if(card instanceof DynamiteCard) {
 				targetCharacter.setHasDynamite(false);
 			}
-			BangUtils.notifyCharacter(simpMessageSendingOperations, targetCharacter, sessionTargetId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 			character.getCardsInHand().add(card);
-			BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 			turnNode.getNextPlayer().poll();
 			if (turnNode.getNextPlayer().peek() == null) {
 				// request player in turn continue using card
 				turnNode.requestPlayerUseCard();
 			} else {
-				System.out.println("PanicCardActionCmd Error!!!!!!!!!!!!!!!!!!!");
+				logger.error("PanicCardActionCmd Error!!!!!!!!!!!!!!!!!!!");
 			}
 		} else {
-			System.out.println("PanicCardActionCmd card null!!!!!!!!!!!!!!!!!!!");
+			logger.error("PanicCardActionCmd card null!!!!!!!!!!!!!!!!!!!");
 		}
 		
 	}

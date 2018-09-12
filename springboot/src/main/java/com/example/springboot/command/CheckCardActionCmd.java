@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -31,7 +33,7 @@ import com.example.springboot.service.TurnService;
 import com.example.springboot.utils.BangUtils;
 
 public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(CheckCardActionCmd.class);
 	public CheckCardActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
 		super(commonService, simpMessageSendingOperations);
 	}

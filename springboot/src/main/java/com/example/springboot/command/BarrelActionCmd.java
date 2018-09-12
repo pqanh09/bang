@@ -1,5 +1,7 @@
 package com.example.springboot.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Match;
@@ -7,12 +9,13 @@ import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.BarrelCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.service.CommonService;
 
 public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(BarrelActionCmd.class);
 
 	public BarrelActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
 		super(commonService, simpMessageSendingOperations);
@@ -34,13 +37,14 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 		TurnNode turnNode = match.getCurrentTurn();
 		turnNode.getPlayerUsedBarrel().add(userName);
 		if(Suit.hearts.equals(card.getSuit())) {
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, true));
 			turnNode.getNextPlayer().poll();
-			if (turnNode.getNextPlayer().peek() == null) {
-				// request player in turn continue using card
-				turnNode.requestPlayerUseCard();
-			} else {
-				turnNode.requestOtherPlayerUseCard(match);
-			}
+		} else {
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, false));
+		}
+		if (turnNode.getNextPlayer().peek() == null) {
+			// request player in turn continue using card
+			turnNode.requestPlayerUseCard();
 		} else {
 			turnNode.requestOtherPlayerUseCard(match);
 		}

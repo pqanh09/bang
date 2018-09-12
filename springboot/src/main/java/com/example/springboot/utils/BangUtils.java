@@ -15,7 +15,6 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.CardType;
 import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.ResponseType;
-import com.example.springboot.model.card.*;
 
 public class BangUtils {
 	public static void sendRole() {
@@ -51,9 +50,9 @@ public class BangUtils {
 		result.poll();
 		return result;
 	}
-	public static void notifyCharacter(SimpMessageSendingOperations messagingTemplate, Character character, String sessionId) {
-		messagingTemplate.convertAndSend("/topic/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character.getVO()));
-		messagingTemplate.convertAndSendToUser(sessionId, "/queue/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character));
+	public static void notifyCharacter(SimpMessageSendingOperations messagingTemplate, String matchId, Character character, String sessionId) {
+		messagingTemplate.convertAndSend("/topic/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character.getVO()));
+		messagingTemplate.convertAndSendToUser(sessionId, "/queue/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character));
 	}
 	public static Card getCardInHand(Character character, String id) {
 		Card result = null;

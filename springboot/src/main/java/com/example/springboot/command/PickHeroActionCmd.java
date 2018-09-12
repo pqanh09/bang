@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -18,7 +20,7 @@ import com.example.springboot.service.CommonService;
 import com.example.springboot.service.HeroService;
 
 public class PickHeroActionCmd extends AbsActionCmd implements ActionCmd {
-	
+	private static final Logger logger = LoggerFactory.getLogger(PickHeroActionCmd.class);
 	private HeroService heroService;
 	
 

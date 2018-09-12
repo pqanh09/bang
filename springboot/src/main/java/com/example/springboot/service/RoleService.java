@@ -20,36 +20,57 @@ public class RoleService {
 
 	public List<Role> getRoles(int numberPlayer) {
 		List<Role> roles = new ArrayList<>();
-		roles.add(new SceriffoRole("SCERIFFO", "SceriffoRole", "/data/image/role/Sceriffo.jpg"));
-		roles.add(new FuorileggeRole("FUORILEGGE", "FuorileggeRole", "/data/image/role/Fuorilegge.jpg"));
 //		if(numberPlayer < 4) return roles;
-//		SceriffoRole sceriffoRole = new SceriffoRole("SCERIFFO", "SceriffoRole", "/data/image/role/Sceriffo.jpg");
-//		FuorileggeRole fuorileggeRole = new FuorileggeRole("FUORILEGGE", "FuorileggeRole", "/data/image/role/Fuorilegge.jpg");
-//		ViceRole viceRole = new ViceRole("VICE", "ViceRole", "/data/image/role/Vice.jpg");
-//		RinnegatoRole rinnegatoRole = new RinnegatoRole("RINNEGATO", "RinnegatoRole", "/data/image/role/Rinnegato.jpg");
-//		roles.add(sceriffoRole);
-//		roles.add(rinnegatoRole);
-//		roles.add(fuorileggeRole);
-//		roles.add(fuorileggeRole);
-//		switch (numberPlayer) {
-//		case 5:
-//			roles.add(viceRole);
-//			break;
-//		case 6:
-//			roles.add(rinnegatoRole);
-//			roles.add(viceRole);
-//			break;
-//		case 7:
-//			roles.add(rinnegatoRole);
-//			roles.add(viceRole);
-//			roles.add(viceRole);
-//			break;
-//		default:
-//			break;
-//		}
-//		if(roles.size() >=4) {
-//			Collections.shuffle(roles);
-//		}
+		SceriffoRole sceriffoRole = new SceriffoRole("SCERIFFO", "SceriffoRole", "/data/image/role/Sceriffo.jpg");
+		FuorileggeRole fuorileggeRole = new FuorileggeRole("FUORILEGGE", "FuorileggeRole", "/data/image/role/Fuorilegge.jpg");
+		ViceRole viceRole = new ViceRole("VICE", "ViceRole", "/data/image/role/Vice.jpg");
+		RinnegatoRole rinnegatoRole = new RinnegatoRole("RINNEGATO", "RinnegatoRole", "/data/image/role/Rinnegato.jpg");
+		switch (numberPlayer) {
+		case 2:
+			roles.add(sceriffoRole);
+			roles.add(fuorileggeRole);
+			break;
+		case 3:
+			roles.add(sceriffoRole);
+			roles.add(rinnegatoRole);
+			roles.add(fuorileggeRole);
+			break;
+		case 4:
+			roles.add(sceriffoRole);
+			roles.add(rinnegatoRole);
+			roles.add(fuorileggeRole);
+			roles.add(fuorileggeRole);
+			break;
+		case 5:
+			roles.add(sceriffoRole);
+			roles.add(rinnegatoRole);
+			roles.add(fuorileggeRole);
+			roles.add(fuorileggeRole);
+			roles.add(viceRole);
+			break;
+		case 6:
+			roles.add(sceriffoRole);
+			roles.add(rinnegatoRole);
+			roles.add(fuorileggeRole);
+			roles.add(fuorileggeRole);
+			roles.add(rinnegatoRole);
+			roles.add(viceRole);
+			break;
+		case 7:
+			roles.add(sceriffoRole);
+			roles.add(rinnegatoRole);
+			roles.add(fuorileggeRole);
+			roles.add(fuorileggeRole);
+			roles.add(rinnegatoRole);
+			roles.add(viceRole);
+			roles.add(viceRole);
+			break;
+		default:
+			break;
+		}
+		if(roles.size() >=4) {
+			Collections.shuffle(roles);
+		}
 		return roles;
 
 	}

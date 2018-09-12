@@ -68,7 +68,7 @@
 								</div>
 								<div class="item-hero-image-div"
 									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''">
-									<img ng-show="modeImage" ng-src="{{character.hero.image}}"
+									<img  ng-src="{{character.hero.image}}"
 										alt="{{character.hero.name}}"
 										class="img-thumbnail item-hero-image1"
 										ng-click="zoomImage(character.hero.image)">
@@ -111,8 +111,7 @@
 								</div>
 								<div class="flex-container-weapon">
 									<div ng-repeat="card in character.cardsInFront">
-										<h2 >{{card.name}}</h2>
-										<img ng-show="modeImage" ng-src="{{card.image}}"
+										<img  ng-src="{{card.image}}"
 											alt="{{card.name}}"
 											class="img-thumbnail item-card-in-front-hero">
 									</div>
@@ -130,8 +129,7 @@
 									<h5 style="margin-bottom: 0;">OldCard</h5>
 								</div>
 								<div style="width: 121px; height: 180px;">
-									<h2 >{{oldCard.name}}</h2>
-									<img ng-show="modeImage" ng-src="{{oldCard.image}}"
+									<img  ng-src="{{oldCard.image}}"
 										alt="{{oldCard.name}}" class="img-thumbnail item-card-image"
 										ng-click="zoomImage(oldCard.image)">
 								</div>
@@ -187,8 +185,7 @@
 								<div class="flex-container">
 									<div ng-repeat="card in cardsInHand" class="item-hero-card">
 										<div class="item-hero-image-div">
-											<h2 >{{card.name}}</h2>
-											<img ng-show="modeImage" ng-src="{{card.image}}"
+											<img  ng-src="{{card.image}}"
 												alt="{{card.name}}" class="img-thumbnail item-card-image"
 												ng-click="zoomImage(card.image)">
 										</div>
@@ -279,7 +276,7 @@
 									<div class="col-12" style="display: -webkit-box;">
 										<div ng-repeat="hero in heros" class="item-hero-card">
 											<div class="item-hero-image-dialog">
-												<img ng-show="modeImage" ng-src="{{hero.image}}"
+												<img  ng-src="{{hero.image}}"
 													alt="{{hero.name}}" class="img-thumbnail item-dialog-image">
 											</div>
 											<button type="button" data-dismiss="modal"
@@ -311,7 +308,7 @@
 										style="display: flex; justify-content: center; width: max-content;">
 										<div ng-repeat="card in cards" class="item-hero-card">
 											<div class="item-card-hand-image-div">
-												<img ng-show="modeImage" ng-src="{{card.image}}"
+												<img  ng-src="{{card.image}}"
 													alt="{{card.name}}" class="img-thumbnail item-dialog-image">
 											</div>
 											<button type="button" data-dismiss="modal"
@@ -339,8 +336,7 @@
 									<div class="col-12" style="display: -webkit-box;">
 										<div ng-repeat="card in cards" class="item-hero-card">
 											<div class="item-hero-image-dialog">
-												<h2 >{{card.name}}</h2>
-												<img ng-show="modeImage" ng-src="{{card.image}}"
+												<img  ng-src="{{card.image}}"
 													alt="{{card.name}}" class="img-thumbnail item-dialog-image">
 											</div>
 											<button type="button" data-dismiss="modal"

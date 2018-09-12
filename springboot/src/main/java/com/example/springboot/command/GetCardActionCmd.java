@@ -2,6 +2,8 @@ package com.example.springboot.command;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -13,7 +15,7 @@ import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
-
+	private static final Logger logger = LoggerFactory.getLogger(GetCardActionCmd.class);
 	
 
 	public GetCardActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
@@ -34,7 +36,7 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 		character.getCardsInHand().addAll(cards);
 		character.setNumCardsInHand(character.getCardsInHand().size());
 		//udpate character for user 
-		BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
+		BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 		// update alreadyGetCard = true
 		match.getCurrentTurn().setAlreadyGetCard(true);
 		match.getCurrentTurn().requestPlayerUseCard();

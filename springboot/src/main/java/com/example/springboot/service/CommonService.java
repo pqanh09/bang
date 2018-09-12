@@ -9,10 +9,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import com.example.springboot.controller.WebSocketEventListener;
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Constants;
 import com.example.springboot.model.Match;
@@ -28,7 +31,7 @@ import com.example.springboot.utils.BangUtils;
 
 @Service("commonService")
 public class CommonService {
-	
+	private static final Logger logger = LoggerFactory.getLogger(CommonService.class);
 	@Autowired
 	private SimpMessageSendingOperations simpMessageSendingOperations;
 	
@@ -62,13 +65,13 @@ public class CommonService {
 				killerCharacter.setNumCardsInHand(killerCharacter.getCardsInHand().size());
 				//udpate character for user 
 //				notifyPrivateCharacter(killingPlayer, killerCharacter);
-				BangUtils.notifyCharacter(simpMessageSendingOperations, killerCharacter, killerSessionId);
+				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), killerCharacter, killerSessionId);
 			} else if(RoleType.VICE.equals(roleTypeDeathPlayer) && RoleType.SCERIFFO.equals(killerCharacter.getRole().getRoleType())) {
 				simpMessageSendingOperations.convertAndSend("/topic/server", new UserResponse(ResponseType.LoseCard, killerCharacter.getUserName()));
 				addToOldCardList(killerCharacter.getCardsInFront(), match);
 				addToOldCardList(killerCharacter.getCardsInHand(), match);
 				//udpate character for user 
-				BangUtils.notifyCharacter(simpMessageSendingOperations, killerCharacter, killerSessionId);
+				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), killerCharacter, killerSessionId);
 			} else if(RoleType.SCERIFFO.equals(roleTypeDeathPlayer)) {
 				List<String> remainPlayers = new ArrayList<>(match.getPlayerTurnQueue());
 				boolean hasFuorilegge = false;
@@ -189,7 +192,7 @@ public class CommonService {
 			callNextPlayerTurn(match);
 			match.getPlayerTurnQueue().add(userName);
 		} else {
-			System.out.println("Turn service endTurn ERROR @!@@@@@!");
+			logger.error("Turn service endTurn ERROR @!@@@@@!");
 		}
 	}
 	public void callNextPlayerTurn(Match match) {
@@ -199,7 +202,7 @@ public class CommonService {
 			match.getCurrentTurn().resetTurnNode(nextCharacter);
 			match.getCurrentTurn().run();
 		} else {
-			System.out.println("Turn service callNextPlayerTurn ERROR @!@@@@@!");
+			logger.error("Turn service callNextPlayerTurn ERROR @!@@@@@!");
 //			tableService.getsimpMessageSendingOperations().convertAndSend("/topic/turn", new TurnResponse(ResponseType.Winner, userName));
 //			return;
 		}

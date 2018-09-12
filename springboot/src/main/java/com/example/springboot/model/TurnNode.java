@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.card.BarrelCard;
@@ -16,6 +18,7 @@ import com.example.springboot.response.TurnResponse;
 import com.example.springboot.response.UserResponse;
 
 public class TurnNode {
+	private static final Logger logger = LoggerFactory.getLogger(TurnNode.class);
 	private boolean alreadyCheckedJail = false;
 	private boolean alreadyCheckedDynamite = false;
 	private boolean alreadyGetCard = false;
@@ -112,7 +115,7 @@ public class TurnNode {
 					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(action, targetUser));
 				}
 			} else {
-				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 87");
+				logger.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 87");
 			}	
 		} else if(ResponseType.Panic.equals(action) || ResponseType.CatPalou.equals(action)) {
 			String targetUser = nextPlayer.peek();
@@ -127,10 +130,10 @@ public class TurnNode {
 				// request player use cards
 				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(ResponseType.GeneralStore, targetUser, cardTemp));
 			} else {
-				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Null nextplayer");
+				logger.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Null nextplayer");
 			}	
 		} else {
-				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Null nextplayer");
+				logger.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Null nextplayer");
 		}
 	}
 
