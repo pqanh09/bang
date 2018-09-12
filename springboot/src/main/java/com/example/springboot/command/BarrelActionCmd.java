@@ -1,36 +1,37 @@
 package com.example.springboot.command;
 
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
+import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
-import com.example.springboot.service.HeroService;
-import com.example.springboot.service.ShareService;
-import com.example.springboot.service.TableService;
-import com.example.springboot.service.TurnService;
+import com.example.springboot.service.CommonService;
 
 public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 
-	
 
-	public BarrelActionCmd(TableService tableService, HeroService heroService, ShareService shareService, TurnService turnService) {
-		super(tableService, heroService, shareService, turnService);
+	public BarrelActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
+		super(commonService, simpMessageSendingOperations);
 	}
 
 	@Override
-	public void execute(Request request) {
+	public void execute(Request request, Match match) {
 		String userName = request.getUser();
+		SimpMessageSendingOperations simpMessageSendingOperations = commonService.getSimpMessageSendingOperations();
 		// get cards for escaping the bang/gatlling;
-		Card card = tableService.getFromNewCardList(1).get(0);
+		Card card = commonService.getFromNewCardList(match, 1).get(0);
+		
 		
 		//TODO ....
-		tableService.addToOldCardList(card);
+		commonService.addToOldCardList(card, match);
 		
-		tableService.getMessagingTemplate().convertAndSend("/topic/usedCard", new UseCardResponse(userName, ResponseType.UseBarrel, card, null));
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.UseBarrel, card, null));
 		
-		TurnNode turnNode = turnService.getCurrentTurn();
+		TurnNode turnNode = match.getCurrentTurn();
 		turnNode.getPlayerUsedBarrel().add(userName);
 		if(Suit.hearts.equals(card.getSuit())) {
 			turnNode.getNextPlayer().poll();
@@ -38,11 +39,12 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 				// request player in turn continue using card
 				turnNode.requestPlayerUseCard();
 			} else {
-				turnNode.requestOtherPlayerUseCard();
+				turnNode.requestOtherPlayerUseCard(match);
 			}
 		} else {
-			turnNode.requestOtherPlayerUseCard();
+			turnNode.requestOtherPlayerUseCard(match);
 		}
 	}
+
 
 }

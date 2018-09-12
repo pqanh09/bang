@@ -1,47 +1,42 @@
 package com.example.springboot.command;
 
-import java.util.List;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
-import com.example.springboot.model.Constants;
-import com.example.springboot.model.TurnNode;
+import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
-import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.model.card.Card.Suit;
+import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.request.Request;
-import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
-import com.example.springboot.service.HeroService;
-import com.example.springboot.service.ShareService;
-import com.example.springboot.service.TableService;
-import com.example.springboot.service.TurnService;
+import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 
 	
 
-	public DynamiteActionCmd(TableService tableService, HeroService heroService, ShareService shareService, TurnService turnService) {
-		super(tableService, heroService, shareService, turnService);
+	public DynamiteActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
+		super(commonService, simpMessageSendingOperations);
 	}
 
 	@Override
-	public void execute(Request request) {
+	public void execute(Request request, Match match) {
 		String userName = request.getUser();
-		String sessionId = tableService.getUserMap().get(userName);
+		String sessionId = match.getUserMap().get(userName);
 		
-		if(!turnService.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
+		if(!match.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
 			return;
 		}
 		//get Character
-		Character character = tableService.getCharacterMap().get(userName);
+		Character character = match.getCharacterMap().get(userName);
 		// get cards for escaping the jail;
-		Card card = tableService.getFromNewCardList(1).get(0);
+		Card card = commonService.getFromNewCardList(match, 1).get(0);
 		
 		//TODO ....
-		tableService.addToOldCardList(card);
-		tableService.getMessagingTemplate().convertAndSend("/topic/usedCard", new UseCardResponse(userName, ResponseType.DrawCardDynamite, card, null));
+		commonService.addToOldCardList(card, match);
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardDynamite, card, null));
 		
 		character.setHasDynamite(false);
 		
@@ -56,29 +51,29 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 		character.getCardsInFront().remove(dynamiteCard);
 		
 		if(Suit.spades.equals(card.getSuit())) {
-			tableService.addToOldCardList(dynamiteCard);
+			commonService.addToOldCardList(dynamiteCard, match);
 			 
 			character.setLifePoint(character.getLifePoint() - 3);
-			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 			if (character.getLifePoint() <= 0) {
-				tableService.playerDead(userName, false);
-				turnService.callNextPlayerTurn();
+				commonService.playerDead(userName, false, match);
+				commonService.callNextPlayerTurn(match);
 			} else {
-				turnService.getCurrentTurn().run();
+				match.getCurrentTurn().run();
 			}
 		} else {
 			
-			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 			
-			tableService.getPlayerTurnQueue().poll();
-			String nextPlayer = tableService.getPlayerTurnQueue().peek();
-			tableService.getPlayerTurnQueue().addFirst(userName);
-			Character nextCharacter = tableService.getCharacterMap().get(nextPlayer);
+			match.getPlayerTurnQueue().poll();
+			String nextPlayer = match.getPlayerTurnQueue().peek();
+			match.getPlayerTurnQueue().addFirst(userName);
+			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			nextCharacter.getCardsInFront().add(dynamiteCard);
 			nextCharacter.setHasDynamite(true);
-			String sessionIdNextPlayer = tableService.getUserMap().get(nextPlayer);
-			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), nextCharacter, sessionIdNextPlayer);
-			turnService.getCurrentTurn().run();
+			String sessionIdNextPlayer = match.getUserMap().get(nextPlayer);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, nextCharacter, sessionIdNextPlayer);
+			match.getCurrentTurn().run();
 		}
 	}
 

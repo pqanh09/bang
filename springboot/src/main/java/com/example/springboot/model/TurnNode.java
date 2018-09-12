@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
 import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.response.BarrelCardResponse;
@@ -12,7 +14,6 @@ import com.example.springboot.response.GetCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
 import com.example.springboot.response.UserResponse;
-import com.example.springboot.service.TableService;
 
 public class TurnNode {
 	private boolean alreadyCheckedJail = false;
@@ -23,9 +24,9 @@ public class TurnNode {
 	private ResponseType action;
 	private LinkedList<String> nextPlayer = new LinkedList<>();
 	private List<Card> cardTemp = new ArrayList<>();
-	private TableService tableService;
 	private List<String> playerUsedBarrel = new ArrayList<>();
-
+	private SimpMessageSendingOperations simpMessageSendingOperations;
+	private String matchId;
 	
 	public List<String> getPlayerUsedBarrel() {
 		return playerUsedBarrel;
@@ -68,7 +69,7 @@ public class TurnNode {
 	}
 	public void resetTurnNode(Character character) {
 		this.character = character;
-		tableService.getMessagingTemplate().convertAndSend("/topic/turn", new TurnResponse(ResponseType.Turn, character.getUserName()));
+		this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/turn", new TurnResponse(ResponseType.Turn, character.getUserName()));
 		this.alreadyCheckedDynamite = false;
 		this.alreadyCheckedJail = false;
 		this.alreadyGetCard = false;
@@ -78,23 +79,25 @@ public class TurnNode {
 		this.cardTemp.clear();
 	}
 
-	public TurnNode(TableService tableService) {
+	public TurnNode(SimpMessageSendingOperations simpMessageSendingOperations, String matchId) {
 		super();
-		this.tableService = tableService;
+		this.simpMessageSendingOperations = simpMessageSendingOperations;
+		this.matchId = matchId;
 	}
 	public void requestPlayerUseCard() {
 		cardTemp.clear();
 		nextPlayer.clear();
-		tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.UseCard, character.getUserName()));
+		simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.UseCard, character.getUserName()));
 	}
-	public void requestOtherPlayerUseCard() {
+	
+	public void requestOtherPlayerUseCard(Match match) {
 		if(ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action) || ResponseType.Duello.equals(action) || ResponseType.Indians.equals(action)) {
 			// request player use cards
 			String targetUser = nextPlayer.peek();
 			if(targetUser != null) {
 				boolean hasBarrel = false;
 				if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && !playerUsedBarrel.contains(targetUser)) {
-					Character targetCharater = tableService.getCharacterMap().get(targetUser);
+					Character targetCharater = match.getCharacterMap().get(targetUser);
 					for (Card card : targetCharater.getCardsInFront()) {
 						if(card instanceof BarrelCard) {
 							hasBarrel = true;
@@ -104,25 +107,25 @@ public class TurnNode {
 				}
 				// request player use cards
 				if(hasBarrel) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/action", new BarrelCardResponse(action, targetUser, true));
+					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true));
 				} else {
-					tableService.getMessagingTemplate().convertAndSend("/topic/action", new CardResponse(action, targetUser));
+					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(action, targetUser));
 				}
 			} else {
 				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 87");
 			}	
 		} else if(ResponseType.Panic.equals(action) || ResponseType.CatPalou.equals(action)) {
 			String targetUser = nextPlayer.peek();
-			Character targetCharacter = tableService.getCharacterMap().get(targetUser);
+			Character targetCharacter = match.getCharacterMap().get(targetUser);
 			List<Card> cards = targetCharacter.getCardsInFront();
 			// request player use cards
-			tableService.getMessagingTemplate().convertAndSend("/topic/action", new GetCardResponse(character.getUserName(), action, targetUser, cards));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new GetCardResponse(character.getUserName(), action, targetUser, cards));
 		} else if(ResponseType.GeneralStore.equals(action)) {
 			// request player use cards
 			String targetUser = nextPlayer.peek();
 			if(targetUser != null) {
 				// request player use cards
-				tableService.getMessagingTemplate().convertAndSend("/topic/action", new CardResponse(ResponseType.GeneralStore, targetUser, cardTemp));
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(ResponseType.GeneralStore, targetUser, cardTemp));
 			} else {
 				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Null nextplayer");
 			}	
@@ -134,12 +137,12 @@ public class TurnNode {
 	public void run() {
 		//Check Dynamite
 		if(character.isHasDynamite()) {
-			tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName()));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName()));
 			return;
 		}
 		//Check jail
 		if(character.isBeJailed()) {
-			tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName()));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName()));
 			return;
 		}
 		//get cards
@@ -151,7 +154,7 @@ public class TurnNode {
 			// request player use cards
 			cardTemp.clear();
 			nextPlayer.clear();
-			tableService.getMessagingTemplate().convertAndSend("/topic/cardaction", new UserResponse(ResponseType.GetCard, character.getUserName()));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.GetCard, character.getUserName()));
 		}
 	}
 	
@@ -217,9 +220,5 @@ public class TurnNode {
 	public void setAlreadyUseBangCard(boolean alreadyUseBangCard) {
 		this.alreadyUseBangCard = alreadyUseBangCard;
 	}
-	
-	
-	
-	
 	
 }

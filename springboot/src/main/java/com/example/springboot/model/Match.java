@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.card.Card;
-import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UserResponse;
 
@@ -19,6 +19,7 @@ public class Match {
 	public enum MatchStatus {
 		playing, waiting;
 	}
+	private static final Logger logger = LoggerFactory.getLogger(Match.class);
 	private String matchId;
 	private MatchStatus status = MatchStatus.waiting;
 	private Map<String, Character> characterMap = new HashMap<>();
@@ -28,13 +29,12 @@ public class Match {
 	private List<Card> cardPool = new ArrayList<>();
 	private Map<String, String> userMap = new HashMap<>();
 	private LinkedList<String> playerTurnQueue = new LinkedList<>();
-	private Map<String, SimpMessageSendingOperations> messagingTemplateMap = new HashMap<>();
 	private Map<Pair<String, String>, Integer> rangeMap = new HashMap<>();
+	private TurnNode currentTurn;
 	
 	public Match(String matchId, String userName, String sessionId, SimpMessageSendingOperations messagingTemplate) {
 		this.userMap.put(userName, sessionId);
 		this.playerTurnQueue.add(userName);
-		this.messagingTemplateMap.put(userName, messagingTemplate);
 		this.matchId = matchId;
 		this.status = MatchStatus.waiting;
 	}
@@ -44,66 +44,70 @@ public class Match {
 		} else {
 			this.userMap.put(userName, sessionId);
 			this.playerTurnQueue.add(userName);
-			this.messagingTemplateMap.put(userName, messagingTemplate);
 			return true;
 		}
 	}
 	
 	
 	
-	public void updateRangeMap() {
-		rangeMap.clear();
-		List<String> list = new ArrayList<>(playerTurnQueue);
-		for (int i = 0; i < list.size(); i++) {
-			String begin = list.get(i);
-			LinkedList<String> tmp = new LinkedList<>(playerTurnQueue);
-			while (!tmp.peek().equals(begin)) {
-				tmp.add(tmp.poll());
-			}
-			int range = 1;
-			tmp.poll();
-			String end;
-			while (!tmp.isEmpty()) {
-				end = tmp.poll();
-				if (!rangeMap.containsKey(Pair.of(begin, end)) && !rangeMap.containsKey(Pair.of(end, begin))) {
-					rangeMap.put(Pair.of(begin, end), range);
-				} else {
-					Pair<String, String> pair = rangeMap.containsKey(Pair.of(begin, end)) ? Pair.of(begin, end)
-							: Pair.of(end, begin);
-					int oldRange = rangeMap.get(pair);
-					if (range < oldRange) {
-						rangeMap.put(pair, range);
-					}
-				}
-				range++;
-			}
-		}
+//	public void updateRangeMap() {
+//		rangeMap.clear();
+//		List<String> list = new ArrayList<>(playerTurnQueue);
+//		for (int i = 0; i < list.size(); i++) {
+//			String begin = list.get(i);
+//			LinkedList<String> tmp = new LinkedList<>(playerTurnQueue);
+//			while (!tmp.peek().equals(begin)) {
+//				tmp.add(tmp.poll());
+//			}
+//			int range = 1;
+//			tmp.poll();
+//			String end;
+//			while (!tmp.isEmpty()) {
+//				end = tmp.poll();
+//				if (!rangeMap.containsKey(Pair.of(begin, end)) && !rangeMap.containsKey(Pair.of(end, begin))) {
+//					rangeMap.put(Pair.of(begin, end), range);
+//				} else {
+//					Pair<String, String> pair = rangeMap.containsKey(Pair.of(begin, end)) ? Pair.of(begin, end)
+//							: Pair.of(end, begin);
+//					int oldRange = rangeMap.get(pair);
+//					if (range < oldRange) {
+//						rangeMap.put(pair, range);
+//					}
+//				}
+//				range++;
+//			}
+//		}
+//	}
+//	
+//	public void disconnecPlayer(SimpMessageSendingOperations messagingTemplate, String playerName) {
+//		playerTurnQueue.remove(playerName);
+//		messagingTemplate.convertAndSend("/topic/"+matchId+"/server", new UserResponse(ResponseType.Leave, playerName));
+//		
+//	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public TurnNode getCurrentTurn() {
+		return currentTurn;
 	}
-	
-	public void disconnecPlayer(SimpMessageSendingOperations messagingTemplate, String playerName) {
-		playerTurnQueue.remove(playerName);
-		messagingTemplate.convertAndSend("/topic/"+matchId+"/server", new UserResponse(ResponseType.Leave, playerName));
-		
+	public void setCurrentTurn(TurnNode currentTurn) {
+		this.currentTurn = currentTurn;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	public Map<Pair<String, String>, Integer> getRangeMap() {
 		return rangeMap;
@@ -164,12 +168,6 @@ public class Match {
 	}
 	public void setPlayerTurnQueue(LinkedList<String> playerTurnQueue) {
 		this.playerTurnQueue = playerTurnQueue;
-	}
-	public Map<String, SimpMessageSendingOperations> getMessagingTemplateMap() {
-		return messagingTemplateMap;
-	}
-	public void setMessagingTemplateMap(Map<String, SimpMessageSendingOperations> messagingTemplateMap) {
-		this.messagingTemplateMap = messagingTemplateMap;
 	}
 	
 }

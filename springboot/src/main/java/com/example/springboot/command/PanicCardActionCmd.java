@@ -1,38 +1,36 @@
 package com.example.springboot.command;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
+import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
-import com.example.springboot.model.card.JailCard;
 import com.example.springboot.model.card.Card.CardType;
 import com.example.springboot.model.card.DynamiteCard;
+import com.example.springboot.model.card.JailCard;
 import com.example.springboot.request.Request;
-import com.example.springboot.service.HeroService;
-import com.example.springboot.service.ShareService;
-import com.example.springboot.service.TableService;
-import com.example.springboot.service.TurnService;
+import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 
-	public PanicCardActionCmd(TableService tableService, HeroService heroService, ShareService shareService,
-			TurnService turnService) {
-		super(tableService, heroService, shareService, turnService);
+	public PanicCardActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
+		super(commonService, simpMessageSendingOperations);
 	}
 
 	@Override
-	public void execute(Request request) {
-		TurnNode turnNode = turnService.getCurrentTurn();
+	public void execute(Request request, Match match) {
+		TurnNode turnNode = match.getCurrentTurn();
 		// current player
 		String userName = request.getUser();
-		String sessionId = tableService.getUserMap().get(userName);
+		String sessionId = match.getUserMap().get(userName);
 		Character character = turnNode.getCharacter();
 		// target player
 		String targetPlayer = turnNode.getNextPlayer().peek();
-		Character targetCharacter = tableService.getCharacterMap().get(targetPlayer);
-		String sessionTargetId = tableService.getUserMap().get(targetPlayer);
+		Character targetCharacter = match.getCharacterMap().get(targetPlayer);
+		String sessionTargetId = match.getUserMap().get(targetPlayer);
 		Card card = null;
 		if (StringUtils.isNotBlank(request.getId())) {
 			card = BangUtils.getCardInFront(targetCharacter, request.getId());
@@ -59,9 +57,9 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 			} else if(card instanceof DynamiteCard) {
 				targetCharacter.setHasDynamite(false);
 			}
-			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), targetCharacter, sessionTargetId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, targetCharacter, sessionTargetId);
 			character.getCardsInHand().add(card);
-			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 			turnNode.getNextPlayer().poll();
 			if (turnNode.getNextPlayer().peek() == null) {
 				// request player in turn continue using card

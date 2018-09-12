@@ -607,7 +607,15 @@ myapp.controller('FirstCtrl',
 			$scope.$apply();
 		}
 		
-		
+		function addMessage(message) {
+			var messageArea = document
+					.querySelector('#messageArea');
+			var messageElement = document.createElement('li');
+			messageElement.innerHTML = message;
+			messageElement.classList.add('li-server-notification');
+			messageArea.appendChild(messageElement);
+			messageArea.scrollTop = messageArea.scrollHeight;
+		}
 		
 		function onError(error) {
 			console.log(error);

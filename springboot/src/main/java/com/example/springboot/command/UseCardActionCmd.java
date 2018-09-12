@@ -3,7 +3,10 @@ package com.example.springboot.command;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
 import com.example.springboot.model.Character;
+import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.BangCard;
 import com.example.springboot.model.card.BeerCard;
@@ -22,51 +25,46 @@ import com.example.springboot.model.card.SaloonCard;
 import com.example.springboot.model.card.StageCoachCard;
 import com.example.springboot.model.card.WellsFargoCard;
 import com.example.springboot.request.Request;
-import com.example.springboot.response.CheckCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
-import com.example.springboot.service.HeroService;
-import com.example.springboot.service.ShareService;
-import com.example.springboot.service.TableService;
-import com.example.springboot.service.TurnService;
+import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 
-	public UseCardActionCmd(TableService tableService, HeroService heroService, ShareService shareService,
-			TurnService turnService) {
-		super(tableService, heroService, shareService, turnService);
-		// TODO Auto-generated constructor stub
+	public UseCardActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
+		super(commonService, simpMessageSendingOperations);
 	}
 
 	@Override
-	public void execute(Request request) {
+	public void execute(Request request, Match match) {
 		// get turn node
-		TurnNode turnNode = turnService.getCurrentTurn();
+		TurnNode turnNode = match.getCurrentTurn();
 		String userName = request.getUser();
 		if (turnNode.getCharacter().getUserName().equals(userName)) {
-			processUseCardInTurn(turnNode, request);
+			processUseCardInTurn(match, request);
 		} else {
-			processUseCardNotInTurn(turnNode, request);
+			processUseCardNotInTurn(match, request);
 		}
 	}
 
-	private void processUseCardNotInTurn(TurnNode turnNode, Request userCardRequest) {
+	private void processUseCardNotInTurn(Match match, Request userCardRequest) {
 		String userName = userCardRequest.getUser();
+		TurnNode turnNode = match.getCurrentTurn();
 		if (!turnNode.getNextPlayer().peek().equals(userName)) {
 			return;
 		}
-		String sessionId = tableService.getUserMap().get(userName);
+		String sessionId = match.getUserMap().get(userName);
 		// get Character
-		Character character = tableService.getCharacterMap().get(userName);
+		Character character = match.getCharacterMap().get(userName);
 		if (userCardRequest.isNoneResponse()) {
-			tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 					new UseCardResponse(userName, null, null));
 			character.setLifePoint(character.getLifePoint() - 1);
-			BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 
 			if (character.getLifePoint() == 0) {
-				tableService.playerDead(userName, true);
+				commonService.playerDead(userName, true, match);
 			}
 			if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Bang.equals(turnNode.getAction())) {
 				turnNode.setAction(ResponseType.Unknown);
@@ -80,26 +78,26 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				System.out.println("%%%%%%%%%%%%%%%%%%%%%%%Card Error");
 				return;
 			}
-			tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 					new UseCardResponse(userName, card, null));
-			tableService.addToOldCardList(card);
+			commonService.addToOldCardList(card, match);
 
 			if (ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Gatling.equals(turnNode.getAction())) {
 				if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 				} else {
 					System.out.println("%%%%%%%%%%%%%%%%%%%%%%%Bang Gatling Error");
 				}
 			} else if (ResponseType.Indians.equals(turnNode.getAction())) {
 				if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
 
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 				} else {
 					System.out.println("%%%%%%%%%%%%%%%%%%%%%%%Indians Error");
 				}
 			} else if (ResponseType.Duello.equals(turnNode.getAction())) {
 				if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 
 					String targetUser = turnNode.getCharacter().getUserName();
 					turnNode.getNextPlayer().addFirst(targetUser);
@@ -107,7 +105,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 						// request player in turn continue using card
 						turnNode.requestPlayerUseCard();
 					} else {
-						turnNode.requestOtherPlayerUseCard();
+						turnNode.requestOtherPlayerUseCard(match);
 					}
 					return;
 				} else {
@@ -122,25 +120,26 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			// request player in turn continue using card
 			turnNode.requestPlayerUseCard();
 		} else {
-			turnNode.requestOtherPlayerUseCard();
+			turnNode.requestOtherPlayerUseCard(match);
 		}
 	}
 
-	private void processUseCardInTurn(TurnNode turnNode, Request userCardRequest) {
+	private void processUseCardInTurn(Match match, Request userCardRequest) {
 		String userName = userCardRequest.getUser();
-		String sessionId = tableService.getUserMap().get(userName);
+		TurnNode turnNode = match.getCurrentTurn();
+		String sessionId = match.getUserMap().get(userName);
 		// get Character
 		Character character = turnNode.getCharacter();
 
 		if (userCardRequest.isNoneResponse()) {
 			if (ResponseType.Duello.equals(turnNode.getAction())) {
-				tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 						new UseCardResponse(userName, null, null));
 				character.setLifePoint(character.getLifePoint() - 1);
-				BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+				BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 				if (character.getLifePoint() == 0) {
-					tableService.playerDead(userName, false);
-					turnService.callNextPlayerTurn();
+					commonService.playerDead(userName, false, match);
+					commonService.callNextPlayerTurn(match);
 				} else {
 					turnNode.setAction(ResponseType.Unknown);
 					turnNode.requestPlayerUseCard();
@@ -162,7 +161,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 						// request player in turn continue using card
 						turnNode.requestPlayerUseCard();
 					} else {
-						turnNode.requestOtherPlayerUseCard();
+						turnNode.requestOtherPlayerUseCard(match);
 					}
 					return;
 				}
@@ -171,7 +170,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			if (CardType.gun.equals(card.getCardType()) || CardType.barrel.equals(card.getCardType())
 					|| CardType.otherviews.equals(card.getCardType())
 					|| CardType.viewothers.equals(card.getCardType())) {
-				tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 						new UseCardResponse(userName, card, null));
 				Card cardFound = BangUtils.getCardByCardType(character.getCardsInFront(), card.getCardType());
 				if (cardFound != null) {
@@ -179,140 +178,140 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					// remove card in hand
 					character.getCardsInFront().remove(cardFound);
 					// put into oldcardlist
-					tableService.addToOldCardList(cardFound);
+					commonService.addToOldCardList(cardFound, match);
 				} else {
 					character.getCardsInFront().add(card);
 					// set gun character
 				}
 				card.run(character);
-				BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+				BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 				// request continue use cards
 				turnNode.requestPlayerUseCard();
 				return;
 			} else if (CardType.physical.equals(card.getCardType())) {
-				tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 						new UseCardResponse(userName, card, null));
-				tableService.addToOldCardList(card);
-				BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+				commonService.addToOldCardList(card, match);
+				BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 				turnNode.setAction(ResponseType.Bang);
 				turnNode.setAlreadyUseBangCard(true);
 				turnNode.getNextPlayer().clear();
 				turnNode.getNextPlayer().add(targetUser);
-				turnNode.requestOtherPlayerUseCard();
+				turnNode.requestOtherPlayerUseCard(match);
 				return;
 			} else {
 				if (card instanceof BeerCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
 					card.run(character);
-					tableService.addToOldCardList(card);
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					commonService.addToOldCardList(card, match);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 					// request continue use cards
 					turnNode.requestPlayerUseCard();
 					return;
 				} else if (card instanceof GatlingCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
-					tableService.addToOldCardList(card);
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
-					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(tableService.getPlayerTurnQueue(),
+					commonService.addToOldCardList(card, match);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
+					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(match.getPlayerTurnQueue(),
 							userName);
 					turnNode.setAction(ResponseType.Gatling);
 					turnNode.setNextPlayer(otherPlayers);
-					turnNode.requestOtherPlayerUseCard();
+					turnNode.requestOtherPlayerUseCard(match);
 					return;
 				} else if (card instanceof SaloonCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
-					tableService.addToOldCardList(card);
-					for (Entry<String, Character> entry : tableService.getCharacterMap().entrySet()) {
+					commonService.addToOldCardList(card, match);
+					for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 						card.run(entry.getValue());
 						// notify hero of this character to others
-						String sessionIdPlayer = tableService.getUserMap().get(entry.getKey());
-						BangUtils.notifyCharacter(tableService.getMessagingTemplate(), entry.getValue(),
+						String sessionIdPlayer = match.getUserMap().get(entry.getKey());
+						BangUtils.notifyCharacter(simpMessageSendingOperations, entry.getValue(),
 								sessionIdPlayer);
 					}
 					// request continue use cards
 					turnNode.requestPlayerUseCard();
 					return;
 				} else if (card instanceof WellsFargoCard || card instanceof StageCoachCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
 					int n = (card instanceof WellsFargoCard) ? 3 : 2;
-					character.getCardsInHand().addAll(tableService.getFromNewCardList(n));
+					character.getCardsInHand().addAll(commonService.getFromNewCardList(match, n));
 					character.setNumCardsInHand(character.getCardsInHand().size());
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 					// request continue use cards
 					turnNode.requestPlayerUseCard();
 					return;
 				} else if (card instanceof DynamiteCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
 					// set dynamite
 					character.setHasDynamite(true);
 					character.getCardsInFront().add(card);
 					// notify
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 					// request continue use cards
 					turnNode.requestPlayerUseCard();
 					return;
 				}  else if (card instanceof JailCard) {
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
 					// set jail or dynamite
-					Character targetCharacter = tableService.getCharacterMap().get(targetUser);
+					Character targetCharacter = match.getCharacterMap().get(targetUser);
 					targetCharacter.setBeJailed(true);
 					targetCharacter.getCardsInFront().add(card);
 					// notify
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), targetCharacter, tableService.getUserMap().get(targetUser));
+					BangUtils.notifyCharacter(simpMessageSendingOperations, targetCharacter, match.getUserMap().get(targetUser));
 					// request continue use cards
 					turnNode.requestPlayerUseCard();
 					return;
 				} else if (card instanceof IndiansCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
-					tableService.addToOldCardList(card);
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					commonService.addToOldCardList(card, match);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 					turnNode.setAction(ResponseType.Indians);
-					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(tableService.getPlayerTurnQueue(),
+					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(match.getPlayerTurnQueue(),
 							userName);
 					turnNode.setNextPlayer(otherPlayers);
-					turnNode.requestOtherPlayerUseCard();
+					turnNode.requestOtherPlayerUseCard(match);
 					return;
 				} else if (card instanceof DuelloCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, targetUser));
-					tableService.addToOldCardList(card);
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					commonService.addToOldCardList(card, match);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 					turnNode.setAction(ResponseType.Duello);
 					turnNode.getNextPlayer().clear();
 					turnNode.getNextPlayer().add(targetUser);
-					turnNode.requestOtherPlayerUseCard();
+					turnNode.requestOtherPlayerUseCard(match);
 					return;
 				} else if (card instanceof PanicCard || card instanceof CatPalouCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, targetUser));
-					tableService.addToOldCardList(card);
+					commonService.addToOldCardList(card, match);
 					ResponseType turnAction = card instanceof PanicCard ? ResponseType.Panic : ResponseType.CatPalou;
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 					turnNode.setAction(turnAction);
 					turnNode.getNextPlayer().clear();
 					turnNode.getNextPlayer().add(targetUser);
-					turnNode.requestOtherPlayerUseCard();
+					turnNode.requestOtherPlayerUseCard(match);
 					return;
 				} else if (card instanceof GeneralStoreCard) {
-					tableService.getMessagingTemplate().convertAndSend("/topic/usedCard",
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 							new UseCardResponse(userName, card, null));
-					tableService.addToOldCardList(card);
-					BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+					commonService.addToOldCardList(card, match);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 					turnNode.setAction(ResponseType.GeneralStore);
-					turnNode.setCardTemp(tableService.getFromNewCardList(tableService.getPlayerTurnQueue().size()));
-					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(tableService.getPlayerTurnQueue(),
+					turnNode.setCardTemp(commonService.getFromNewCardList(match, match.getPlayerTurnQueue().size()));
+					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(match.getPlayerTurnQueue(),
 							userName);
 					otherPlayers.addFirst(userName);
 					turnNode.setNextPlayer(otherPlayers);
-					turnNode.requestOtherPlayerUseCard();
+					turnNode.requestOtherPlayerUseCard(match);
 					return;
 				} else {
 					System.out.println("%%%%%%%%%%%%%%%%%%%%%%%processUseCardInTurn - magic-" + card.getName());

@@ -1,47 +1,42 @@
 package com.example.springboot.command;
 
-import java.util.List;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
-import com.example.springboot.model.Constants;
+import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
-import com.example.springboot.model.card.DynamiteCard;
-import com.example.springboot.model.card.JailCard;
 import com.example.springboot.model.card.Card.Suit;
+import com.example.springboot.model.card.JailCard;
 import com.example.springboot.request.Request;
-import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
-import com.example.springboot.service.HeroService;
-import com.example.springboot.service.ShareService;
-import com.example.springboot.service.TableService;
-import com.example.springboot.service.TurnService;
+import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
 public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 
 	
 
-	public JailActionCmd(TableService tableService, HeroService heroService, ShareService shareService, TurnService turnService) {
-		super(tableService, heroService, shareService, turnService);
+	public JailActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
+		super(commonService, simpMessageSendingOperations);
 	}
 
 	@Override
-	public void execute(Request request) {
+	public void execute(Request request, Match match) {
 		String userName = request.getUser();
-		if(!turnService.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
+		if(!match.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
 			return;
 		}
-		String sessionId = tableService.getUserMap().get(userName);
+		String sessionId = match.getUserMap().get(userName);
 		
 		//get Character
-		Character character = tableService.getCharacterMap().get(userName);
+		Character character = match.getCharacterMap().get(userName);
 		// get cards for escaping the jail;
-		Card card = tableService.getFromNewCardList(1).get(0);
+		Card card = commonService.getFromNewCardList(match, 1).get(0);
 		
 		//TODO ....
-		tableService.addToOldCardList(card);
-		tableService.getMessagingTemplate().convertAndSend("/topic/usedCard", new UseCardResponse(userName, ResponseType.DrawCardJail, card, null));
+		commonService.addToOldCardList(card, match);
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardJail, card, null));
 		
 		character.setBeJailed(false);
 		// find dynamite card
@@ -54,13 +49,13 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		character.getCardsInFront().remove(jailCard);
 		
-		BangUtils.notifyCharacter(tableService.getMessagingTemplate(), character, sessionId);
+		BangUtils.notifyCharacter(simpMessageSendingOperations, character, sessionId);
 		
-		tableService.addToOldCardList(jailCard);
+		commonService.addToOldCardList(jailCard, match);
 		if(Suit.hearts.equals(card.getSuit())) {
-			turnService.getCurrentTurn().run();
+			match.getCurrentTurn().run();
 		} else {
-			turnService.endTurn(userName);
+			commonService.endTurn(userName, match);
 		}
 	}
 

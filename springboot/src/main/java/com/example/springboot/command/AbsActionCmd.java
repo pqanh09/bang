@@ -1,22 +1,27 @@
 package com.example.springboot.command;
 
-import com.example.springboot.service.HeroService;
-import com.example.springboot.service.ShareService;
-import com.example.springboot.service.TableService;
-import com.example.springboot.service.TurnService;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
+import com.example.springboot.service.CommonService;
 
 public abstract class AbsActionCmd {
-	protected TableService tableService;
-	protected ShareService shareService;
-	protected HeroService heroService;
-	protected TurnService turnService;
-	public AbsActionCmd(TableService tableService,
-			HeroService heroService, ShareService shareService, TurnService turnService) {
-		super();
-		this.tableService = tableService;
-		this.heroService = heroService;
-		this.shareService = shareService;
-		this.turnService = turnService;
+	protected CommonService commonService;
+	protected SimpMessageSendingOperations simpMessageSendingOperations;
+	public CommonService getCommonService() {
+		return commonService;
 	}
-	
+	public void setCommonService(CommonService commonService) {
+		this.commonService = commonService;
+	}
+	public SimpMessageSendingOperations getSimpMessageSendingOperations() {
+		return simpMessageSendingOperations;
+	}
+	public void setSimpMessageSendingOperations(SimpMessageSendingOperations simpMessageSendingOperations) {
+		this.simpMessageSendingOperations = simpMessageSendingOperations;
+	}
+	public AbsActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
+		super();
+		this.commonService = commonService;
+		this.simpMessageSendingOperations = simpMessageSendingOperations;
+	}
 }

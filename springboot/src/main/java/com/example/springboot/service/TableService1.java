@@ -24,7 +24,7 @@ import com.example.springboot.response.UserResponse;
 import com.example.springboot.utils.BangUtils;
 
 @Service("tableService")
-public class TableService {
+public class TableService1 {
 	private Map<String, Character> characterMap = new HashMap<>();
 	private LinkedList<Card> newCards = new LinkedList<>();
 	private LinkedList<Card> oldCards = new LinkedList<>();

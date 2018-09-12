@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.RoleResponse;
 import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CardService;
+import com.example.springboot.service.CommonService;
+import com.example.springboot.service.Dispatcher;
 import com.example.springboot.service.HeroService;
 import com.example.springboot.service.MatchService;
 import com.example.springboot.service.RoleService;
@@ -51,9 +54,14 @@ public class BangController {
 	
 	@Autowired
 	MatchService matchService;
+	@Autowired
+	Dispatcher dispatcher;
+	
+	@Autowired
+	CommonService commonService;
 
 	@Autowired
-	private SimpMessageSendingOperations messagingTemplate;
+	private SimpMessageSendingOperations simpMessageSendingOperations;
 	
 	public BangController() {
 		// TODO Auto-generated constructor stub
@@ -63,14 +71,18 @@ public class BangController {
 
 	@MessageMapping("/game.execute")
 	public void sendMessage(@Payload Request request, SimpMessageHeaderAccessor sha) {
-//		actionService.initCmds();
-//		String user = (String) sha.getSessionAttributes().get(Constants.HEADER_ACCESSOR_USER);
-//		// TODO check username
-//		if (user == null) {
-//			user = tableService.getSessionIdMap().get(sha.getUser().getName());
-//		}
-//		request.setUser(user);
-//		actionService.perform(request);
+		dispatcher.initCmds();
+		String playerName = (String) sha.getSessionAttributes().get(Constants.HEADER_ACCESSOR_USER);
+		// TODO check username
+		if (playerName == null) {
+			playerName = userService.getSessionIdMap().get(sha.getUser().getName());
+		}
+		String matchId = matchService.getUserMap().get(playerName);
+		if(StringUtils.isNotBlank(matchId)) {
+			Match match = matchService.getMatchMap().get(matchId);
+			request.setUser(playerName);
+			dispatcher.perform(request, match);
+		}
 	}
 
 	@MessageMapping("/user.create")
@@ -83,7 +95,7 @@ public class BangController {
 		String sessionId = sha.getUser().getName();
 		if(userService.getUserMap().containsKey(userName)) {
 			logger.error("Error Existed..........");
-			messagingTemplate.convertAndSendToUser(sessionId, "/queue/user", new UserResponse(ResponseType.Existed, userName));
+			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/user", new UserResponse(ResponseType.Existed, userName));
 			return;
 		} else {
 			// Add username in web socket session
@@ -91,7 +103,7 @@ public class BangController {
 			userService.getUserMap().put(userName, sessionId);
 			userService.getSessionIdMap().put(sessionId, userName);
 			UserResponse createResponse = new UserResponse(ResponseType.Create, userName);
-			messagingTemplate.convertAndSendToUser(sessionId, "/queue/user", createResponse);
+			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/user", createResponse);
 		}
 	}
 	
@@ -103,7 +115,7 @@ public class BangController {
 			matches.add(new MatchVO(entry.getValue()));
 		}
 		MatchResponse createResponse = new MatchResponse(ResponseType.Get, matches);
-		messagingTemplate.convertAndSendToUser(sessionId, "/queue/game", createResponse);
+		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
 	}
 	@MessageMapping("/game.create")
 	public void createNewMatch(SimpMessageHeaderAccessor sha) {
@@ -114,11 +126,11 @@ public class BangController {
 		} else {
 			// create new match
 			String matchId = userName + String.valueOf(Calendar.getInstance().getTime().getTime());
-			Match match = new Match(matchId, userName, sessionId, messagingTemplate);
+			Match match = new Match(matchId, userName, sessionId, simpMessageSendingOperations);
 			matchService.getUserMap().put(userName, matchId);
 			matchService.getMatchMap().put(matchId, match);
 			MatchResponse createResponse = new MatchResponse(ResponseType.Create, matchId, true);
-			messagingTemplate.convertAndSendToUser(sessionId, "/queue/game", createResponse);
+			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
 		}
 	}
 	
@@ -143,13 +155,13 @@ public class BangController {
 		}
 		String sessionId = sha.getUser().getName();
 		String userName = userService.getSessionIdMap().get(sessionId);
-		match.addPlayer(userName, sessionId, messagingTemplate);
+		match.addPlayer(userName, sessionId, simpMessageSendingOperations);
 		
 		matchService.getUserMap().put(userName, match.getMatchId());
 		
 		MatchResponse joinResponse = new MatchResponse(ResponseType.Join, match.getMatchId(), false);
-		messagingTemplate.convertAndSendToUser(sessionId, "/queue/game", joinResponse);
-		messagingTemplate.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Join, userName));
+		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", joinResponse);
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Join, userName));
 	}
 	
 	@MessageMapping("/game.start")
@@ -185,7 +197,6 @@ public class BangController {
 		int n = 0;
 		for (String plName : match.getUserMap().keySet()) {
 			String plSessionId = match.getUserMap().get(plName);
-			SimpMessageSendingOperations simpMessageSendingOperations = match.getMessagingTemplateMap().get(plName);
 			// create Character
 			Character character = new Character(n + 1, plName);
 			match.getCharacterMap().put(plName, character);
@@ -212,7 +223,7 @@ public class BangController {
 			n++;
 		}
 		match.getPlayerTurnQueue().addAll(playerNotYetInTurn);
-		match.updateRangeMap();
+		commonService.updateRangeMap(match);
 	}
 	@MessageMapping("/game.useheroskill")
 	public void useHeroSkill() {
