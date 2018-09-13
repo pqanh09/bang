@@ -649,6 +649,8 @@ myapp.controller('FirstCtrl',
 			var messageElement = document.createElement('li');
 			messageElement.innerHTML = message;
 			messageElement.classList.add('li-server-notification');
+			messageElement.classList.add('animated');
+			messageElement.classList.add('rubberBand');
 			messageArea.appendChild(messageElement);
 			messageArea.scrollTop = messageArea.scrollHeight;
 		}
@@ -658,6 +660,8 @@ myapp.controller('FirstCtrl',
 			var messageElement = document.createElement('li');
 			messageElement.innerHTML = message;
 			messageElement.classList.add('li-server-notification');
+			messageElement.classList.add('animated');
+			messageElement.classList.add('bounceInRight');
 			messageArea.appendChild(messageElement);
 			messageArea.scrollTop = messageArea.scrollHeight;
 		}
