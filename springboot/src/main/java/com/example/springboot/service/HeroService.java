@@ -12,7 +12,6 @@ import com.example.springboot.model.hero.CalamityJanet;
 import com.example.springboot.model.hero.ElGringo;
 import com.example.springboot.model.hero.Hero;
 import com.example.springboot.model.hero.JesseJones;
-import com.example.springboot.model.hero.JohnnyKisch;
 import com.example.springboot.model.hero.Jourdonnais;
 import com.example.springboot.model.hero.KitCarlson;
 import com.example.springboot.model.hero.LuckyDuke;
@@ -22,7 +21,6 @@ import com.example.springboot.model.hero.RoseDoolan;
 import com.example.springboot.model.hero.SidKetchum;
 import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.model.hero.SuzyLafayette;
-import com.example.springboot.model.hero.UncleWill;
 import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.hero.WillyTheKid;
 
@@ -35,7 +33,6 @@ public class HeroService {
 		heros.add(new CalamityJanet());
 		heros.add(new ElGringo());
 		heros.add(new JesseJones());
-
 		heros.add(new Jourdonnais());
 		heros.add(new KitCarlson());
 		heros.add(new LuckyDuke());
@@ -45,10 +42,8 @@ public class HeroService {
 		heros.add(new SidKetchum());
 		heros.add(new SlabTheKiller());
 		heros.add(new SuzyLafayette());
-		heros.add(new UncleWill());
 		heros.add(new VultureSam());
 		heros.add(new WillyTheKid());
-//		heros.add(new JohnnyKisch());
 		Collections.shuffle(heros);
 	}
 	public List<Hero> getHerosByNumber(int n) {
