@@ -3,6 +3,8 @@ package com.example.springboot.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,7 @@ import com.example.springboot.request.RequestType;
 
 @Service("dispatcher")
 public class Dispatcher {
-
+	private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
 	@Autowired
 	CommonService commonService;
 
@@ -65,10 +67,13 @@ public class Dispatcher {
 	public void perform(Request request, Match match) {
 		ActionCmd actionCmd = actionMap.get(request.getActionType());
 		if (actionCmd != null) {
-			actionCmd.execute(request, match);
+			try {
+				actionCmd.execute(request, match);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
 		} else {
-			// TODO
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			logger.error("$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 		}
 	}
 }

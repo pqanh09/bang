@@ -22,7 +22,7 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 	}
 
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		String userName = request.getUser();
 		SimpMessageSendingOperations simpMessageSendingOperations = commonService.getSimpMessageSendingOperations();
 		// get cards for escaping the bang/gatlling;

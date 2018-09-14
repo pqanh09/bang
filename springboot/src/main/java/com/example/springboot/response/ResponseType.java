@@ -41,14 +41,8 @@ public enum ResponseType {
 	Duello,
 	Bang,
 	Gatling,
-	Indians
+	Indians,
+	//
+	Skill
 	
-	//JoinGame,
-//	PickHero,
-//	CheckJail,
-//	CheckDynamite,
-//	UseSkill,
-//	GetCard,
-//	PlayCard,
-//	EndTurn
 }

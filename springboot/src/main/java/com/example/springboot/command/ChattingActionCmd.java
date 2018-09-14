@@ -17,7 +17,7 @@ public class ChattingActionCmd extends AbsActionCmd implements ActionCmd {
 	}
 
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		String userName = request.getUser();
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/chatting", new UserResponse(ResponseType.Chatting, userName, request.getId()));
 	}

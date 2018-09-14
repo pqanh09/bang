@@ -38,7 +38,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		super(commonService, simpMessageSendingOperations);
 	}
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		// get turn node
 		TurnNode turnNode = match.getCurrentTurn();
 		String userName = request.getUser();
@@ -209,7 +209,9 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				Character targetCharater;
 				for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 					targetCharater = entry.getValue();
-					if(targetCharater.getUserName().equals(userName) || !match.getPlayerTurnQueue().contains(entry.getKey())) {
+					if(targetCharater.getUserName().equals(userName) 
+							|| !match.getPlayerTurnQueue().contains(entry.getKey()) 
+							||(targetCharater.getCardsInHand().isEmpty() && targetCharater.getCardsInFront().isEmpty())) {
 						continue;
 					}
 					userCanBeAffectList.add(entry.getKey());

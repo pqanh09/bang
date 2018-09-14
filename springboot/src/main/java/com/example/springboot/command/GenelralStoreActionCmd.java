@@ -20,7 +20,7 @@ public class GenelralStoreActionCmd extends AbsActionCmd implements ActionCmd {
 		super(commonService, simpMessageSendingOperations);
 	}
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		TurnNode turnNode = match.getCurrentTurn();
 		// current player
 		String userName = request.getUser();

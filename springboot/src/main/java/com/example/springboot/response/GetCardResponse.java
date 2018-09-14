@@ -6,6 +6,16 @@ import com.example.springboot.model.card.Card;
 
 public class GetCardResponse extends CardResponse {
 	private String targetUser;
+	private boolean hasCardInHand = false;
+
+	
+	public boolean isHasCardInHand() {
+		return hasCardInHand;
+	}
+
+	public void setHasCardInHand(boolean hasCardInHand) {
+		this.hasCardInHand = hasCardInHand;
+	}
 
 	public String getTargetUser() {
 		return targetUser;
@@ -15,12 +25,13 @@ public class GetCardResponse extends CardResponse {
 		this.targetUser = targetUser;
 	}
 
-	public GetCardResponse(String userName, ResponseType responseType, String targetUser, List<Card> cards) {
+	public GetCardResponse(String userName, ResponseType responseType, String targetUser, List<Card> cards, boolean hasCardInHand) {
 		super();
 		this.userName = userName;
 		this.cards = cards;
 		this.targetUser = targetUser;
 		this.responseType = responseType;
+		this.hasCardInHand = hasCardInHand;
 	}
 
 	public GetCardResponse() {

@@ -10,6 +10,7 @@ import com.example.springboot.model.Character;
 import com.example.springboot.model.Constants;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.hero.BlackJack;
 import com.example.springboot.request.Request;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
@@ -23,7 +24,7 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 	}
 
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		String userName = request.getUser();
 		if(!match.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
 			return;
@@ -32,9 +33,15 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 		//get Character
 		Character character = match.getCharacterMap().get(userName);
 		// get cards for character;
-		List<Card> cards = commonService.getFromNewCardList(match, Constants.DEFAULT_CARD);
-		character.getCardsInHand().addAll(cards);
-		character.setNumCardsInHand(character.getCardsInHand().size());
+		if(character.getHero() instanceof BlackJack) {
+			// skill hero  BlackJack
+			character.getHero().useSkill(match, userName, character, commonService, null);
+		} else {
+			List<Card> cards = commonService.getFromNewCardList(match, Constants.DEFAULT_CARD);
+			character.getCardsInHand().addAll(cards);
+			character.setNumCardsInHand(character.getCardsInHand().size());
+		}
+		
 		//udpate character for user 
 		BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 		// update alreadyGetCard = true

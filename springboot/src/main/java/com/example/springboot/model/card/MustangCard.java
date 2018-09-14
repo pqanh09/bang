@@ -1,9 +1,7 @@
 package com.example.springboot.model.card;
 import com.example.springboot.model.Character;
+import com.example.springboot.model.hero.PaulRegret;
 public class MustangCard extends Card{
-	
-	
-	
 
 	public MustangCard() {
 		super();
@@ -20,7 +18,11 @@ public class MustangCard extends Card{
 
 	@Override
 	public void run(Character character) {
-		character.setOthersView(1);
+		if(character.getHero() instanceof PaulRegret) {
+			character.setOthersView(2);
+		} else {
+			character.setOthersView(1);
+		}
 	}
 
 }

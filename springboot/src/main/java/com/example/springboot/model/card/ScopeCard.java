@@ -1,5 +1,6 @@
 package com.example.springboot.model.card;
 import com.example.springboot.model.Character;
+import com.example.springboot.model.hero.RoseDoolan;
 public class ScopeCard extends Card{
 	
 	
@@ -20,7 +21,11 @@ public class ScopeCard extends Card{
 
 	@Override
 	public void run(Character character) {
-		character.setViewOthers(1);
+		if(character.getHero() instanceof RoseDoolan) {
+			character.setViewOthers(2);
+		} else {
+			character.setViewOthers(1);
+		}
 	}
 
 }

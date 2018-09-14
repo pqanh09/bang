@@ -347,7 +347,7 @@
 												ng-click="pickCardToRemoveFuncPC(card.id)"
 												class="btn btn-primary">{{dialogSelectCardActionStr}}</button>
 										</div>
-										<div class="random-from-hand-button">
+										<div ng-show="hasCardInHand" class="random-from-hand-button">
 											<button type="button" data-dismiss="modal"
 												ng-click="pickCardToRemoveFuncPCRandom()"
 												class="btn btn-primary">Random from Hand</button>

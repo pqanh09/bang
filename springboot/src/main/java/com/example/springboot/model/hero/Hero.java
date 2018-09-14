@@ -1,6 +1,11 @@
 package com.example.springboot.model.hero;
 
+import java.util.Map;
+
+import com.example.springboot.model.Character;
+import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.service.CommonService;
 
 public abstract class Hero {
 	protected String name;
@@ -13,6 +18,7 @@ public abstract class Hero {
 	protected String image = "/data/image/hero/";
 	abstract public void useSkill();
 	abstract public boolean useSkill(Card card);
+	abstract public boolean useSkill(Match match, String userName, Character character, CommonService commonService, Map<String, Object> others);
 	
 	public String getImage() {
 		return image;

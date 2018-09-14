@@ -18,7 +18,7 @@ public class EndTurnActionCmd extends AbsActionCmd implements ActionCmd {
 	}
 
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		String userName = request.getUser();
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();

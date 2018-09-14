@@ -1,5 +1,8 @@
 package com.example.springboot.command;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -8,6 +11,7 @@ import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
+import com.example.springboot.model.hero.BartCassidy;
 import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.ResponseType;
@@ -24,7 +28,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 	}
 
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		String userName = request.getUser();
 		String sessionId = match.getUserMap().get(userName);
 		
@@ -36,7 +40,6 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 		// get cards for escaping the jail;
 		Card card = commonService.getFromNewCardList(match, 1).get(0);
 		
-		//TODO ....
 		commonService.addToOldCardList(card, match);
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardDynamite, card, null));
 		
@@ -56,6 +59,12 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 			commonService.addToOldCardList(dynamiteCard, match);
 			character.setLifePoint(character.getLifePoint() - 3);
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostLifePoint, null, null));
+			// skill hero  BartCassidy
+			if(character.getHero() instanceof BartCassidy) {
+				Map<String, Object> others = new HashMap<>();
+				others.put("numberNewCard", 3);
+				character.getHero().useSkill(match, userName, character, commonService, others);
+			}
 			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 			if (character.getLifePoint() <= 0) {
 				commonService.playerDead(userName, false, match);

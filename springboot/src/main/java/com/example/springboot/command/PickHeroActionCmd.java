@@ -13,6 +13,8 @@ import com.example.springboot.model.Constants;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.Hero;
+import com.example.springboot.model.hero.PaulRegret;
+import com.example.springboot.model.hero.RoseDoolan;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.ResponseType;
@@ -24,7 +26,7 @@ public class PickHeroActionCmd extends AbsActionCmd implements ActionCmd {
 	private HeroService heroService;
 	
 
-	public HeroService getHeroService() {
+	public HeroService getHeroService() throws Exception {
 		return heroService;
 	}
 
@@ -47,7 +49,9 @@ public class PickHeroActionCmd extends AbsActionCmd implements ActionCmd {
 		Character character = match.getCharacterMap().get(userName);
 		//set hero in character
 		character.setHero(hero);
-		
+		if(hero instanceof PaulRegret  || hero instanceof RoseDoolan) {
+			hero.useSkill(match, userName, character, commonService, null);
+		}
 		// get cards for character;
 		List<Card> cards = new ArrayList<>();
 		for (int i = 0; i < Constants.BEGIN_CARD; i++) {

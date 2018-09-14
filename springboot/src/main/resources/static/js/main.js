@@ -43,7 +43,7 @@ myapp.controller('FirstCtrl',
 		$scope.actionType = '';
 		$scope.dialogTitle = '';
 		$scope.chattingMsg = '';
-		
+		$scope.hasCardInHand = false;
 		$scope.sendMessage = function(keyEvent) {
 			 if (keyEvent.which === 13){
 				 stompClient.send("/app/game.execute", {}, JSON
@@ -563,6 +563,7 @@ myapp.controller('FirstCtrl',
 							function() {
 								$scope.playerUsingCard = '';
 								$scope.cards = response.cards;
+								$scope.hasCardInHand = response.hasCardInHand;
 								$scope.dialogSelectCardTitle = 'get';
 								$scope.dialogSelectCardActionType = response.responseType;
 								$scope.dialogSelectCardActionStr = 'Get';
@@ -575,6 +576,7 @@ myapp.controller('FirstCtrl',
 							function() {
 								$scope.playerUsingCard = '';
 								$scope.cards = response.cards;
+								$scope.hasCardInHand = response.hasCardInHand;
 								$scope.dialogSelectCardTitle = 'remove';
 								$scope.dialogSelectCardActionType = response.responseType;
 								$scope.dialogSelectCardActionStr = 'Remove';

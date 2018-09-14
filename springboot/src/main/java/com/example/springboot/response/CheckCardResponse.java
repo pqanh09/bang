@@ -6,7 +6,7 @@ import java.util.List;
 public class CheckCardResponse extends Response{
 	private boolean canUse = false;
 	private List<String> userCanBeAffectList = new ArrayList<>();
-	private boolean mustChooseTarget;
+	private boolean mustChooseTarget = false;
 	
 	
 	public boolean isMustChooseTarget() {
@@ -46,7 +46,6 @@ public class CheckCardResponse extends Response{
 		this.mustChooseTarget = mustChooseTarget;
 		this.responseType = ResponseType.CheckCard;
 	}
-
 
 
 

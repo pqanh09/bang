@@ -122,7 +122,7 @@ public class TurnNode {
 			Character targetCharacter = match.getCharacterMap().get(targetUser);
 			List<Card> cards = targetCharacter.getCardsInFront();
 			// request player use cards
-			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new GetCardResponse(character.getUserName(), action, targetUser, cards));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new GetCardResponse(character.getUserName(), action, targetUser, cards, !targetCharacter.getCardsInHand().isEmpty()));
 		} else if(ResponseType.GeneralStore.equals(action)) {
 			// request player use cards
 			String targetUser = nextPlayer.peek();

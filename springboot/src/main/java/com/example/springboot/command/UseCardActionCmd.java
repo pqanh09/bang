@@ -1,6 +1,8 @@
 package com.example.springboot.command;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -26,6 +28,8 @@ import com.example.springboot.model.card.PanicCard;
 import com.example.springboot.model.card.SaloonCard;
 import com.example.springboot.model.card.StageCoachCard;
 import com.example.springboot.model.card.WellsFargoCard;
+import com.example.springboot.model.hero.BartCassidy;
+import com.example.springboot.model.hero.ElGringo;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
@@ -39,7 +43,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 	}
 
 	@Override
-	public void execute(Request request, Match match) {
+	public void execute(Request request, Match match) throws Exception {
 		// get turn node
 		TurnNode turnNode = match.getCurrentTurn();
 		String userName = request.getUser();
@@ -50,7 +54,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 	}
 
-	private void processUseCardNotInTurn(Match match, Request userCardRequest) {
+	private void processUseCardNotInTurn(Match match, Request userCardRequest) throws Exception {
 		String userName = userCardRequest.getUser();
 		TurnNode turnNode = match.getCurrentTurn();
 		if (!turnNode.getNextPlayer().peek().equals(userName)) {
@@ -63,8 +67,18 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 					new UseCardResponse(userName, null, null));
 			character.setLifePoint(character.getLifePoint() - 1);
+			// skill hero  BartCassidy
+			if(character.getHero() instanceof BartCassidy) {
+				Map<String, Object> others = new HashMap<>();
+				others.put("numberNewCard", 1);
+				character.getHero().useSkill(match, userName, character, commonService, others);
+			}
+			// skill hero  ElGringo
+			if(character.getHero() instanceof ElGringo) {
+				character.getHero().useSkill(match, userName, character, commonService, null);
+			}
+			//
 			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
-
 			if (character.getLifePoint() == 0) {
 				commonService.playerDead(userName, true, match);
 				if(match.getPlayerTurnQueue().size() <=1) {
@@ -145,6 +159,12 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
 						new UseCardResponse(userName, null, null));
 				character.setLifePoint(character.getLifePoint() - 1);
+				// skill hero  BartCassidy
+				if(character.getHero() instanceof BartCassidy) {
+					Map<String, Object> others = new HashMap<>();
+					others.put("numberNewCard", 1);
+					character.getHero().useSkill(match, userName, character, commonService, others);
+				}
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 				if (character.getLifePoint() == 0) {
 					commonService.playerDead(userName, false, match);
