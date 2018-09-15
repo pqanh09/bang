@@ -99,21 +99,21 @@ public class BangUtils {
 		}
 		return false;
 	}
-	//return list of player can use Bang  or Panic card 
-	public static List<String> checkRangeToUseCard(Map<Pair<String, String>, Integer> rangeMap, Character rootPlayer, Map<String, Character> characterMap, int rangeCard, LinkedList<String> playerTurnQueue) {
-		List<String> userCanBeAffectList = new ArrayList<>();
-		Character targetPlayer;
-		for (Entry<String, Character> entry : characterMap.entrySet()) {
-			targetPlayer = entry.getValue();
-			if(targetPlayer.getUserName().equals(rootPlayer.getUserName()) || !playerTurnQueue.contains(entry.getKey())) {
-				continue;
-			}
-			int range = (rangeMap.get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) != null) ? rangeMap.get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) : rangeMap.get(Pair.of(targetPlayer.getUserName(), rootPlayer.getUserName()));
-			range += targetPlayer.getOthersView();
-			if((rootPlayer.getViewOthers() + rangeCard) >= range) {
-				userCanBeAffectList.add(targetPlayer.getUserName());
-			}
-		}
-		return userCanBeAffectList;
-	}
+//	//return list of player can use Bang  or Panic card 
+//	public static List<String> checkRangeToUseCard(Map<Pair<String, String>, Integer> rangeMap, Character rootPlayer, Map<String, Character> characterMap, int rangeCard, LinkedList<String> playerTurnQueue) {
+//		List<String> userCanBeAffectList = new ArrayList<>();
+//		Character targetPlayer;
+//		for (Entry<String, Character> entry : characterMap.entrySet()) {
+//			targetPlayer = entry.getValue();
+//			if(targetPlayer.getUserName().equals(rootPlayer.getUserName()) || !playerTurnQueue.contains(entry.getKey())) {
+//				continue;
+//			}
+//			int range = (rangeMap.get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) != null) ? rangeMap.get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) : rangeMap.get(Pair.of(targetPlayer.getUserName(), rootPlayer.getUserName()));
+//			range += targetPlayer.getOthersView();
+//			if((rootPlayer.getViewOthers() + rangeCard) >= range) {
+//				userCanBeAffectList.add(targetPlayer.getUserName());
+//			}
+//		}
+//		return userCanBeAffectList;
+//	}
 }

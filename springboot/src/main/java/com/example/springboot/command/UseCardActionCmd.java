@@ -30,9 +30,13 @@ import com.example.springboot.model.card.StageCoachCard;
 import com.example.springboot.model.card.WellsFargoCard;
 import com.example.springboot.model.hero.BartCassidy;
 import com.example.springboot.model.hero.ElGringo;
+import com.example.springboot.model.hero.ElenaFuente;
 import com.example.springboot.model.hero.JohnnyKisch;
+import com.example.springboot.model.hero.MollyStark;
+import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.model.hero.TequilaJoe;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.CheckCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.service.CommonService;
@@ -101,13 +105,34 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				return;
 			}
 			commonService.addToOldCardList(card, match);
+			//skill hero MollyStark
+			if(character.getHero() instanceof MollyStark) {
+				character.getHero().useSkill(match, userName, character, commonService, null);
+			}
 
 			if (ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Gatling.equals(turnNode.getAction())) {
-				if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
+				//skill hero ElenaFuente
+				if(character.getHero() instanceof ElenaFuente) {
+					character.getHero().useSkill(match, userName, character, commonService, null);
 					BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 				} else {
-					logger.error("%%%%%%%%%%%%%%%%%%%%%%%Bang Gatling Error");
+					if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
+						BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
+						if(ResponseType.Bang.equals(turnNode.getAction()) && turnNode.getCharacter().getHero() instanceof SlabTheKiller && !turnNode.getPlayerUsedMissed().contains(userName)) {
+							turnNode.getCharacter().getHero().useSkill(match, userName, turnNode.getCharacter(), commonService, null);
+							if (turnNode.getNextPlayer().peek() == null) {
+								// request player in turn continue using card
+								turnNode.requestPlayerUseCard();
+							} else {
+								turnNode.requestOtherPlayerUseCard(match);
+							}
+							return;
+						}
+					} else {
+						logger.error("%%%%%%%%%%%%%%%%%%%%%%%Bang Gatling Error");
+					}
 				}
+				
 			} else if (ResponseType.Indians.equals(turnNode.getAction())) {
 				if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
 

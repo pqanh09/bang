@@ -25,13 +25,12 @@ import com.example.springboot.model.card.PanicCard;
 import com.example.springboot.model.card.SaloonCard;
 import com.example.springboot.model.card.VolcanicCard;
 import com.example.springboot.model.hero.ApacheKid;
+import com.example.springboot.model.hero.ElenaFuente;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.CheckCardResponse;
 import com.example.springboot.response.ResponseType;
-import com.example.springboot.service.HeroService;
 import com.example.springboot.service.CommonService;
-import com.example.springboot.service.TurnService;
 import com.example.springboot.utils.BangUtils;
 
 public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
@@ -69,6 +68,12 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			return;
 		}
 		if (ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Gatling.equals(turnNode.getAction())) {
+			//skill hero ElenaFuente
+			if(character.getHero() instanceof ElenaFuente) {
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
+						new CheckCardResponse(true));
+				return;
+			}
 			if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(true));
@@ -150,8 +155,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 			// check range to use
 			else {
-				List<String> userCanBeAffectList = BangUtils.checkRangeToUseCard(match.getRangeMap(), character,
-						match.getCharacterMap(), character.getGun(), match.getPlayerTurnQueue());
+				List<String> userCanBeAffectList = commonService.checkRangeToUseCard(match, character,character.getGun());
 				List<String> apacheKids = new ArrayList<>();
 				// skill hero ApacheKid
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
@@ -176,8 +180,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 			// PanicCard
 			else if (card instanceof PanicCard) {
-				List<String> temp = BangUtils.checkRangeToUseCard(match.getRangeMap(), character,
-						match.getCharacterMap(), 1, match.getPlayerTurnQueue());
+				List<String> temp = commonService.checkRangeToUseCard(match, character, 1);
 				// check number card of user
 				List<String> userCanBeAffectList = new ArrayList<>();
 				for (String user : temp) {

@@ -8,6 +8,7 @@ import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
+import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.BarrelCardResponse;
 import com.example.springboot.response.ResponseType;
@@ -28,8 +29,6 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 		// get cards for escaping the bang/gatlling;
 		Card card = commonService.getFromNewCardList(match, 1).get(0);
 		
-		
-		//TODO ....
 		commonService.addToOldCardList(card, match);
 		
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.UseBarrel, card, null));
@@ -38,7 +37,13 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 		turnNode.getPlayerUsedBarrel().add(userName);
 		if(Suit.hearts.equals(card.getSuit())) {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, true));
-			turnNode.getNextPlayer().poll();
+			if(ResponseType.Bang.equals(turnNode.getAction()) 
+					&& turnNode.getCharacter().getHero() instanceof SlabTheKiller
+					&& !turnNode.getPlayerUsedMissed().contains(userName)) {
+				turnNode.getCharacter().getHero().useSkill(match, userName, turnNode.getCharacter(), commonService, null);
+			} else {
+				turnNode.getNextPlayer().poll();
+			}
 		} else {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, false));
 		}

@@ -10,12 +10,16 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.hero.BelleStar;
+import com.example.springboot.model.hero.Jourdonnais;
+import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.response.BarrelCardResponse;
 import com.example.springboot.response.CardResponse;
 import com.example.springboot.response.GetCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
 import com.example.springboot.response.UserResponse;
+import com.example.springboot.service.CommonService;
 
 public class TurnNode {
 	private static final Logger logger = LoggerFactory.getLogger(TurnNode.class);
@@ -28,9 +32,56 @@ public class TurnNode {
 	private LinkedList<String> nextPlayer = new LinkedList<>();
 	private List<Card> cardTemp = new ArrayList<>();
 	private List<String> playerUsedBarrel = new ArrayList<>();
+	
+	//for SlabTheKiller
+	private List<String> playerUsedMissed = new ArrayList<>();
+	
+	private List<String> playerSkillBarrel = new ArrayList<>();
 	private SimpMessageSendingOperations simpMessageSendingOperations;
 	private String matchId;
+	private CommonService commonService;
 	
+	
+	public List<String> getPlayerUsedMissed() {
+		return playerUsedMissed;
+	}
+
+	public void setPlayerUsedMissed(List<String> playerUsedMissed) {
+		this.playerUsedMissed = playerUsedMissed;
+	}
+
+	public List<String> getPlayerSkillBarrel() {
+		return playerSkillBarrel;
+	}
+
+	public void setPlayerSkillBarrel(List<String> playerSkillBarrel) {
+		this.playerSkillBarrel = playerSkillBarrel;
+	}
+
+	public SimpMessageSendingOperations getSimpMessageSendingOperations() {
+		return simpMessageSendingOperations;
+	}
+
+	public void setSimpMessageSendingOperations(SimpMessageSendingOperations simpMessageSendingOperations) {
+		this.simpMessageSendingOperations = simpMessageSendingOperations;
+	}
+
+	public String getMatchId() {
+		return matchId;
+	}
+
+	public void setMatchId(String matchId) {
+		this.matchId = matchId;
+	}
+
+	public CommonService getCommonService() {
+		return commonService;
+	}
+
+	public void setCommonService(CommonService commonService) {
+		this.commonService = commonService;
+	}
+
 	public List<String> getPlayerUsedBarrel() {
 		return playerUsedBarrel;
 	}
@@ -80,11 +131,15 @@ public class TurnNode {
 		this.action = ResponseType.Unknown;
 		this.nextPlayer.clear();
 		this.cardTemp.clear();
+		this.playerSkillBarrel.clear();
+		this.playerUsedBarrel.clear();
+		this.playerUsedMissed.clear();
 	}
 
-	public TurnNode(SimpMessageSendingOperations simpMessageSendingOperations, String matchId) {
+	public TurnNode(CommonService commonService, String matchId) {
 		super();
-		this.simpMessageSendingOperations = simpMessageSendingOperations;
+		this.simpMessageSendingOperations = commonService.getSimpMessageSendingOperations();
+		this.commonService = commonService;
 		this.matchId = matchId;
 	}
 	public void requestPlayerUseCard() {
@@ -98,9 +153,24 @@ public class TurnNode {
 			// request player use cards
 			String targetUser = nextPlayer.peek();
 			if(targetUser != null) {
+				Character targetCharater = match.getCharacterMap().get(targetUser);
+				if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && !playerSkillBarrel.contains(targetUser) && targetCharater.getHero() instanceof Jourdonnais){
+					targetCharater.getHero().useSkill(match, targetCharater.getUserName(), targetCharater, commonService, null);
+//					if(result) {
+//						match.getCurrentTurn().getPlayerUsedMissed().add(targetUser);
+//					}
+					playerSkillBarrel.add(targetUser);
+					if (nextPlayer.peek() == null) {
+						// request player in turn continue using card
+						requestPlayerUseCard();
+					} else {
+						requestOtherPlayerUseCard(match);
+					}
+					return;
+				}
 				boolean hasBarrel = false;
 				if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && !playerUsedBarrel.contains(targetUser)) {
-					Character targetCharater = match.getCharacterMap().get(targetUser);
+					
 					for (Card card : targetCharater.getCardsInFront()) {
 						if(card instanceof BarrelCard) {
 							hasBarrel = true;
@@ -110,7 +180,11 @@ public class TurnNode {
 				}
 				// request player use cards
 				if(hasBarrel) {
-					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true));
+					if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && match.getCurrentTurn().getCharacter().getHero() instanceof BelleStar) {
+						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, false));
+					} else {
+						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true));
+					}
 				} else {
 					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(action, targetUser));
 				}

@@ -25,6 +25,7 @@ import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.model.hero.ApacheKid;
+import com.example.springboot.model.hero.BelleStar;
 import com.example.springboot.model.hero.GregDigger;
 import com.example.springboot.model.hero.HerbHunter;
 import com.example.springboot.model.hero.SuzyLafayette;
@@ -200,7 +201,7 @@ public class CommonService {
 	public void createTurnNode(Match match) {
 		String firstTurn = match.getPlayerTurnQueue().peekFirst();
 		Character firstCharacter = match.getCharacterMap().get(firstTurn);
-		match.setCurrentTurn(new TurnNode(simpMessageSendingOperations, match.getMatchId()));
+		match.setCurrentTurn(new TurnNode(this, match.getMatchId()));
 		match.getCurrentTurn().resetTurnNode(firstCharacter);
 	}
 	public void endTurn(String userName, Match match) {
@@ -287,5 +288,26 @@ public class CommonService {
 		}
 		userCanBeAffectList.removeAll(apacheKids);
 	}
-	
+	//return list of player can use Bang  or Panic card 
+//	BangUtils.checkRangeToUseCard(match.getRangeMap(), character,
+//			match.getCharacterMap(), character.getGun(), match.getPlayerTurnQueue());
+//	public static List<String> checkRangeToUseCard(Map<Pair<String, String>, Integer> rangeMap, Character rootPlayer, Map<String, Character> characterMap, int rangeCard, LinkedList<String> playerTurnQueue) {
+	public List<String> checkRangeToUseCard(Match match, Character rootPlayer,  int rangeCard) {
+		List<String> userCanBeAffectList = new ArrayList<>();
+		Character targetPlayer;
+		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
+			targetPlayer = entry.getValue();
+			if(targetPlayer.getUserName().equals(rootPlayer.getUserName()) || !match.getPlayerTurnQueue().contains(entry.getKey())) {
+				continue;
+			}
+			int range = (match.getRangeMap().get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) != null) ? match.getRangeMap().get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) : match.getRangeMap().get(Pair.of(targetPlayer.getUserName(), rootPlayer.getUserName()));
+			if(!(rootPlayer.getHero() instanceof BelleStar)) {
+				range += targetPlayer.getOthersView();
+			}
+			if((rootPlayer.getViewOthers() + rangeCard) >= range) {
+				userCanBeAffectList.add(targetPlayer.getUserName());
+			}
+		}
+		return userCanBeAffectList;
+	}
 }

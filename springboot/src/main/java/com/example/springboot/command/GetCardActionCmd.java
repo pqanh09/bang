@@ -10,6 +10,7 @@ import com.example.springboot.model.Character;
 import com.example.springboot.model.Constants;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.hero.BillNoface;
 import com.example.springboot.model.hero.BlackJack;
 import com.example.springboot.model.hero.PixiePete;
 import com.example.springboot.request.Request;
@@ -39,6 +40,9 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 			character.getHero().useSkill(match, userName, character, commonService, null);
 		} else if(character.getHero() instanceof PixiePete) {
 			// skill hero  PixiePete
+			character.getHero().useSkill(match, userName, character, commonService, null);
+		} else if(character.getHero() instanceof BillNoface) {
+			// skill hero  BillNoface
 			character.getHero().useSkill(match, userName, character, commonService, null);
 		} else {
 			List<Card> cards = commonService.getFromNewCardList(match, Constants.DEFAULT_CARD);
