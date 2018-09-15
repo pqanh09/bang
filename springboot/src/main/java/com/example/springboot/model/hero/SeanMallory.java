@@ -1,6 +1,5 @@
 package com.example.springboot.model.hero;
 
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -13,21 +12,21 @@ import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.service.CommonService;
 
-public class VultureSam extends Hero {
-	private static final Logger logger = LoggerFactory.getLogger(VultureSam.class);
+public class SeanMallory extends Hero {
+	private static final Logger logger = LoggerFactory.getLogger(SeanMallory.class);
 
 	@Override
 	public void useSkill() {
-		logger.info("using VultureSam Herro's Skill");
+		logger.info("using SeanMallory Herro's Skill");
 
 	}
 
-	public VultureSam() {
-		this.name = "VultureSam";
+	public SeanMallory() {
+		this.name = "SeanMallory";
 		this.skillDescription = "Description " + name;
-		this.id = "VultureSam";
+		this.id = "SeanMallory";
 		this.lifePoint = 4;
-		this.setImage("Hero-VultureSam.jpg");
+		this.setImage("Hero-SeanMallory.jpg");
 	}
 
 	@Override
@@ -40,12 +39,10 @@ public class VultureSam extends Hero {
 	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
 			Map<String, Object> others) {
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
-		// get cards for character;
-		Character deadCharacter = (Character) others.get("deadCharacter");
-		character.getCardsInHand().addAll(deadCharacter.getCardsInFront());
-		character.getCardsInHand().addAll(deadCharacter.getCardsInHand());
-		character.setNumCardsInHand(character.getCardsInHand().size());
-		return true;
+		if(character.getCardsInHand().size() > 10) {
+			return true;
+		}
+		return false;
 	}
 
 }

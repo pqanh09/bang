@@ -13,21 +13,21 @@ import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.service.CommonService;
 
-public class VultureSam extends Hero {
-	private static final Logger logger = LoggerFactory.getLogger(VultureSam.class);
+public class HerbHunter extends Hero {
+	private static final Logger logger = LoggerFactory.getLogger(HerbHunter.class);
 
 	@Override
 	public void useSkill() {
-		logger.info("using VultureSam Herro's Skill");
+		logger.info("using HerbHunter Herro's Skill");
 
 	}
 
-	public VultureSam() {
-		this.name = "VultureSam";
+	public HerbHunter() {
+		this.name = "HerbHunter";
 		this.skillDescription = "Description " + name;
-		this.id = "VultureSam";
+		this.id = "HerbHunter";
 		this.lifePoint = 4;
-		this.setImage("Hero-VultureSam.jpg");
+		this.setImage("Hero-HerbHunter.jpg");
 	}
 
 	@Override
@@ -41,9 +41,8 @@ public class VultureSam extends Hero {
 			Map<String, Object> others) {
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		// get cards for character;
-		Character deadCharacter = (Character) others.get("deadCharacter");
-		character.getCardsInHand().addAll(deadCharacter.getCardsInFront());
-		character.getCardsInHand().addAll(deadCharacter.getCardsInHand());
+		List<Card> cards = commonService.getFromNewCardList(match, 2);
+		character.getCardsInHand().addAll(cards);
 		character.setNumCardsInHand(character.getCardsInHand().size());
 		return true;
 	}

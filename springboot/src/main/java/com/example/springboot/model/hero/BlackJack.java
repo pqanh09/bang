@@ -43,7 +43,7 @@ public class BlackJack extends Hero {
 		// get cards for character;
 		List<Card> cards = commonService.getFromNewCardList(match, 2);
 		if(Suit.hearts.equals(cards.get(1).getSuit()) || Suit.diamonds.equals(cards.get(1).getSuit())) {
-			cards.add(commonService.getFromNewCardList(match, 1).get(0));
+			cards.addAll(commonService.getFromNewCardList(match, 1));
 		}
 		character.getCardsInHand().addAll(cards);
 		character.setNumCardsInHand(character.getCardsInHand().size());

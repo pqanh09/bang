@@ -33,14 +33,14 @@ public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
 		String targetPlayer = turnNode.getNextPlayer().peek();
 		Character targetCharacter = match.getCharacterMap().get(targetPlayer);
 		String sessionTargetId = match.getUserMap().get(targetPlayer);
-		SimpMessageSendingOperations simpMessageSendingOperations = commonService.getSimpMessageSendingOperations();
 		Card card = null;
 		if (StringUtils.isNotBlank(request.getId())) {
-			card = BangUtils.getCardInFront(targetCharacter, request.getId());
+			card = commonService.getCardInFront(targetCharacter, request.getId());
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 		} else {
 			if (!targetCharacter.getCardsInHand().isEmpty()) {
 				int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
-				card = BangUtils.getCardInHand(targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId());
+				card = commonService.getCardInHand(match, targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId(), null);
 			} else {
 				logger.error("CatPalou card error cmd");
 			}
@@ -60,7 +60,6 @@ public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
 			} else if(card instanceof DynamiteCard) {
 				targetCharacter.setHasDynamite(false);
 			}
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 			commonService.addToOldCardList(card, match);
 			turnNode.getNextPlayer().poll();
 			if (turnNode.getNextPlayer().peek() == null) {

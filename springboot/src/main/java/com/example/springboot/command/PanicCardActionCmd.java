@@ -37,11 +37,12 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 		String sessionTargetId = match.getUserMap().get(targetPlayer);
 		Card card = null;
 		if (StringUtils.isNotBlank(request.getId())) {
-			card = BangUtils.getCardInFront(targetCharacter, request.getId());
+			card = commonService.getCardInFront(targetCharacter, request.getId());
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 		} else {
 			if (!targetCharacter.getCardsInHand().isEmpty()) {
 				int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
-				card = BangUtils.getCardInHand(targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId());
+				card = commonService.getCardInHand(match, targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId(), null);
 			} else {
 				logger.error("Panic card error cmd");
 			}
@@ -61,7 +62,6 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 			} else if(card instanceof DynamiteCard) {
 				targetCharacter.setHasDynamite(false);
 			}
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 			character.getCardsInHand().add(card);
 			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 			turnNode.getNextPlayer().poll();

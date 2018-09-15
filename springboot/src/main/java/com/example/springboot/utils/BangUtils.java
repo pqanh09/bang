@@ -54,33 +54,33 @@ public class BangUtils {
 		messagingTemplate.convertAndSend("/topic/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character.getVO()));
 		messagingTemplate.convertAndSendToUser(sessionId, "/queue/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character));
 	}
-	public static Card getCardInHand(Character character, String id) {
-		Card result = null;
-		for (Card card : character.getCardsInHand()) {
-			if(card.getId().equals(id)) {
-				result = card;
-				break;
-			}
-		}
-		if(result != null) {
-			character.getCardsInHand().remove(result);
-			character.setNumCardsInHand(character.getCardsInHand().size());
-		}
-		return result;
-	}
-	public static Card getCardInFront(Character character, String id) {
-		Card result = null;
-		for (Card card : character.getCardsInFront()) {
-			if(card.getId().equals(id)) {
-				result = card;
-				break;
-			}
-		}
-		if(result != null) {
-			character.getCardsInFront().remove(result);
-		}
-		return result;
-	}
+//	public static Card getCardInHand(Character character, String id) {
+//		Card result = null;
+//		for (Card card : character.getCardsInHand()) {
+//			if(card.getId().equals(id)) {
+//				result = card;
+//				break;
+//			}
+//		}
+//		if(result != null) {
+//			character.getCardsInHand().remove(result);
+//			character.setNumCardsInHand(character.getCardsInHand().size());
+//		}
+//		return result;
+//	}
+//	public static Card getCardInFront(Character character, String id) {
+//		Card result = null;
+//		for (Card card : character.getCardsInFront()) {
+//			if(card.getId().equals(id)) {
+//				result = card;
+//				break;
+//			}
+//		}
+//		if(result != null) {
+//			character.getCardsInFront().remove(result);
+//		}
+//		return result;
+//	}
 	public static Card getCardByCardType(List<Card> list, CardType cardType) {
 		Card result = null;
 		for (Card card : list) {

@@ -15,6 +15,7 @@ import com.example.springboot.model.card.BangCard;
 import com.example.springboot.model.card.BeerCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.CardType;
+import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.model.card.CatPalouCard;
 import com.example.springboot.model.card.DuelloCard;
 import com.example.springboot.model.card.DynamiteCard;
@@ -23,6 +24,7 @@ import com.example.springboot.model.card.MissedCard;
 import com.example.springboot.model.card.PanicCard;
 import com.example.springboot.model.card.SaloonCard;
 import com.example.springboot.model.card.VolcanicCard;
+import com.example.springboot.model.hero.ApacheKid;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.CheckCardResponse;
@@ -77,8 +79,14 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			return;
 		} else if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Indians.equals(turnNode.getAction())) {
 			if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
-				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(true));
+				if(ResponseType.Duello.equals(turnNode.getAction()) && Suit.diamonds.equals(card.getSuit()) && turnNode.getCharacter().getHero() instanceof ApacheKid) {
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
+							new CheckCardResponse(false));
+				} else {
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
+							new CheckCardResponse(true));
+				}
+				
 			} else {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(false));
@@ -89,7 +97,6 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 
 	}
-
 	private void processUseCardInTurn(Request request, Match match) {
 		String userName = request.getUser();
 		TurnNode turnNode = match.getCurrentTurn();
@@ -145,6 +152,9 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			else {
 				List<String> userCanBeAffectList = BangUtils.checkRangeToUseCard(match.getRangeMap(), character,
 						match.getCharacterMap(), character.getGun(), match.getPlayerTurnQueue());
+				List<String> apacheKids = new ArrayList<>();
+				// skill hero ApacheKid
+				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
 								!userCanBeAffectList.isEmpty()));
@@ -176,15 +186,19 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 						userCanBeAffectList.add(user);
 					}
 				}
+				// skill hero ApacheKid
+				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
 								!userCanBeAffectList.isEmpty()));
 				return;
 			}
 			// DuelloCard
-			else if (card instanceof CatPalouCard || card instanceof DuelloCard) {
+			else if (card instanceof DuelloCard) {
 				List<String> userCanBeAffectList = BangUtils.getOtherPlayer(match.getCharacterMap().keySet(),
 						userName);
+				// skill hero ApacheKid
+				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(true, userCanBeAffectList, true));
 				return;
@@ -216,6 +230,8 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 					}
 					userCanBeAffectList.add(entry.getKey());
 				}
+				// skill hero ApacheKid
+				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
 								!userCanBeAffectList.isEmpty()));
@@ -233,6 +249,8 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 					}
 					userCanBeAffectList.add(entry.getKey());
 				}
+				// skill hero ApacheKid
+				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
 								!userCanBeAffectList.isEmpty()));

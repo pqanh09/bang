@@ -3,9 +3,11 @@ package com.example.springboot.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,11 +23,19 @@ import com.example.springboot.model.Constants;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.card.Card.Suit;
+import com.example.springboot.model.hero.ApacheKid;
+import com.example.springboot.model.hero.GregDigger;
+import com.example.springboot.model.hero.HerbHunter;
+import com.example.springboot.model.hero.SuzyLafayette;
+import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.CharacterResponse;
+import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
+import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.response.UserResponse;
 import com.example.springboot.utils.BangUtils;
 
@@ -41,6 +51,24 @@ public class CommonService {
 	public void setSimpMessageSendingOperations(SimpMessageSendingOperations simpMessageSendingOperations) {
 		this.simpMessageSendingOperations = simpMessageSendingOperations;
 	}
+	private boolean usingSkillOfHeroWhenAPlayerDead(String deadPlayer, Match match, Character deadCharacter) {
+		boolean addToOldCardList = false;
+		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
+			Character character = entry.getValue();
+			if(!deadPlayer.equals(character.getUserName()) && (character.getHero() instanceof VultureSam || character.getHero() instanceof HerbHunter || character.getHero() instanceof GregDigger)) {
+				if(character.getHero() instanceof VultureSam) {
+					addToOldCardList = true;
+					Map<String, Object> others = new HashMap<String, Object>();
+					others.put("deadCharacter", deadCharacter);
+					character.getHero().useSkill(match, character.getUserName(), character, this, others);
+				} else {
+					character.getHero().useSkill(match, character.getUserName(), character, this, null);
+				}
+				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
+			}
+		}
+		return addToOldCardList;
+	}
 	public void playerDead(String userName, boolean beKilled, Match match) {
 		Character character = match.getCharacterMap().get(userName);
 		character.setRoleImage(character.getRole().getImage());
@@ -53,8 +81,13 @@ public class CommonService {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, lastCharacter.getRole().getRoleType().toString()));
 			return;
 		}
-		addToOldCardList(character.getCardsInFront(), match);
-		addToOldCardList(character.getCardsInHand(), match);
+		//
+		if(!usingSkillOfHeroWhenAPlayerDead(userName, match, character)) {
+			addToOldCardList(character.getCardsInFront(), match);
+			addToOldCardList(character.getCardsInHand(), match);
+		};
+			
+		//	
 		updateRangeMap(match);
 		
 		if(beKilled) {
@@ -200,6 +233,59 @@ public class CommonService {
 		} else {
 			match.getCurrentTurn().requestOtherPlayerUseCard(match);
 		}
+	}
+	public  Card getCardInHand(Match match, Character character, String id, String targetUser) {
+		Card result = null;
+		for (Card card : character.getCardsInHand()) {
+			if(card.getId().equals(id)) {
+				result = card;
+				break;
+			}
+		}
+		if(result != null) {
+			character.getCardsInHand().remove(result);
+			character.setNumCardsInHand(character.getCardsInHand().size());
+			if(StringUtils.isNoneBlank(targetUser)) {
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
+						new UseCardResponse(character.getUserName(), result, targetUser));
+			} else {
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
+						new UseCardResponse(character.getUserName(), result, null));
+			}
+			if(character.getHero() instanceof SuzyLafayette && character.getCardsInHand().isEmpty()) {
+				character.getHero().useSkill(match, character.getUserName(), character, this, null);
+			}
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
+		}
+		return result;
+	}
+	public Card getCardInFront(Character character, String id) {
+		Card result = null;
+		for (Card card : character.getCardsInFront()) {
+			if(card.getId().equals(id)) {
+				result = card;
+				break;
+			}
+		}
+		if(result != null) {
+			character.getCardsInFront().remove(result);
+		}
+		return result;
+	}
+	public void useSkillOfApacheKid(Match match, List<String> userCanBeAffectList, Card card, boolean notify) {
+		if(!Suit.diamonds.equals(card.getSuit())) {
+			return;
+		}
+		List<String> apacheKids = new ArrayList<>();
+		for (String player : userCanBeAffectList) {
+			if(match.getCharacterMap().get(player).getHero() instanceof ApacheKid) {
+				apacheKids.add(player);
+				if(notify) {
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, player, match.getCharacterMap().get(player).getHero(), null, null));
+				}
+			}
+		}
+		userCanBeAffectList.removeAll(apacheKids);
 	}
 	
 }

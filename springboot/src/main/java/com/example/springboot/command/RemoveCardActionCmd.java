@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.hero.SeanMallory;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.RemoveCardResponse;
 import com.example.springboot.service.CommonService;
@@ -31,20 +32,26 @@ public class RemoveCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Character character = match.getCharacterMap().get(userName);
 		// get cards for removing;
 		List<Card> cards = new ArrayList<>();
-		Card card = BangUtils.getCardInHand(character, request.getId());
+		Card card = commonService.getCardInHand(match, character, request.getId(), null);
 		if(card != null) {
 			cards.add(card);
 			commonService.addToOldCardList(card, match);
 		}
-		BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, cards));
 		
 		//check number card is  not ok
 		if(character.getCardsInHand().size() > character.getLifePoint()) {
-			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, character.getCardsInHand()));
-			return;
+			if(character.getHero() instanceof SeanMallory) {
+				if(character.getHero().useSkill(match, userName, character, commonService, null)) {
+					//character.getCardsInHand().size() > 10)
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, character.getCardsInHand()));
+					return;
+				}
+			} else {
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, character.getCardsInHand()));
+				return;
+			}
 		}
-		
 		// if ok -> next turn
 		commonService.endTurn(userName, match);
 	}
