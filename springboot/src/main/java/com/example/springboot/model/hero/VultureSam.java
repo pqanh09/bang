@@ -41,9 +41,8 @@ public class VultureSam extends Hero {
 			int step, Map<String, Object> others) {
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		// get cards for character;
-		Character deadCharacter = (Character) others.get("deadCharacter");
-		character.getCardsInHand().addAll(deadCharacter.getCardsInFront());
-		character.getCardsInHand().addAll(deadCharacter.getCardsInHand());
+		List<Card> cards = (List<Card>) others.get("cards");
+		character.getCardsInHand().addAll(cards);
 		character.setNumCardsInHand(character.getCardsInHand().size());
 		return true;
 	}

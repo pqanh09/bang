@@ -1,17 +1,31 @@
 package com.example.springboot;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class Main {
 
 	public static void main(String[] args) {
-		int a = 25;
-		int b = 7;
-		int c = 25/7;
-		Date dt = new Date();
-		System.out.println(Calendar.getInstance().getTime().getTime());
-		
+//		int a = 25;
+//		int b = 7;
+//		int c = 25/7;
+//		Date dt = new Date();
+//		System.out.println(Calendar.getInstance().getTime().getTime());
+		List<String> l = new ArrayList<>();
+		l.add("1");
+		l.add("2");
+		l.add("3");
+		l.add("4");
+		l.add("5");
+		l.add("6");
+		l.add("7");
+		l.get(7);
+		System.out.println(l.subList(0, 2));;
+		System.out.println(l);
+		System.out.println(l.subList(2, 7));;
+		System.out.println(l);
 //		Runnable runnable = new Runnable() {
 //		      public void run() {
 //		        // task to run goes here

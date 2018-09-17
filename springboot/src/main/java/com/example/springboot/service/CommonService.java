@@ -54,18 +54,42 @@ public class CommonService {
 	}
 	private boolean usingSkillOfHeroWhenAPlayerDead(String deadPlayer, Match match, Character deadCharacter) {
 		boolean addToOldCardList = false;
+		List<Character> vultureSams = new ArrayList<>();
 		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 			Character character = entry.getValue();
 			if(!deadPlayer.equals(character.getUserName()) && (character.getHero() instanceof VultureSam || character.getHero() instanceof HerbHunter || character.getHero() instanceof GregDigger)) {
 				if(character.getHero() instanceof VultureSam) {
-					addToOldCardList = true;
-					Map<String, Object> others = new HashMap<String, Object>();
-					others.put("deadCharacter", deadCharacter);
-					character.getHero().useSkill(match, character.getUserName(), character, this, 1, others);
+					vultureSams.add(character);
+					
 				} else {
 					character.getHero().useSkill(match, character.getUserName(), character, this, 1, null);
 				}
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
+			}
+		}
+		if(!vultureSams.isEmpty()) {
+			List<Card> cards = new ArrayList<>();
+			cards.addAll(deadCharacter.getCardsInFront());
+			cards.addAll(deadCharacter.getCardsInHand());
+			if(cards.isEmpty()) {
+				return false;
+			} else {
+				addToOldCardList = true;
+				Collections.shuffle(cards);
+				Collections.shuffle(cards);
+				Collections.shuffle(cards);
+			}
+			int numCards = cards.size()/vultureSams.size();
+			Map<String, Object> others = new HashMap<String, Object>();
+			//first hero
+			Character fisrtCharacter = vultureSams.get(0);
+			others.put("cards", cards.subList(0, numCards));
+			fisrtCharacter.getHero().useSkill(match, fisrtCharacter.getUserName(), fisrtCharacter, this, 1, others);
+			//second hero
+			if(vultureSams.size() > 1) {
+				Character secondCharacter = vultureSams.get(1);
+				others.put("cards", cards.subList(numCards, cards.size()));
+				secondCharacter.getHero().useSkill(match, secondCharacter.getUserName(), secondCharacter, this, 1, others);
 			}
 		}
 		return addToOldCardList;
@@ -179,11 +203,13 @@ public class CommonService {
 	}
 
 	public void addToOldCardList(List<Card> cards, Match match) {
-		match.getOldCards().addAll(cards);
-		while (match.getOldCards().size() > 2) {
-			match.getCardPool().add(match.getOldCards().poll());
+		if(!cards.isEmpty()) {
+			match.getOldCards().addAll(cards);
+			while (match.getOldCards().size() > 2) {
+				match.getCardPool().add(match.getOldCards().poll());
+			}
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", new OldCardResponse(cards));
 		}
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", new OldCardResponse(cards));
 	}
 	public List<Card> getFromNewCardList(Match match, int n) {
 		List<Card> cards = new ArrayList<>();
