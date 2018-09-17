@@ -43,7 +43,7 @@ public class RemoveCardEndTurnActionCmd extends AbsActionCmd implements ActionCm
 		//check number card is  not ok
 		if(character.getCardsInHand().size() > character.getLifePoint()) {
 			if(character.getHero() instanceof SeanMallory) {
-				if(character.getHero().useSkill(match, userName, character, commonService, 1, null)) {
+				if(character.getHero().useSkill(match, character, commonService, 1, null)) {
 					//character.getCardsInHand().size() > 10)
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
 					return;

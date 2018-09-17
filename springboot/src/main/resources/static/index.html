@@ -174,7 +174,7 @@
 								<button type="button" class="btn btn-info"
 									ng-show="userName === playerGettingCard && userName === characterTurn"
 									ng-click="getCardFunc()">Get Card</button>
-								<button type="button" class="btn btn-info"
+								<button type="button" class="btn btn-info" ng-show="!selectedHero.autoUseSkill"
 									ng-click="useHeroSkillFunc()">Use Hero'skill</button>
 								<button type="button" class="btn btn-info"
 									ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"

@@ -39,20 +39,20 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 		// get cards for character;
 		if(character.getHero() instanceof BlackJack) {
 			// skill hero  BlackJack
-			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+			character.getHero().useSkill(match, character, commonService, 1, null);
 		} else if(character.getHero() instanceof PixiePete) {
 			// skill hero  PixiePete
-			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+			character.getHero().useSkill(match, character, commonService, 1, null);
 		} else if(character.getHero() instanceof BillNoface) {
 			// skill hero  BillNoface
-			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+			character.getHero().useSkill(match, character, commonService, 1, null);
 		} else if(character.getHero() instanceof ClausTheSaint) {
 			// skill hero  ClausTheSaint
-			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+			character.getHero().useSkill(match, character, commonService, 1, null);
 			return;
 		} else if(character.getHero() instanceof KitCarlson) {
 			// skill hero  KitCarlson
-			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+			character.getHero().useSkill(match, character, commonService, 1, null);
 			return;
 		} else {
 			List<Card> cards = commonService.getFromNewCardList(match, Constants.DEFAULT_CARD);

@@ -15,6 +15,7 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.Hero;
 import com.example.springboot.model.hero.PaulRegret;
 import com.example.springboot.model.hero.RoseDoolan;
+import com.example.springboot.model.hero.VeraCuster;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.ResponseType;
@@ -50,7 +51,11 @@ public class PickHeroActionCmd extends AbsActionCmd implements ActionCmd {
 		//set hero in character
 		character.setHero(hero);
 		if(hero instanceof PaulRegret  || hero instanceof RoseDoolan) {
-			hero.useSkill(match, userName, character, commonService, 1, null);
+			hero.useSkill(match, character, commonService, 1, null);
+		}
+		if(hero instanceof VeraCuster) {
+			match.setVeraCuster(hero);
+			match.setVeraCusterPlayer(userName);
 		}
 		// get cards for character;
 		List<Card> cards = new ArrayList<>();

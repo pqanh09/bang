@@ -13,7 +13,6 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.BelleStar;
 import com.example.springboot.model.hero.Jourdonnais;
 import com.example.springboot.model.hero.LuckyDuke;
-import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.response.BarrelCardResponse;
 import com.example.springboot.response.CardResponse;
 import com.example.springboot.response.GetCardResponse;
@@ -36,6 +35,12 @@ public class TurnNode {
 	
 	//for SlabTheKiller
 	private List<String> playerUsedMissed = new ArrayList<>();
+	//for UncleWill 
+	private boolean uncleWill;
+	//for DocHolyday
+	private boolean docHolyday;
+	//for JoseDelgado
+	private int joseDelgado;
 	
 	private List<String> playerSkillBarrel = new ArrayList<>();
 	private SimpMessageSendingOperations simpMessageSendingOperations;
@@ -135,6 +140,12 @@ public class TurnNode {
 		this.playerSkillBarrel.clear();
 		this.playerUsedBarrel.clear();
 		this.playerUsedMissed.clear();
+		//for UncelWill
+		this.uncleWill = false;
+		//for DocHolyday
+		this.docHolyday = false;
+		//for JoseDelgado
+		this.joseDelgado = 0;
 	}
 
 	public TurnNode(CommonService commonService, String matchId) {
@@ -156,7 +167,7 @@ public class TurnNode {
 			if(targetUser != null) {
 				Character targetCharater = match.getCharacterMap().get(targetUser);
 				if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && !playerSkillBarrel.contains(targetUser) && targetCharater.getHero() instanceof Jourdonnais){
-					targetCharater.getHero().useSkill(match, targetCharater.getUserName(), targetCharater, commonService, 1, null);
+					targetCharater.getHero().useSkill(match, targetCharater, commonService, 1, null);
 //					if(result) {
 //						match.getCurrentTurn().getPlayerUsedMissed().add(targetUser);
 //					}
@@ -216,7 +227,7 @@ public class TurnNode {
 		//Check Dynamite
 		if(character.isHasDynamite()) {
 			if(character.getHero() instanceof LuckyDuke) {
-				character.getHero().useSkill(match, character.getUserName(), character, commonService, 1, null);
+				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
 				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName()));	
 			}
@@ -226,7 +237,7 @@ public class TurnNode {
 		//Check jail
 		if(character.isBeJailed()) {
 			if(character.getHero() instanceof LuckyDuke) {
-				character.getHero().useSkill(match, character.getUserName(), character, commonService, 1, null);
+				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
 				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName()));
 			}
@@ -299,14 +310,37 @@ public class TurnNode {
 		this.alreadyGetCard = alreadyGetCard;
 	}
 
-
 	public boolean isAlreadyUseBangCard() {
 		return alreadyUseBangCard;
 	}
 
-
 	public void setAlreadyUseBangCard(boolean alreadyUseBangCard) {
 		this.alreadyUseBangCard = alreadyUseBangCard;
 	}
+
+	public boolean isUncleWill() {
+		return uncleWill;
+	}
+
+	public void setUncleWill(boolean uncleWill) {
+		this.uncleWill = uncleWill;
+	}
+
+	public boolean isDocHolyday() {
+		return docHolyday;
+	}
+
+	public void setDocHolyday(boolean docHolyday) {
+		this.docHolyday = docHolyday;
+	}
+
+	public int getJoseDelgado() {
+		return joseDelgado;
+	}
+
+	public void setJoseDelgado(int joseDelgado) {
+		this.joseDelgado = joseDelgado;
+	}
+
 	
 }

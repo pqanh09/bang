@@ -45,8 +45,8 @@ public class LuckyDuke extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService, int step,
-			Map<String, Object> others) {
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
+		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
 		

@@ -218,7 +218,9 @@ myapp.controller('FirstCtrl',
 				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/role', onRoleReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/hero', onHeroReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/server', onServerReceived);
+				stompClient.subscribe('/topic/'+ $scope.matchId +'/skill', onSkillTopicReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/character', onCharacterQueueReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/skill', onSkillQueueReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/character', onCharacterTopicReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/checkcard',onCheckCardQueueReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/removecard',onRemoveCardBeforeEndTurnQueueReceived);
@@ -301,6 +303,7 @@ myapp.controller('FirstCtrl',
 				$scope.characters.forEach(function(character) {
 					if (character.userName === userName) {
 						character.hero = response.character.hero;
+						$scope.selectedHero = response.character.hero;
 						character.cardsInFront = response.character.cardsInFront;
 						character.numCardsInHand = response.character.numCardsInHand;
 						character.gun = response.character.gun;
@@ -407,7 +410,7 @@ myapp.controller('FirstCtrl',
 			} else if (response.responseType === 'RemoveCard') {
 				addMessage(response.userName
 						+ ' has just removed card '
-						+ response.cards[0].name;
+						+ response.cards[0].name);
 
 				$scope.$apply();
 			} else {
@@ -621,8 +624,26 @@ myapp.controller('FirstCtrl',
 		
 		
 		
-		
-		
+		function onSkillQueueReceived(payload) {
+			var response = JSON.parse(payload.body);
+			if (response.responseType === 'Skill') {
+				addMessage(JSON.stringify(response));
+			}  else {
+				console.log('ERROR');
+				alert(JSON.stringify(response));
+			}
+			$scope.$apply();
+		}
+		function onSkillTopicReceived(payload) {
+			var response = JSON.parse(payload.body);
+			if (response.responseType === 'Skill') {
+				addMessage(JSON.stringify(response));
+			}  else {
+				console.log('ERROR');
+				alert(JSON.stringify(response));
+			}
+			$scope.$apply();
+		}
 		function onServerReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Gitf') {

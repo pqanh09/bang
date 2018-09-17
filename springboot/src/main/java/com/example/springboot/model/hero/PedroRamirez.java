@@ -33,6 +33,7 @@ public class PedroRamirez extends Hero {
 		this.id = "PedroRamirez";
 		this.lifePoint = 4;
 		this.setImage("Hero-PedroRamirez.jpg");
+		this.autoUseSkill = false;
 	}
 
 	@Override
@@ -41,8 +42,8 @@ public class PedroRamirez extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService, int step,
-			Map<String, Object> others) {
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
+		String userName = character.getUserName();
 		if(step == 1) {
 			String sessionId = match.getUserMap().get(userName);
 			Card card = match.getOldCards().pollLast();

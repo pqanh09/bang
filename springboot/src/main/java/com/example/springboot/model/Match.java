@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.hero.Hero;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UserResponse;
 
@@ -31,6 +32,9 @@ public class Match {
 	private LinkedList<String> playerTurnQueue = new LinkedList<>();
 	private Map<Pair<String, String>, Integer> rangeMap = new HashMap<>();
 	private TurnNode currentTurn;
+	//for VeraCuster
+	private Hero veraCuster;
+	private String veraCusterPlayer;
 	
 	public Match(String matchId, String userName, String sessionId, SimpMessageSendingOperations messagingTemplate) {
 		this.userMap.put(userName, sessionId);
@@ -102,8 +106,21 @@ public class Match {
 	
 	
 	
+	
+	public String getVeraCusterPlayer() {
+		return veraCusterPlayer;
+	}
+	public void setVeraCusterPlayer(String veraCusterPlayer) {
+		this.veraCusterPlayer = veraCusterPlayer;
+	}
 	public TurnNode getCurrentTurn() {
 		return currentTurn;
+	}
+	public Hero getVeraCuster() {
+		return veraCuster;
+	}
+	public void setVeraCuster(Hero veraCuster) {
+		this.veraCuster = veraCuster;
 	}
 	public void setCurrentTurn(TurnNode currentTurn) {
 		this.currentTurn = currentTurn;

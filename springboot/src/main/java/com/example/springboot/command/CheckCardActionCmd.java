@@ -203,7 +203,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				// skill hero ApacheKid
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(true, userCanBeAffectList, true));
+						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList, true));
 				return;
 			} 
 			//SaloonCard

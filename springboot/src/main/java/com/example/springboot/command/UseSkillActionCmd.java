@@ -69,39 +69,40 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 		Hero hero = character.getHero();
 		if (hero instanceof ClausTheSaint || hero instanceof LuckyDuke || hero instanceof KitCarlson) {
 			if(request.getStep() == 2) {
-				hero.useSkill(match, userName, character, commonService, 2, request.getOthers());
+				hero.useSkill(match, character, commonService, 2, request.getOthers());
 			} else {
 				returnFalse(sessionId, match);
 			}
-		}  else if (hero instanceof JesseJones || hero instanceof PatBrennan || hero instanceof SidKetchum) {
+		}  else if (hero instanceof JesseJones || hero instanceof PatBrennan || hero instanceof SidKetchum || hero instanceof UncleWill || hero instanceof JoseDelgado || hero instanceof VeraCuster) {
 			if(request.getStep() == 1) {
-				hero.useSkill(match, userName, character, commonService, 1, request.getOthers());
+				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else if(request.getStep() == 2) {
-				hero.useSkill(match, userName, character, commonService, 2, request.getOthers());
+				hero.useSkill(match, character, commonService, 2, request.getOthers());
 			} else {
 				returnFalse(sessionId, match);
 			}
 		} else if (hero instanceof PedroRamirez) {
 			if(request.getStep() == 1) {
-				hero.useSkill(match, userName, character, commonService, 1, request.getOthers());
+				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else {
 				returnFalse(sessionId, match);
 			}
 		} else if (hero instanceof ChuckWengam) {
 			if(request.getStep() == 1) {
-				hero.useSkill(match, userName, character, commonService, 1, request.getOthers());
+				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else {
 				returnFalse(sessionId, match);
 			}
-
-		} else if (hero instanceof SidKetchum) {
-
-		} else if (hero instanceof UncleWill) {
-
-		} else if (hero instanceof JoseDelgado) {
-
 		} else if (hero instanceof DocHolyday) {
-
+			if(request.getStep() == 1) {
+				hero.useSkill(match, character, commonService, 1, request.getOthers());
+			} else if(request.getStep() == 2) {
+				hero.useSkill(match, character, commonService, 2, request.getOthers());
+			} else if(request.getStep() == 3) {
+				hero.useSkill(match, character, commonService, 3, request.getOthers());
+			} else {
+				returnFalse(sessionId, match);
+			}
 		} else if (hero instanceof VeraCuster) {
 
 		} 

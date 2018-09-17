@@ -29,6 +29,7 @@ import com.example.springboot.model.hero.BelleStar;
 import com.example.springboot.model.hero.GregDigger;
 import com.example.springboot.model.hero.HerbHunter;
 import com.example.springboot.model.hero.SuzyLafayette;
+import com.example.springboot.model.hero.VeraCuster;
 import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.CharacterResponse;
@@ -60,9 +61,8 @@ public class CommonService {
 			if(!deadPlayer.equals(character.getUserName()) && (character.getHero() instanceof VultureSam || character.getHero() instanceof HerbHunter || character.getHero() instanceof GregDigger)) {
 				if(character.getHero() instanceof VultureSam) {
 					vultureSams.add(character);
-					
 				} else {
-					character.getHero().useSkill(match, character.getUserName(), character, this, 1, null);
+					character.getHero().useSkill(match, character, this, 1, null);
 				}
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
 			}
@@ -84,12 +84,12 @@ public class CommonService {
 			//first hero
 			Character fisrtCharacter = vultureSams.get(0);
 			others.put("cards", cards.subList(0, numCards));
-			fisrtCharacter.getHero().useSkill(match, fisrtCharacter.getUserName(), fisrtCharacter, this, 1, others);
+			fisrtCharacter.getHero().useSkill(match, fisrtCharacter, this, 1, others);
 			//second hero
 			if(vultureSams.size() > 1) {
 				Character secondCharacter = vultureSams.get(1);
 				others.put("cards", cards.subList(numCards, cards.size()));
-				secondCharacter.getHero().useSkill(match, secondCharacter.getUserName(), secondCharacter, this, 1, others);
+				secondCharacter.getHero().useSkill(match, secondCharacter, this, 1, others);
 			}
 		}
 		return addToOldCardList;
@@ -137,20 +137,7 @@ public class CommonService {
 				//udpate character for user 
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), killerCharacter, killerSessionId);
 			} else if(RoleType.SCERIFFO.equals(roleTypeDeathPlayer)) {
-				List<String> remainPlayers = new ArrayList<>(match.getPlayerTurnQueue());
-				boolean hasFuorilegge = false;
-				for (String player : remainPlayers) {
-					if(match.getCharacterMap().get(player).getRole().getRoleType().equals(RoleType.FUORILEGGE)) {
-						hasFuorilegge = true;
-						break;
-					}
-				}
-				if(hasFuorilegge) {
-					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
-				} else {
-					logger.error("Not yet handled 93 CommonService ");
-				}
-				//TODO notify end
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
 				match.getPlayerTurnQueue().clear();
 				return;
 			}
@@ -229,6 +216,13 @@ public class CommonService {
 		Character firstCharacter = match.getCharacterMap().get(firstTurn);
 		match.setCurrentTurn(new TurnNode(this, match.getMatchId()));
 		match.getCurrentTurn().resetTurnNode(firstCharacter);
+		useSkillOfVeraCuster(firstCharacter, match);
+		
+	}
+	private void useSkillOfVeraCuster(Character character, Match match) {
+		if(match.getVeraCuster() != null && character.getUserName().equals(match.getVeraCusterPlayer())) {
+			match.getVeraCuster().useSkill(match, match.getCurrentTurn().getCharacter(),  this, 1, null);
+		}
 	}
 	public void endTurn(String userName, Match match) {
 		if(match.getPlayerTurnQueue().peek().equals(userName)){
@@ -245,6 +239,7 @@ public class CommonService {
 		if(StringUtils.isNotBlank(nextPlayer)) {
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			match.getCurrentTurn().resetTurnNode(nextCharacter);
+			useSkillOfVeraCuster(nextCharacter, match);
 			match.getCurrentTurn().run(match);
 		} else {
 			logger.error("Turn service callNextPlayerTurn ERROR @!@@@@@!");
@@ -294,7 +289,7 @@ public class CommonService {
 						new UseCardResponse(character.getUserName(), result, null));
 			}
 			if(character.getHero() instanceof SuzyLafayette && character.getCardsInHand().isEmpty()) {
-				character.getHero().useSkill(match, character.getUserName(), character, this, 1, null);
+				character.getHero().useSkill(match, character, this, 1, null);
 			}
 			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
 		}

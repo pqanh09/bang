@@ -34,8 +34,8 @@ public class ApacheKid extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			int step, Map<String, Object> others) {
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
+			Map<String, Object> others) {
 		// TODO Auto-generated method stub
 		return false;
 	}

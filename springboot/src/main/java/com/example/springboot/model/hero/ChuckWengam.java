@@ -30,6 +30,7 @@ public class ChuckWengam extends Hero {
 		this.id = "ChuckWengam";
 		this.lifePoint = 4;
 		this.setImage("Hero-ChuckWengam.jpg");
+		this.autoUseSkill = false;
 	}
 
 	@Override
@@ -39,8 +40,9 @@ public class ChuckWengam extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			int step, Map<String, Object> others) {
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
+			Map<String, Object> others) {
+		String userName = character.getUserName();
 		if(step == 1) {
 			String sessionId = match.getUserMap().get(userName);
 			TurnNode turnNode = match.getCurrentTurn();

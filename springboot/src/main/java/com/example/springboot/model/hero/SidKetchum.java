@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
+import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.BangCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.MissedCard;
@@ -34,6 +35,7 @@ public class SidKetchum extends Hero {
 		this.id = "SidKetchum";
 		this.lifePoint = 4;
 		this.setImage("Hero-SidKetchum.jpg");
+		this.autoUseSkill = false;
 	}
 
 	@Override
@@ -42,14 +44,17 @@ public class SidKetchum extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService, int step,
-			Map<String, Object> others) {
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
+		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
+		TurnNode turnNode = match.getCurrentTurn();
 		if(step == 1) {
 			List<Card> cards = new ArrayList<>();
 			cards.addAll(character.getCardsInFront());
 			cards.addAll(character.getCardsInHand());
-			if(cards.size() < 2 || character.getLifePoint() < character.getCapacityLPoint()) {
+			if(cards.size() < 2 || character.getLifePoint() < character.getCapacityLPoint() || !turnNode.isAlreadyCheckedDynamite() 
+					|| !turnNode.isAlreadyCheckedJail() 
+					|| !turnNode.isAlreadyGetCard()) {
 				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 						new SkillResponse(false));
 				return false;
@@ -77,6 +82,7 @@ public class SidKetchum extends Hero {
 				logger.error("Error when perform SidKetchum's skill: size  < 2");
 				return false;
 			}
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 		}
 		return true;
 	}

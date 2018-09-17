@@ -36,8 +36,9 @@ public class TequilaJoe extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			int step, Map<String, Object> others) {
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
+			Map<String, Object> others) {
+		String userName = character.getUserName();
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		int lifePoint = character.getLifePoint() + 2;
 		if(lifePoint > character.getCapacityLPoint()) {

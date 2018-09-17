@@ -41,8 +41,9 @@ public class ElGringo extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			int step, Map<String, Object> others) {
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
+			Map<String, Object> others) {
+		String userName = character.getUserName();
 		// get cards from target character;
 		Character targetCharacter = match.getCurrentTurn().getCharacter();
 		if(targetCharacter.getCardsInHand().isEmpty()) {

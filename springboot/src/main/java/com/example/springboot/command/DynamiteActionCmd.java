@@ -67,7 +67,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 			if(character.getHero() instanceof BartCassidy) {
 				Map<String, Object> others = new HashMap<>();
 				others.put("numberNewCard", 3);
-				character.getHero().useSkill(match, userName, character, commonService, 1, others);
+				character.getHero().useSkill(match, character, commonService, 1, others);
 			}
 			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 			if (character.getLifePoint() <= 0) {

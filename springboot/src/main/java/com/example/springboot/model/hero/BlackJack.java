@@ -38,11 +38,12 @@ public class BlackJack extends Hero {
 	}
 
 	@Override
-	public boolean useSkill(Match match, String userName, Character character, CommonService commonService, int step, Map<String, Object> others) {
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
+		String userName = character.getUserName();
 		// get cards for character;
 		List<Card> cards = commonService.getFromNewCardList(match, 2);
 		if(Suit.hearts.equals(cards.get(1).getSuit()) || Suit.diamonds.equals(cards.get(1).getSuit())) {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			cards.addAll(commonService.getFromNewCardList(match, 1));
 		}
 		character.getCardsInHand().addAll(cards);
