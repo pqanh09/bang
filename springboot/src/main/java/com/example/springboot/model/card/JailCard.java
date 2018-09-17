@@ -19,9 +19,12 @@ public class JailCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
-		
-		
+	public void apply(Character character) {
+		character.setBeJailed(true);
+	}
+	@Override
+	public void remove(Character character) {
+		character.setBeJailed(false);
 	}
 
 }

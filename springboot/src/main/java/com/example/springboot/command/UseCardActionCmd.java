@@ -239,7 +239,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					character.getCardsInFront().add(card);
 					// set gun character
 				}
-				card.run(character);
+				card.apply(character);
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 				// skill JohnnyKisch
 				if(character.getHero() instanceof JohnnyKisch) {
@@ -265,7 +265,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					if(character.getHero() instanceof TequilaJoe) {
 						character.getHero().useSkill(match, character, commonService, 1, null);
 					} else {
-						card.run(character);
+						card.apply(character);
 					}
 					commonService.addToOldCardList(card, match);
 					BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
@@ -285,7 +285,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				} else if (card instanceof SaloonCard) {
 					commonService.addToOldCardList(card, match);
 					for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
-						card.run(entry.getValue());
+						card.apply(entry.getValue());
 						// notify hero of this character to others
 						String sessionIdPlayer = match.getUserMap().get(entry.getKey());
 						BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), entry.getValue(),
@@ -295,6 +295,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					turnNode.requestPlayerUseCard();
 					return;
 				} else if (card instanceof WellsFargoCard || card instanceof StageCoachCard) {
+					commonService.addToOldCardList(card, match);
 					int n = (card instanceof WellsFargoCard) ? 3 : 2;
 					character.getCardsInHand().addAll(commonService.getFromNewCardList(match, n));
 					character.setNumCardsInHand(character.getCardsInHand().size());
@@ -304,7 +305,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					return;
 				} else if (card instanceof DynamiteCard) {
 					// set dynamite
-					character.setHasDynamite(true);
+					card.apply(character);
 					character.getCardsInFront().add(card);
 					// notify
 					BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
@@ -314,7 +315,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				}  else if (card instanceof JailCard) {
 					// set jail or dynamite
 					Character targetCharacter = match.getCharacterMap().get(targetUser);
-					targetCharacter.setBeJailed(true);
+					card.apply(targetCharacter);
 					targetCharacter.getCardsInFront().add(card);
 					// notify
 					BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, match.getUserMap().get(targetUser));

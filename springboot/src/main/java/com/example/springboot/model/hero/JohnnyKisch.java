@@ -42,13 +42,18 @@ public class JohnnyKisch extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		boolean notified = false;
 		// get cards for character;
 		Card newCard = (Card) others.get("card");
 		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 			if(!userName.equals(entry.getValue().getUserName())) {
 				Card card = getCard(entry.getValue(), newCard.getName());
 				if(card != null) {
+					if(!notified) {
+						commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+						notified = true;
+					}
+					card.remove(character);
 					BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), entry.getValue(), match.getUserMap().get(entry.getValue().getUserName()));
 					commonService.addToOldCardList(card, match);
 				}

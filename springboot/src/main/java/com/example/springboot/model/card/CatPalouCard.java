@@ -19,7 +19,7 @@ public class CatPalouCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		
 		
 	}

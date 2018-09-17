@@ -17,11 +17,19 @@ public class MustangCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		if(character.getHero() instanceof PaulRegret) {
 			character.setOthersView(2);
 		} else {
 			character.setOthersView(1);
+		}
+	}
+	@Override
+	public void remove(Character character) {
+		if(character.getHero() instanceof PaulRegret) {
+			character.setOthersView(1);
+		} else {
+			character.setOthersView(0);
 		}
 	}
 

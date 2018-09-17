@@ -18,8 +18,13 @@ public class WinchesterCard extends Card {
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		character.setGun(5);
 	}
+	@Override
+	public void remove(Character character) {
+		character.setGun(1);
+	}
+
 
 }

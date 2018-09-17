@@ -18,8 +18,12 @@ public class RevCarabineCard extends Card {
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		character.setGun(4);
+	}
+	@Override
+	public void remove(Character character) {
+		character.setGun(1);
 	}
 
 }

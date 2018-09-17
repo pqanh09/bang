@@ -18,7 +18,10 @@ public abstract class Card {
 	protected CardType cardType = CardType.physical;
 	protected boolean affectAll = false;
 	protected String id;
-	abstract public void run(Character character);
+	abstract public void apply(Character character);
+	public void remove(Character character) {
+		
+	};
 	
 	
 	public String getImage() {

@@ -19,7 +19,7 @@ public class DuelloCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		
 		
 	}

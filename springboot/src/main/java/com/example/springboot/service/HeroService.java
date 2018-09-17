@@ -45,12 +45,13 @@ import com.example.springboot.model.hero.WillyTheKid;
 @Service("heroService")
 public class HeroService {
 	private List<Hero> heros = new ArrayList<>();
+
 	public HeroService() {
 //		heros.add(new ApacheKid());
 //		heros.add(new BartCassidy());
 //		heros.add(new BelleStar());
 //		heros.add(new BillNoface());
-		heros.add(new BlackJack());
+//		heros.add(new BlackJack());
 //		heros.add(new CalamityJanet());
 //		heros.add(new ChuckWengam());
 //		heros.add(new ClausTheSaint());
@@ -62,7 +63,7 @@ public class HeroService {
 //		heros.add(new JesseJones());
 //		heros.add(new JohnnyKisch());
 //		heros.add(new JoseDelgado());
-//		heros.add(new Jourdonnais());
+		heros.add(new Jourdonnais());
 //		heros.add(new KitCarlson());
 //		heros.add(new LuckyDuke());
 //		heros.add(new MollyStark());
@@ -73,36 +74,38 @@ public class HeroService {
 //		heros.add(new RoseDoolan());
 //		heros.add(new SeanMallory());
 //		heros.add(new SidKetchum());
-//		heros.add(new SlabTheKiller());
-		heros.add(new SuzyLafayette());
+		heros.add(new SlabTheKiller());
+//		heros.add(new SuzyLafayette());
 //		heros.add(new TequilaJoe());
 //		heros.add(new UncleWill());
 //		heros.add(new VeraCuster());
 //		heros.add(new VultureSam());
 //		heros.add(new WillyTheKid());
-		
+
 		Collections.shuffle(heros);
 	}
+
 	public List<Hero> getHerosByNumber(int n) {
 		Collections.shuffle(heros);
 		return heros.subList(0, n);
 	}
+
 	public Hero getHero(String id) {
 		Hero hero = null;
 		for (Hero hr : heros) {
-			if(hr.getId().equals(id)) {
+			if (hr.getId().equals(id)) {
 				hero = hr;
 			}
 		}
 		return hero;
 	}
+
 	public List<Hero> getHeros() {
 		return heros;
 	}
+
 	public void setHeros(List<Hero> heros) {
 		this.heros = heros;
 	}
-	
-	
-	
+
 }

@@ -285,7 +285,7 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if ($scope.userName === response.character.userName) {
 				$scope.cardsInHand = response.character.cardsInHand;
-				$scope.cardsInFront = response.character.cardsInFront;
+				$scope.cardsInFront = response.character.cardsInFront;$scope.selectedHero = response.character.hero;
 				$scope.$apply();
 			} else {
 				console.log('Error');

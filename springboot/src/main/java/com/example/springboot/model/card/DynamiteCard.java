@@ -1,9 +1,8 @@
 package com.example.springboot.model.card;
+
 import com.example.springboot.model.Character;
-public class DynamiteCard extends Card{
-	
-	
-	
+
+public class DynamiteCard extends Card {
 
 	public DynamiteCard() {
 		super();
@@ -19,9 +18,13 @@ public class DynamiteCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
-		
-		
+	public void apply(Character character) {
+		character.setHasDynamite(true);
+	}
+
+	@Override
+	public void remove(Character character) {
+		character.setHasDynamite(false);
 	}
 
 }

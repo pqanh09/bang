@@ -63,8 +63,9 @@ public class CommonService {
 					vultureSams.add(character);
 				} else {
 					character.getHero().useSkill(match, character, this, 1, null);
+					BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
 				}
-				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
+				
 			}
 		}
 		if(!vultureSams.isEmpty()) {
@@ -85,11 +86,13 @@ public class CommonService {
 			Character fisrtCharacter = vultureSams.get(0);
 			others.put("cards", cards.subList(0, numCards));
 			fisrtCharacter.getHero().useSkill(match, fisrtCharacter, this, 1, others);
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), fisrtCharacter , match.getUserMap().get(fisrtCharacter.getUserName()));
 			//second hero
 			if(vultureSams.size() > 1) {
 				Character secondCharacter = vultureSams.get(1);
 				others.put("cards", cards.subList(numCards, cards.size()));
 				secondCharacter.getHero().useSkill(match, secondCharacter, this, 1, others);
+				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), secondCharacter , match.getUserMap().get(secondCharacter.getUserName()));
 			}
 		}
 		return addToOldCardList;

@@ -19,8 +19,12 @@ public class SchofieldCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		character.setGun(2);
+	}
+	@Override
+	public void remove(Character character) {
+		character.setGun(1);
 	}
 
 }

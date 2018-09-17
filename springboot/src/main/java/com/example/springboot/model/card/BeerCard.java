@@ -19,7 +19,7 @@ public class BeerCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		int lifePoint = character.getLifePoint();
 		if(lifePoint < character.getCapacityLPoint()) {
 			character.setLifePoint(lifePoint + 1);

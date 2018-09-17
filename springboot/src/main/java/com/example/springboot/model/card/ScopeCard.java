@@ -20,11 +20,19 @@ public class ScopeCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		if(character.getHero() instanceof RoseDoolan) {
 			character.setViewOthers(2);
 		} else {
 			character.setViewOthers(1);
+		}
+	}
+	@Override
+	public void remove(Character character) {
+		if(character.getHero() instanceof RoseDoolan) {
+			character.setViewOthers(1);
+		} else {
+			character.setViewOthers(0);
 		}
 	}
 

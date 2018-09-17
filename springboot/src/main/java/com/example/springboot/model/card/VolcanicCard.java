@@ -21,9 +21,12 @@ public class VolcanicCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		character.setGun(1);
-		
+	}
+	@Override
+	public void remove(Character character) {
+		character.setGun(1);
 	}
 
 }

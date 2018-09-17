@@ -19,7 +19,7 @@ public class GeneralStoreCard extends Card{
 	}
 
 	@Override
-	public void run(Character character) {
+	public void apply(Character character) {
 		
 		
 	}
