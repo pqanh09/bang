@@ -11,10 +11,12 @@ public enum ResponseType {
 	Hero,
 	Chatting,
 	//
+	CheckSkill,
 	CheckCard,
 	GetCard,
 	OldCard,
 	RemoveCard,
+	RemoveCardEndTurn,
 	UseCard,
 	UseBarrel,
 	DrawCardJail,

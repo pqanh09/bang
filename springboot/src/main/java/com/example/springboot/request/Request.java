@@ -1,7 +1,9 @@
 package com.example.springboot.request;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Request {
 	private String user;
@@ -9,8 +11,24 @@ public class Request {
 	private RequestType actionType;
 	private String id;
 	private boolean noneResponse = false;
+	private Map<String, Object> others = new HashMap<>();
+	private int step;
 	
-	
+	public int getStep() {
+		return step;
+	}
+
+	public void setStep(int step) {
+		this.step = step;
+	}
+
+	public Map<String, Object> getOthers() {
+		return others;
+	}
+
+	public void setOthers(Map<String, Object> others) {
+		this.others = others;
+	}
 	private List<String> ids = new ArrayList<>();
 
 	public List<String> getIds() {

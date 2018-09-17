@@ -7,8 +7,13 @@ import org.slf4j.LoggerFactory;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
+import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.response.HeroSkillResponse;
+import com.example.springboot.response.ResponseType;
+import com.example.springboot.response.SkillResponse;
 import com.example.springboot.service.CommonService;
+import com.example.springboot.utils.BangUtils;
 
 public class ChuckWengam extends Hero {
 	private static final Logger logger = LoggerFactory.getLogger(ChuckWengam.class);
@@ -35,9 +40,27 @@ public class ChuckWengam extends Hero {
 
 	@Override
 	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			Map<String, Object> others) {
-		// TODO Auto-generated method stub
-		return false;
+			int step, Map<String, Object> others) {
+		if(step == 1) {
+			String sessionId = match.getUserMap().get(userName);
+			TurnNode turnNode = match.getCurrentTurn();
+			if(character.getLifePoint() <= 1 || !turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail()) {
+				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+						new SkillResponse(false));
+				return false;
+			}
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+			
+			character.setLifePoint(character.getLifePoint() -1);
+
+			character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 2));
+			character.setNumCardsInHand(character.getCardsInHand().size());
+			
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			
+			match.getCurrentTurn().run(match);
+		}
+		return true;
 	}
 
 }

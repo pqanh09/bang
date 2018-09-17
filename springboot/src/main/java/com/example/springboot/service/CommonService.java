@@ -45,8 +45,8 @@ public class CommonService {
 	private static final Logger logger = LoggerFactory.getLogger(CommonService.class);
 	@Autowired
 	private SimpMessageSendingOperations simpMessageSendingOperations;
-	
 	public SimpMessageSendingOperations getSimpMessageSendingOperations() {
+	
 		return simpMessageSendingOperations;
 	}
 	public void setSimpMessageSendingOperations(SimpMessageSendingOperations simpMessageSendingOperations) {
@@ -61,9 +61,9 @@ public class CommonService {
 					addToOldCardList = true;
 					Map<String, Object> others = new HashMap<String, Object>();
 					others.put("deadCharacter", deadCharacter);
-					character.getHero().useSkill(match, character.getUserName(), character, this, others);
+					character.getHero().useSkill(match, character.getUserName(), character, this, 1, others);
 				} else {
-					character.getHero().useSkill(match, character.getUserName(), character, this, null);
+					character.getHero().useSkill(match, character.getUserName(), character, this, 1, null);
 				}
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
 			}
@@ -219,7 +219,7 @@ public class CommonService {
 		if(StringUtils.isNotBlank(nextPlayer)) {
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			match.getCurrentTurn().resetTurnNode(nextCharacter);
-			match.getCurrentTurn().run();
+			match.getCurrentTurn().run(match);
 		} else {
 			logger.error("Turn service callNextPlayerTurn ERROR @!@@@@@!");
 //			tableService.getsimpMessageSendingOperations().convertAndSend("/topic/turn", new TurnResponse(ResponseType.Winner, userName));
@@ -234,6 +234,20 @@ public class CommonService {
 		} else {
 			match.getCurrentTurn().requestOtherPlayerUseCard(match);
 		}
+	}
+	public  Card getCardInHand(Character character, String id) {
+		Card result = null;
+		for (Card card : character.getCardsInHand()) {
+			if(card.getId().equals(id)) {
+				result = card;
+				break;
+			}
+		}
+		if(result != null) {
+			character.getCardsInHand().remove(result);
+			character.setNumCardsInHand(character.getCardsInHand().size());
+		}
+		return result;
 	}
 	public  Card getCardInHand(Match match, Character character, String id, String targetUser) {
 		Card result = null;
@@ -254,7 +268,7 @@ public class CommonService {
 						new UseCardResponse(character.getUserName(), result, null));
 			}
 			if(character.getHero() instanceof SuzyLafayette && character.getCardsInHand().isEmpty()) {
-				character.getHero().useSkill(match, character.getUserName(), character, this, null);
+				character.getHero().useSkill(match, character.getUserName(), character, this, 1, null);
 			}
 			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
 		}

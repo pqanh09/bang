@@ -1,11 +1,16 @@
 package com.example.springboot.model.hero;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.example.springboot.model.Character;
+import com.example.springboot.model.Match;
 import com.example.springboot.model.card.BangCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.MissedCard;
+import com.example.springboot.service.CommonService;
 
 public class CalamityJanet extends Hero {
 	private static final Logger logger = LoggerFactory.getLogger(CalamityJanet.class);
@@ -29,6 +34,13 @@ public class CalamityJanet extends Hero {
 		if(card instanceof BangCard || card instanceof MissedCard) {
 			return true;
 		}
+		return false;
+	}
+
+	@Override
+	public boolean useSkill(Match match, String userName, Character character, CommonService commonService, int step,
+			Map<String, Object> others) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

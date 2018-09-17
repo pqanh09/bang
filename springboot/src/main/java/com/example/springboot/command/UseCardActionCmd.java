@@ -77,11 +77,11 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			if(character.getHero() instanceof BartCassidy) {
 				Map<String, Object> others = new HashMap<>();
 				others.put("numberNewCard", 1);
-				character.getHero().useSkill(match, userName, character, commonService, others);
+				character.getHero().useSkill(match, userName, character, commonService, 1, others);
 			}
 			// skill hero  ElGringo
 			if(character.getHero() instanceof ElGringo) {
-				character.getHero().useSkill(match, userName, character, commonService, null);
+				character.getHero().useSkill(match, userName, character, commonService, 1, null);
 			}
 			//
 			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
@@ -107,19 +107,19 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			commonService.addToOldCardList(card, match);
 			//skill hero MollyStark
 			if(character.getHero() instanceof MollyStark) {
-				character.getHero().useSkill(match, userName, character, commonService, null);
+				character.getHero().useSkill(match, userName, character, commonService, 1, null);
 			}
 
 			if (ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Gatling.equals(turnNode.getAction())) {
 				//skill hero ElenaFuente
 				if(character.getHero() instanceof ElenaFuente) {
-					character.getHero().useSkill(match, userName, character, commonService, null);
+					character.getHero().useSkill(match, userName, character, commonService, 1, null);
 					BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 				} else {
 					if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
 						BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 						if(ResponseType.Bang.equals(turnNode.getAction()) && turnNode.getCharacter().getHero() instanceof SlabTheKiller && !turnNode.getPlayerUsedMissed().contains(userName)) {
-							turnNode.getCharacter().getHero().useSkill(match, userName, turnNode.getCharacter(), commonService, null);
+							turnNode.getCharacter().getHero().useSkill(match, userName, turnNode.getCharacter(), commonService, 1, null);
 							if (turnNode.getNextPlayer().peek() == null) {
 								// request player in turn continue using card
 								turnNode.requestPlayerUseCard();
@@ -188,7 +188,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				if(character.getHero() instanceof BartCassidy) {
 					Map<String, Object> others = new HashMap<>();
 					others.put("numberNewCard", 1);
-					character.getHero().useSkill(match, userName, character, commonService, others);
+					character.getHero().useSkill(match, userName, character, commonService, 1, others);
 				}
 				BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 				if (character.getLifePoint() == 0) {
@@ -245,7 +245,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				if(character.getHero() instanceof JohnnyKisch) {
 					Map<String, Object> others = new HashMap<>();
 					others.put("card", card);
-					character.getHero().useSkill(match, userName, character, commonService, others);
+					character.getHero().useSkill(match, userName, character, commonService, 1, others);
 				}
 				// request continue use cards
 				turnNode.requestPlayerUseCard();
@@ -263,7 +263,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				if (card instanceof BeerCard) {
 					//skill hero TequilaJoe
 					if(character.getHero() instanceof TequilaJoe) {
-						character.getHero().useSkill(match, userName, character, commonService, null);
+						character.getHero().useSkill(match, userName, character, commonService, 1, null);
 					} else {
 						card.run(character);
 					}
@@ -275,8 +275,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				} else if (card instanceof GatlingCard) {
 					commonService.addToOldCardList(card, match);
 					BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
-					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(match.getPlayerTurnQueue(),
-							userName);
+					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName);
 					// skill hero ApacheKid
 					commonService.useSkillOfApacheKid(match, otherPlayers, card, false);
 					turnNode.setAction(ResponseType.Gatling);

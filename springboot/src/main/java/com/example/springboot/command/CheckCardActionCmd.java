@@ -63,7 +63,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		// get card from id
 		Card card = BangUtils.findCardInHand(character, request.getId());
 		if (card == null) {
-			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/"+match.getMatchId()+"/checkcard",
+			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 					new CheckCardResponse(false));
 			return;
 		}

@@ -42,7 +42,7 @@ public class Jourdonnais extends Hero {
 
 	@Override
 	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			Map<String, Object> others) {
+			int step, Map<String, Object> others) {
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		Card card = commonService.getFromNewCardList(match, 1).get(0);
 		

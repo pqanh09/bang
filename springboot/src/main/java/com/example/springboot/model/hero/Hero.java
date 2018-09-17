@@ -18,7 +18,7 @@ public abstract class Hero {
 	protected String image = "/data/image/hero/";
 	abstract public void useSkill();
 	abstract public boolean useSkill(Card card);
-	abstract public boolean useSkill(Match match, String userName, Character character, CommonService commonService, Map<String, Object> others);
+	abstract public boolean useSkill(Match match, String userName, Character character, CommonService commonService, int step, Map<String, Object> others);
 	
 	public String getImage() {
 		return image;

@@ -35,7 +35,7 @@ public class VeraCuster extends Hero {
 
 	@Override
 	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			Map<String, Object> others) {
+			int step, Map<String, Object> others) {
 		// TODO Auto-generated method stub
 		return false;
 	}

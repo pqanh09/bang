@@ -27,18 +27,21 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 	public void execute(Request request, Match match) throws Exception {
 		String userName = request.getUser();
 		if(!match.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
+			logger.error("Error not support for " + userName + "at this time");
 			return;
 		}
-		String sessionId = match.getUserMap().get(userName);
-		
-		//get Character
-		Character character = match.getCharacterMap().get(userName);
 		// get cards for escaping the jail;
 		Card card = commonService.getFromNewCardList(match, 1).get(0);
+		checkJail(match, card, commonService);
+	}
+	public static void checkJail(Match match, Card card, CommonService commonService) {
+		//get Character
+		Character character = match.getCurrentTurn().getCharacter();
+		String userName = character.getUserName();
+		String sessionId = match.getUserMap().get(userName);
 		
-		//TODO ....
 		commonService.addToOldCardList(card, match);
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardJail, card, null));
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardJail, card, null));
 		
 		character.setBeJailed(false);
 		// find dynamite card
@@ -51,14 +54,15 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		character.getCardsInFront().remove(jailCard);
 		
-		BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
+		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 		
 		commonService.addToOldCardList(jailCard, match);
+		match.getCurrentTurn().setAlreadyCheckedJail(true);
 		if(Suit.hearts.equals(card.getSuit())) {
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeJail, null, null));
-			match.getCurrentTurn().run();
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeJail, null, null));
+			match.getCurrentTurn().run(match);
 		} else {
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostTurn, null, null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostTurn, null, null));
 			commonService.endTurn(userName, match);
 		}
 	}

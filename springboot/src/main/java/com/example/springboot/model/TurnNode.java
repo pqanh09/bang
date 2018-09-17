@@ -12,6 +12,7 @@ import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.BelleStar;
 import com.example.springboot.model.hero.Jourdonnais;
+import com.example.springboot.model.hero.LuckyDuke;
 import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.response.BarrelCardResponse;
 import com.example.springboot.response.CardResponse;
@@ -155,7 +156,7 @@ public class TurnNode {
 			if(targetUser != null) {
 				Character targetCharater = match.getCharacterMap().get(targetUser);
 				if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && !playerSkillBarrel.contains(targetUser) && targetCharater.getHero() instanceof Jourdonnais){
-					targetCharater.getHero().useSkill(match, targetCharater.getUserName(), targetCharater, commonService, null);
+					targetCharater.getHero().useSkill(match, targetCharater.getUserName(), targetCharater, commonService, 1, null);
 //					if(result) {
 //						match.getCurrentTurn().getPlayerUsedMissed().add(targetUser);
 //					}
@@ -211,17 +212,27 @@ public class TurnNode {
 		}
 	}
 
-	public void run() {
+	public void run(Match match) {
 		//Check Dynamite
 		if(character.isHasDynamite()) {
-			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName()));
+			if(character.getHero() instanceof LuckyDuke) {
+				character.getHero().useSkill(match, character.getUserName(), character, commonService, 1, null);
+			} else {
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName()));	
+			}
 			return;
 		}
+		this.alreadyCheckedDynamite = true;
 		//Check jail
 		if(character.isBeJailed()) {
-			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName()));
+			if(character.getHero() instanceof LuckyDuke) {
+				character.getHero().useSkill(match, character.getUserName(), character, commonService, 1, null);
+			} else {
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName()));
+			}
 			return;
 		}
+		this.alreadyCheckedJail = false;
 		//get cards
 		getCard();
 	}

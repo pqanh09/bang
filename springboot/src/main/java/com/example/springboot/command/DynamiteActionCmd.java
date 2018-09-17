@@ -30,18 +30,22 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 	@Override
 	public void execute(Request request, Match match) throws Exception {
 		String userName = request.getUser();
-		String sessionId = match.getUserMap().get(userName);
-		
 		if(!match.getCurrentTurn().getCharacter().getUserName().equals(userName)) {
+			logger.error("Error not support for " + userName + "at this time");
 			return;
 		}
-		//get Character
-		Character character = match.getCharacterMap().get(userName);
-		// get cards for escaping the jail;
+		// get cards for escaping the Dymanite;
 		Card card = commonService.getFromNewCardList(match, 1).get(0);
+		checkDynamite(match, card, commonService);
+	}
+	public static void checkDynamite(Match match, Card card, CommonService commonService) {
+		//get Character
+		Character character = match.getCurrentTurn().getCharacter();
+		String userName = character.getUserName();
+		String sessionId = match.getUserMap().get(userName);
 		
 		commonService.addToOldCardList(card, match);
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardDynamite, card, null));
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardDynamite, card, null));
 		
 		character.setHasDynamite(false);
 		
@@ -54,18 +58,18 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 		}
 		character.getCardsInFront().remove(dynamiteCard);
-		
+		match.getCurrentTurn().setAlreadyCheckedDynamite(true);
 		if(Suit.spades.equals(card.getSuit()) && card.getNumber() >= 2 && card.getNumber() <=9) {
 			commonService.addToOldCardList(dynamiteCard, match);
 			character.setLifePoint(character.getLifePoint() - 3);
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostLifePoint, null, null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostLifePoint, null, null));
 			// skill hero  BartCassidy
 			if(character.getHero() instanceof BartCassidy) {
 				Map<String, Object> others = new HashMap<>();
 				others.put("numberNewCard", 3);
-				character.getHero().useSkill(match, userName, character, commonService, others);
+				character.getHero().useSkill(match, userName, character, commonService, 1, others);
 			}
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 			if (character.getLifePoint() <= 0) {
 				commonService.playerDead(userName, false, match);
 				if(match.getPlayerTurnQueue().size() <=1) {
@@ -74,20 +78,20 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 				}
 				commonService.callNextPlayerTurn(match);
 			} else {
-				match.getCurrentTurn().run();
+				match.getCurrentTurn().run(match);
 			}
 		} else {
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 			match.getPlayerTurnQueue().poll();
 			String nextPlayer = match.getPlayerTurnQueue().peek();
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeDynamite, null, nextPlayer));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeDynamite, null, nextPlayer));
 			match.getPlayerTurnQueue().addFirst(userName);
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			nextCharacter.getCardsInFront().add(dynamiteCard);
 			nextCharacter.setHasDynamite(true);
 			String sessionIdNextPlayer = match.getUserMap().get(nextPlayer);
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), nextCharacter, sessionIdNextPlayer);
-			match.getCurrentTurn().run();
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), nextCharacter, sessionIdNextPlayer);
+			match.getCurrentTurn().run(match);
 		}
 	}
 

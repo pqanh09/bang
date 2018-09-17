@@ -12,6 +12,8 @@ import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.BillNoface;
 import com.example.springboot.model.hero.BlackJack;
+import com.example.springboot.model.hero.ClausTheSaint;
+import com.example.springboot.model.hero.KitCarlson;
 import com.example.springboot.model.hero.PixiePete;
 import com.example.springboot.request.Request;
 import com.example.springboot.service.CommonService;
@@ -37,13 +39,21 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 		// get cards for character;
 		if(character.getHero() instanceof BlackJack) {
 			// skill hero  BlackJack
-			character.getHero().useSkill(match, userName, character, commonService, null);
+			character.getHero().useSkill(match, userName, character, commonService, 1, null);
 		} else if(character.getHero() instanceof PixiePete) {
 			// skill hero  PixiePete
-			character.getHero().useSkill(match, userName, character, commonService, null);
+			character.getHero().useSkill(match, userName, character, commonService, 1, null);
 		} else if(character.getHero() instanceof BillNoface) {
 			// skill hero  BillNoface
-			character.getHero().useSkill(match, userName, character, commonService, null);
+			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+		} else if(character.getHero() instanceof ClausTheSaint) {
+			// skill hero  ClausTheSaint
+			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+			return;
+		} else if(character.getHero() instanceof KitCarlson) {
+			// skill hero  KitCarlson
+			character.getHero().useSkill(match, userName, character, commonService, 1, null);
+			return;
 		} else {
 			List<Card> cards = commonService.getFromNewCardList(match, Constants.DEFAULT_CARD);
 			character.getCardsInHand().addAll(cards);

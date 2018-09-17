@@ -48,13 +48,15 @@ public class Dispatcher {
 			actionMap.put(RequestType.PickHero,
 					new PickHeroActionCmd(commonService, simpMessageSendingOperations, heroService));
 			actionMap.put(RequestType.GetCard, new GetCardActionCmd(commonService, simpMessageSendingOperations));
-			actionMap.put(RequestType.RemoveCard, new RemoveCardActionCmd(commonService, simpMessageSendingOperations));
+			actionMap.put(RequestType.RemoveCardEndTurn, new RemoveCardEndTurnActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.Panic, new PanicCardActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.GeneralStore,
 					new GenelralStoreActionCmd(commonService, simpMessageSendingOperations));
 
 			actionMap.put(RequestType.UseCard, new UseCardActionCmd(commonService, simpMessageSendingOperations));
+			actionMap.put(RequestType.UseSkill, new UseSkillActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.CheckCard, new CheckCardActionCmd(commonService, simpMessageSendingOperations));
+//			actionMap.put(RequestType.CheckSkill, new CheckSkillActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.EndTurn, new EndTurnActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.DrawCardJail, new JailActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.Chatting, new ChattingActionCmd(commonService, simpMessageSendingOperations));

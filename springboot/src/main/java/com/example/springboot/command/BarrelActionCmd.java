@@ -40,7 +40,7 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 			if(ResponseType.Bang.equals(turnNode.getAction()) 
 					&& turnNode.getCharacter().getHero() instanceof SlabTheKiller
 					&& !turnNode.getPlayerUsedMissed().contains(userName)) {
-				turnNode.getCharacter().getHero().useSkill(match, userName, turnNode.getCharacter(), commonService, null);
+				turnNode.getCharacter().getHero().useSkill(match, userName, turnNode.getCharacter(), commonService, 1, null);
 			} else {
 				turnNode.getNextPlayer().poll();
 			}

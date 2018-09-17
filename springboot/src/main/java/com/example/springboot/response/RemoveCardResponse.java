@@ -12,6 +12,12 @@ public class RemoveCardResponse extends CardResponse {
 		this.cards = cards;
 		this.responseType = ResponseType.RemoveCard;
 	}
+	public RemoveCardResponse(String userName, ResponseType responseType ,List<Card> cards) {
+		super();
+		this.userName = userName;
+		this.cards = cards;
+		this.responseType = responseType;
+	}
 	public RemoveCardResponse() {
 		super();
 	}

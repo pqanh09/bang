@@ -122,11 +122,11 @@ myapp.controller('FirstCtrl',
 			$scope.dialogTitle = '';
 		};
 		$scope.pickCardToRemoveFunc = function(cardId) {
-			if ($scope.dialogSelectCardActionType === 'RemoveCard') {
+			if ($scope.dialogSelectCardActionType === 'RemoveCardEndTurn') {
 				stompClient.send("/app/game.execute", {}, JSON
 						.stringify({
 							id : cardId,
-							actionType : 'RemoveCard'
+							actionType : 'RemoveCardEndTurn'
 						}));
 			} else if ($scope.dialogSelectCardActionType === 'GeneralStore') {
 				stompClient.send("/app/game.execute", {}, JSON
@@ -221,8 +221,8 @@ myapp.controller('FirstCtrl',
 				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/character', onCharacterQueueReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/character', onCharacterTopicReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/checkcard',onCheckCardQueueReceived);
-				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/removecardendturn',onRemoveCardBeforeEndTurnQueueReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/removecardendturn',onRemoveCardBeforeEndTurnTopicReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/removecard',onRemoveCardBeforeEndTurnQueueReceived);
+				stompClient.subscribe('/topic/'+ $scope.matchId +'/removecard',onRemoveCardBeforeEndTurnTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/turn',onTurnTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/usedCard',onUsedCardTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.matchId +'/cardaction',onCardActionTopicReceived);
@@ -378,7 +378,7 @@ myapp.controller('FirstCtrl',
 		}
 		function onRemoveCardBeforeEndTurnQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'RemoveCard') {
+			if (response.responseType === 'RemoveCardEndTurn') {
 				$timeout(
 						function() {
 							$scope.cards = response.cards;
@@ -397,11 +397,17 @@ myapp.controller('FirstCtrl',
 		
 		function onRemoveCardBeforeEndTurnTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'RemoveCard') {
+			if (response.responseType === 'RemoveCardEndTurn') {
 				addMessage(response.userName
 						+ ' has just removed card '
 						+ response.cards[0].name
 						+ ' before ending turn!');
+
+				$scope.$apply();
+			} else if (response.responseType === 'RemoveCard') {
+				addMessage(response.userName
+						+ ' has just removed card '
+						+ response.cards[0].name;
 
 				$scope.$apply();
 			} else {

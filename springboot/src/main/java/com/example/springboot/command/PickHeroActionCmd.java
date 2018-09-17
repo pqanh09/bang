@@ -50,7 +50,7 @@ public class PickHeroActionCmd extends AbsActionCmd implements ActionCmd {
 		//set hero in character
 		character.setHero(hero);
 		if(hero instanceof PaulRegret  || hero instanceof RoseDoolan) {
-			hero.useSkill(match, userName, character, commonService, null);
+			hero.useSkill(match, userName, character, commonService, 1, null);
 		}
 		// get cards for character;
 		List<Card> cards = new ArrayList<>();
@@ -63,7 +63,7 @@ public class PickHeroActionCmd extends AbsActionCmd implements ActionCmd {
 		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Character, userName, character));
 		if(checkOtherUserPickedHero(match)) {
 			commonService.createTurnNode(match);
-			match.getCurrentTurn().run();
+			match.getCurrentTurn().run(match);
 		}
 	}
 	private boolean checkOtherUserPickedHero(Match match) {

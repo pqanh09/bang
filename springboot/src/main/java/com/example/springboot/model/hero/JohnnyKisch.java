@@ -40,7 +40,7 @@ public class JohnnyKisch extends Hero {
 
 	@Override
 	public boolean useSkill(Match match, String userName, Character character, CommonService commonService,
-			Map<String, Object> others) {
+			int step, Map<String, Object> others) {
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		// get cards for character;
 		Card newCard = (Card) others.get("card");

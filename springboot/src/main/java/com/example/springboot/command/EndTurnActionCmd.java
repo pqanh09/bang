@@ -10,6 +10,7 @@ import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.hero.SeanMallory;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.RemoveCardResponse;
+import com.example.springboot.response.ResponseType;
 import com.example.springboot.service.CommonService;
 
 public class EndTurnActionCmd extends AbsActionCmd implements ActionCmd {
@@ -28,13 +29,13 @@ public class EndTurnActionCmd extends AbsActionCmd implements ActionCmd {
 		Character character = match.getCharacterMap().get(userName);
 		if(character.getCardsInHand().size() > character.getLifePoint()) {
 			if(character.getHero() instanceof SeanMallory) {
-				if(character.getHero().useSkill(match, userName, character, commonService, null)) {
+				if(character.getHero().useSkill(match, userName, character, commonService, 1, null)) {
 					//character.getCardsInHand().size() > 10)
-					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, character.getCardsInHand()));
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
 					return;
 				}
 			} else {
-				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, character.getCardsInHand()));
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
 				return;
 			}
 			

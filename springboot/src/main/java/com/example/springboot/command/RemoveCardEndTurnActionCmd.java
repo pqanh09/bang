@@ -13,14 +13,15 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.SeanMallory;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.RemoveCardResponse;
+import com.example.springboot.response.ResponseType;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
-public class RemoveCardActionCmd extends AbsActionCmd implements ActionCmd {
-	private static final Logger logger = LoggerFactory.getLogger(RemoveCardActionCmd.class);
+public class RemoveCardEndTurnActionCmd extends AbsActionCmd implements ActionCmd {
+	private static final Logger logger = LoggerFactory.getLogger(RemoveCardEndTurnActionCmd.class);
 	
 
-	public RemoveCardActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
+	public RemoveCardEndTurnActionCmd(CommonService commonService, SimpMessageSendingOperations simpMessageSendingOperations) {
 		super(commonService, simpMessageSendingOperations);
 	}
 
@@ -37,18 +38,18 @@ public class RemoveCardActionCmd extends AbsActionCmd implements ActionCmd {
 			cards.add(card);
 			commonService.addToOldCardList(card, match);
 		}
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, cards));
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, cards));
 		
 		//check number card is  not ok
 		if(character.getCardsInHand().size() > character.getLifePoint()) {
 			if(character.getHero() instanceof SeanMallory) {
-				if(character.getHero().useSkill(match, userName, character, commonService, null)) {
+				if(character.getHero().useSkill(match, userName, character, commonService, 1, null)) {
 					//character.getCardsInHand().size() > 10)
-					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, character.getCardsInHand()));
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
 					return;
 				}
 			} else {
-				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecardendturn", new RemoveCardResponse(userName, character.getCardsInHand()));
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
 				return;
 			}
 		}
