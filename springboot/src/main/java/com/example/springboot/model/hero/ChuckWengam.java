@@ -43,25 +43,23 @@ public class ChuckWengam extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		if(step == 1) {
-			String sessionId = match.getUserMap().get(userName);
-			TurnNode turnNode = match.getCurrentTurn();
-			if(character.getLifePoint() <= 1 || !turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail()) {
-				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(false));
-				return false;
-			}
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
-			
-			character.setLifePoint(character.getLifePoint() -1);
-
-			character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 2));
-			character.setNumCardsInHand(character.getCardsInHand().size());
-			
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
-			
-			match.getCurrentTurn().run(match);
+		String sessionId = match.getUserMap().get(userName);
+		TurnNode turnNode = match.getCurrentTurn();
+		if(character.getLifePoint() <= 1 || !turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail()) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
 		}
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		
+		character.setLifePoint(character.getLifePoint() -1);
+
+		character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 2));
+		character.setNumCardsInHand(character.getCardsInHand().size());
+		
+		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+		
+		match.getCurrentTurn().run(match);
 		return true;
 	}
 

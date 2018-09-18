@@ -26,7 +26,7 @@ public class ElenaFuente extends Hero {
 		this.name = "ElenaFuente";
 		this.skillDescription = "Description " + name;
 		this.id = "ElenaFuente";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-ElenaFuente.jpg");
 	}
 

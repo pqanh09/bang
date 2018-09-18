@@ -25,7 +25,7 @@ public class SeanMallory extends Hero {
 		this.name = "SeanMallory";
 		this.skillDescription = "Description " + name;
 		this.id = "SeanMallory";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-SeanMallory.jpg");
 	}
 

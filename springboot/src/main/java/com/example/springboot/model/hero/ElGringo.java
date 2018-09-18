@@ -1,6 +1,5 @@
 package com.example.springboot.model.hero;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -9,10 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
-import com.example.springboot.model.card.BangCard;
 import com.example.springboot.model.card.Card;
-import com.example.springboot.model.card.MissedCard;
-import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.service.CommonService;
@@ -31,7 +27,7 @@ public class ElGringo extends Hero {
 		this.name = "ElGringo";
 		this.skillDescription = "Description " + name;
 		this.id = "ElGringo";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-ElGringo.jpg");
 	}
 

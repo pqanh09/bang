@@ -76,6 +76,7 @@ public class CardService {
 		//BarrelCard
 		cards.add(new BarrelCard(Suit.hearts, 12, "12C-Barrel.jpg"));
 		cards.add(new BarrelCard(Suit.spades, 13, "13B-Barrel.jpg"));
+		//
 		//BeerCard
 		cards.add(new BeerCard(Suit.hearts, 6, "6C-Beer.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 7, "7C-Beer.jpg"));

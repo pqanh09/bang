@@ -30,7 +30,7 @@ public class ClausTheSaint extends Hero {
 		this.name = "ClausTheSaint";
 		this.skillDescription = "Description " + name;
 		this.id = "ClausTheSaint";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-ClausTheSaint.jpg");
 	}
 

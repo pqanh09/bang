@@ -44,25 +44,28 @@ public class PedroRamirez extends Hero {
 	@Override
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
 		String userName = character.getUserName();
-		if(step == 1) {
-			String sessionId = match.getUserMap().get(userName);
-			Card card = match.getOldCards().pollLast();
-			if(card == null) {
-				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(false));
-				return false;
-			}
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
-			
-			character.getCardsInHand().add(card);
-			character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 1));
-			character.setNumCardsInHand(character.getCardsInHand().size());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, match.getUserMap().get(userName));
-			
-			match.getCurrentTurn().setAlreadyGetCard(true);
-			
-			match.getCurrentTurn().run(match);
+		String sessionId = match.getUserMap().get(userName);
+		if(match.getCurrentTurn().isAlreadyGetCard()) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
 		}
+		Card card = match.getOldCards().pollLast();
+		if(card == null) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
+		}
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		
+		character.getCardsInHand().add(card);
+		character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 1));
+		character.setNumCardsInHand(character.getCardsInHand().size());
+		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, match.getUserMap().get(userName));
+		
+		match.getCurrentTurn().setAlreadyGetCard(true);
+		
+		match.getCurrentTurn().run(match);
 		return true;
 	}
 

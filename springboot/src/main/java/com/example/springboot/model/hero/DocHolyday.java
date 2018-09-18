@@ -57,7 +57,7 @@ public class DocHolyday extends Hero {
 					|| !turnNode.isAlreadyGetCard()
 					|| turnNode.isDocHolyday()) {
 				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(false));
+						new SkillResponse(userName, false));
 				return false;
 			}
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));

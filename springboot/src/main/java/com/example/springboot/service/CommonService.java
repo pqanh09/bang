@@ -180,8 +180,11 @@ public class CommonService {
 	}
 	
 	public void disconnecPlayer(Match match, String playerName) {
-		match.getPlayerTurnQueue().remove(playerName);
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Leave, playerName));
+		playerDead(playerName, false, match);
+//		match.getPlayerTurnQueue().remove(playerName);
+//		Character playerCharacter = match.getCharacterMap().get(playerName);
+//		playerCharacter.setRoleImage(playerCharacter.getRole().getImage());
 		
 	}
 	public void addToOldCardList(Card card, Match match) {

@@ -156,7 +156,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			// check range to use
 			else {
 				List<String> userCanBeAffectList = commonService.checkRangeToUseCard(match, character,character.getGun());
-				List<String> apacheKids = new ArrayList<>();
+				//List<String> apacheKids = new ArrayList<>();
 				// skill hero ApacheKid
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",

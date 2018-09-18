@@ -28,7 +28,7 @@ public class PaulRegret extends Hero {
 		this.name = "PaulRegret";
 		this.skillDescription = "Description " + name;
 		this.id = "PaulRegret";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-PaulRegret.jpg");
 	}
 

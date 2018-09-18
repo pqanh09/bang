@@ -4,33 +4,47 @@ myapp.controller('FirstCtrl',
 	function($scope, $timeout) {
 		var socket = null;
 		var stompClient = null;
-		var characters = {};
 		var dialogInputUserName = angular.element('#dialogInputUserName');
 		var dialogSelectUser = angular.element('#dialogSelectUser');
 		var dialogSelectHero = angular.element('#dialogSelectHero');
 		var dialogSelectCard = angular.element('#dialogSelectCard');
 		var dialogSelectCardPC = angular.element('#dialogSelectCardPC');
 		var dialogFullImage = angular.element('#dialogFullImage');
+		var heroUserSelectionDialog = angular.element('#heroUserSelectionDialog');
+		var heroCardSelectionDialog = angular.element('#heroCardSelectionDialog');
 		
 		$scope.hallPage = true;
 		$scope.gamePage = false;
 		$scope.userName = '';
 		$scope.host = false;
 		$scope.matches = null;
-		$scope.matchId = null;
-		
+		$scope.myInfo = {
+			matchId: null,
+			hero: null,
+			role: null
+		};
+		$scope.skillInfo = {
+			enableCancelBtn: true,
+			titleBtnCard: '',
+			titleDialog: '',
+			step: 1,
+			players: [],
+			selectedPlayer: '',
+			cards: [],
+			selectedCard: [],
+			numberCard: 0,
+			selectedCardMap: {}
+		}
 		$scope.dialogSelectCardTitle = '';
 		$scope.dialogSelectCardActionType = '';
 		$scope.dialogSelectCardActionStr = '';
 		$scope.userCanBeAffectList = [];
 		$scope.selectedUser = '';
 		$scope.selectedCard = '';
-		$scope.selectedHero = null;
 		$scope.oldCard = null;
 		$scope.cardsInFront = [];
 		$scope.cardsInHand = [];
 		$scope.characters = [];
-		$scope.role = null;
 		$scope.image = '';
 		$scope.heros = [];
 		$scope.cards = [];
@@ -86,7 +100,11 @@ myapp.controller('FirstCtrl',
 			// $scope.playerDrawingCard = '';
 		};
 		$scope.useHeroSkillFunc = function() {
-
+			stompClient.send("/app/game.execute", {}, JSON
+					.stringify({
+						actionType : 'UseSkill',
+						step: 1
+					}));
 		};
 		$scope.endTurnFunc = function() {
 			stompClient.send("/app/game.execute", {}, JSON
@@ -101,6 +119,33 @@ myapp.controller('FirstCtrl',
 						actionType : 'UseCard',
 						targetUser : $scope.selectedUser
 					}));
+		};
+		$scope.okHeroUserSelectionDialogFunc = function() {
+			console.log($scope.skillInfo.selectedPlayer);
+//			stompClient.send("/app/game.execute", {}, JSON
+//					.stringify({
+//						id : $scope.selectedCard,
+//						actionType : 'UseCard',
+//						targetUser : $scope.selectedUser
+//					}));
+		};
+		$scope.pickHeroCardSelectionDialogFunc = function(cardId) {
+			console.log($scope.skillInfo.selectedPlayer);
+//			stompClient.send("/app/game.execute", {}, JSON
+//					.stringify({
+//						id : $scope.selectedCard,
+//						actionType : 'UseCard',
+//						targetUser : $scope.selectedUser
+//					}));
+		};
+		$scope.okHeroCardSelectionDialogFunc = function() {
+			console.log($scope.skillInfo.selectedPlayer);
+//			stompClient.send("/app/game.execute", {}, JSON
+//					.stringify({
+//						id : $scope.selectedCard,
+//						actionType : 'UseCard',
+//						targetUser : $scope.selectedUser
+//					}));
 		};
 		$scope.lostLifePointFunc = function() {
 			stompClient.send("/app/game.execute", {}, JSON
@@ -210,27 +255,27 @@ myapp.controller('FirstCtrl',
 			if (response.responseType === 'Get') {
 				$scope.matches = response.matches;
 			} else if (response.responseType === 'Join' || response.responseType === 'Create') {
-				$scope.matchId = response.matchId;
+				$scope.myInfo.matchId = response.matchId;
 				$scope.gamePage = true;
 				$scope.hallPage = false;
 				$scope.host = response.host;
 				//subscribe
-				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/role', onRoleReceived);
-				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/hero', onHeroReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/server', onServerReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/skill', onSkillTopicReceived);
-				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/character', onCharacterQueueReceived);
-				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/skill', onSkillQueueReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/character', onCharacterTopicReceived);
-				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/checkcard',onCheckCardQueueReceived);
-				stompClient.subscribe('/user/queue/'+ $scope.matchId +'/removecard',onRemoveCardBeforeEndTurnQueueReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/removecard',onRemoveCardBeforeEndTurnTopicReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/turn',onTurnTopicReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/usedCard',onUsedCardTopicReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/cardaction',onCardActionTopicReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/oldcard',onOldCardTopicReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/action',onActionTopicReceived);
-				stompClient.subscribe('/topic/'+ $scope.matchId +'/chatting',onChattingTopicReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/role', onRoleReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/hero', onHeroReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/server', onServerReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/skill', onSkillTopicReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/character', onCharacterQueueReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/skill', onSkillQueueReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/character', onCharacterTopicReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/checkcard',onCheckCardQueueReceived);
+				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/removecard',onRemoveCardBeforeEndTurnQueueReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/removecard',onRemoveCardBeforeEndTurnTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/turn',onTurnTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/usedCard',onUsedCardTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/cardaction',onCardActionTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/oldcard',onOldCardTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/action',onActionTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/chatting',onChattingTopicReceived);
 				
 			} else {
 				console.log('ERROR');
@@ -256,7 +301,7 @@ myapp.controller('FirstCtrl',
 		function onRoleReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Role') {
-				$scope.role = response.role;
+				$scope.myInfo.role = response.role;
 				$scope.$apply();
 			} else {
 				console.log('ERROR');
@@ -271,7 +316,7 @@ myapp.controller('FirstCtrl',
 				$timeout(function() {
 					$scope.heros = response.heros;
 					$scope.dialogTitle = 'Your role is '
-							+ $scope.role.name
+							+ $scope.myInfo.role.name
 							+ '. Please select hero...';
 					dialogSelectHero.modal({backdrop:'static',keyboard:true,show:true});
 				}, 200);
@@ -285,7 +330,8 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if ($scope.userName === response.character.userName) {
 				$scope.cardsInHand = response.character.cardsInHand;
-				$scope.cardsInFront = response.character.cardsInFront;$scope.selectedHero = response.character.hero;
+				$scope.cardsInFront = response.character.cardsInFront;
+				$scope.myInfo.hero = response.character.hero;
 				$scope.$apply();
 			} else {
 				console.log('Error');
@@ -303,7 +349,6 @@ myapp.controller('FirstCtrl',
 				$scope.characters.forEach(function(character) {
 					if (character.userName === userName) {
 						character.hero = response.character.hero;
-						$scope.selectedHero = response.character.hero;
 						character.cardsInFront = response.character.cardsInFront;
 						character.numCardsInHand = response.character.numCardsInHand;
 						character.gun = response.character.gun;
@@ -628,6 +673,12 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Skill') {
 				addMessage(JSON.stringify(response));
+				if($scope.userName = response.UserName && response.hero && response.status){
+					
+				} else {
+					console.log('Cant not use skill');
+					console.log(JSON.stringify(response));
+				}
 			}  else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));

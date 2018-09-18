@@ -66,9 +66,10 @@ public class SkillResponse extends Response {
 		this.card = card;
 		this.hero = hero;
 	}
-	public SkillResponse(boolean status) {
+	public SkillResponse(String userName, boolean status) {
 		super();
 		this.status = status;
+		this.responseType = ResponseType.Skill;
 	}
 
 }

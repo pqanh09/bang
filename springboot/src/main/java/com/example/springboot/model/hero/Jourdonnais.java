@@ -53,7 +53,8 @@ public class Jourdonnais extends Hero {
 		if(Suit.hearts.equals(card.getSuit())) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skillresult", new UserResponse(ResponseType.Skill, userName, "Success"));
 			if(match.getCurrentTurn().getCharacter().getHero() instanceof SlabTheKiller) {
-				match.getCurrentTurn().getPlayerUsedMissed().add(userName);
+				turnNode.getCharacter().getHero().useSkill(match, character, commonService, 1, null);
+//				match.getCurrentTurn().getPlayerUsedMissed().add(userName);//TODO excuxe by hero
 			} else {
 				turnNode.getNextPlayer().poll();
 			}

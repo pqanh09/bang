@@ -27,7 +27,7 @@ public class PixiePete extends Hero {
 		this.name = "PixiePete";
 		this.skillDescription = "Description " + name;
 		this.id = "PixiePete";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-PixiePete.jpg");
 	}
 

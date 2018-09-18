@@ -30,7 +30,7 @@ public class VeraCuster extends Hero {
 		this.name = "VeraCuster";
 		this.skillDescription = "Description " + name;
 		this.id = "VeraCuster";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-VeraCuster.jpg");
 	}
 
@@ -55,6 +55,7 @@ public class VeraCuster extends Hero {
 			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
 			character.setHero(targetCharacter.getHero());
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), targetPlayer, null));
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 		}
 		return true;
 	}

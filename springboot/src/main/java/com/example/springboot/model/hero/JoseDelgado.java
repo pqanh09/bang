@@ -83,7 +83,7 @@ public class JoseDelgado extends Hero {
 			if (turnNode.getJoseDelgado() >= 2 || !turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail()
 					|| !turnNode.isAlreadyGetCard() || cards.isEmpty()) {
 				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(false));
+						new SkillResponse(userName, false));
 				return false;
 			}
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));

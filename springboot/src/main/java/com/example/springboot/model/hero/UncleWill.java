@@ -57,7 +57,7 @@ public class UncleWill extends Hero {
 					|| !turnNode.isAlreadyGetCard()
 					|| turnNode.isUncleWill()) {
 				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(false));
+						new SkillResponse(userName, false));
 				return false;
 			}
 			List<Card> cards = new ArrayList<>();
@@ -65,7 +65,7 @@ public class UncleWill extends Hero {
 			cards.addAll(character.getCardsInHand());
 			if(cards.isEmpty()) {
 				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(false));
+						new SkillResponse(userName, false));
 				return false;
 			}
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));

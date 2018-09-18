@@ -39,7 +39,7 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 		TurnNode turnNode = match.getCurrentTurn();
 		Character character = turnNode.getCharacter();
 		if(!character.getUserName().equals(userName)) {
-			returnFalse(sessionId, match);
+			returnFalse(userName, sessionId, match);
 			return;
 		}
 		Hero hero = character.getHero();
@@ -47,7 +47,7 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 			if(request.getStep() == 2) {
 				hero.useSkill(match, character, commonService, 2, request.getOthers());
 			} else {
-				returnFalse(sessionId, match);
+				returnFalse(userName, sessionId, match);
 			}
 		}  else if (hero instanceof JesseJones || hero instanceof PatBrennan || hero instanceof SidKetchum || hero instanceof UncleWill || hero instanceof JoseDelgado || hero instanceof VeraCuster) {
 			if(request.getStep() == 1) {
@@ -55,19 +55,19 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 			} else if(request.getStep() == 2) {
 				hero.useSkill(match, character, commonService, 2, request.getOthers());
 			} else {
-				returnFalse(sessionId, match);
+				returnFalse(userName, sessionId, match);
 			}
 		} else if (hero instanceof PedroRamirez) {
 			if(request.getStep() == 1) {
 				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else {
-				returnFalse(sessionId, match);
+				returnFalse(userName, sessionId, match);
 			}
 		} else if (hero instanceof ChuckWengam) {
 			if(request.getStep() == 1) {
 				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else {
-				returnFalse(sessionId, match);
+				returnFalse(userName, sessionId, match);
 			}
 		} else if (hero instanceof DocHolyday) {
 			if(request.getStep() == 1) {
@@ -77,18 +77,19 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 			} else if(request.getStep() == 3) {
 				hero.useSkill(match, character, commonService, 3, request.getOthers());
 			} else {
-				returnFalse(sessionId, match);
+				returnFalse(userName, sessionId, match);
 			}
 		} else if (hero instanceof VeraCuster) {
-
+			logger.error("VeraCuster Error.............");
+			returnFalse(userName, sessionId, match);
 		} 
 		else {
-			returnFalse(sessionId, match);
+			returnFalse(userName, sessionId, match);
 		}
 	}
-	private void returnFalse(String sessionId, Match match) {
+	private void returnFalse(String userName, String sessionId, Match match) {
 		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-				new SkillResponse(false));
+				new SkillResponse(userName, false));
 	}
 
 	

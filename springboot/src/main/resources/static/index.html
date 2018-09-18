@@ -174,7 +174,7 @@
 								<button type="button" class="btn btn-info"
 									ng-show="userName === playerGettingCard && userName === characterTurn"
 									ng-click="getCardFunc()">Get Card</button>
-								<button type="button" class="btn btn-info" ng-show="!selectedHero.autoUseSkill"
+								<button type="button" class="btn btn-info" ng-show="!myInfo.hero.autoUseSkill"
 									ng-click="useHeroSkillFunc()">Use Hero'skill</button>
 								<button type="button" class="btn btn-info"
 									ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"
@@ -326,6 +326,7 @@
 					</div>
 				</div>
 			</div>
+			<!-- for panic and catpalou cards -->
 			<div id="dialogSelectCardPC" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 					<!-- Modal content-->
@@ -356,6 +357,59 @@
 
 								</div>
 							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="heroCardSelectionDialog" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content" style="width: max-content;">
+						<div class="modal-header">
+							<h4 class="modal-title">{{skillInfo.titleDialog}}</h4>
+							<button type="button" class="close" data-dismiss="modal"
+								ng-show="skillInfo.enableCancelBtn">&times;</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="col-12" style="display: -webkit-box;">
+										<div ng-repeat="card in skillInfo.cards" class="item-hero-card">
+											<div class="item-hero-image-dialog">
+												<img ng-src="{{card.image}}" alt="{{card.name}}"
+													class="img-thumbnail item-dialog-image">
+											</div>
+											<button type="button" data-dismiss="modal"
+												ng-click="pickHeroCardSelectionDialogFunc(card.id)"
+												class="btn btn-primary">{{skillInfo.titleBtnCard}}</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								data-dismiss="modal" ng-click="okHeroCardSelectionDialogFunc()">OK</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="heroUserSelectionDialog" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+
+					<!-- Modal content-->
+					<div class="modal-content" style="width: max-content;">
+						<div class="modal-header">
+							<h4 class="modal-title">Select player:</h4>
+						</div>
+						<div class="modal-body">
+							<select ng-model="skillInfo.selectedPlayer"
+								ng-options="user for user in skillInfo.players"></select>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								data-dismiss="modal" ng-click="okHeroUserSelectionDialogFunc()">OK</button>
 						</div>
 					</div>
 				</div>

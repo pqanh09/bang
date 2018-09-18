@@ -94,6 +94,9 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 			if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Bang.equals(turnNode.getAction())) {
 				turnNode.setAction(ResponseType.Unknown);
+				turnNode.getPlayerSkillBarrel().clear();
+				turnNode.getPlayerUsedBarrel().clear();
+				turnNode.getPlayerUsedMissed().clear();
 			} else {
 				// TODO
 			}
@@ -119,7 +122,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
 						BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
 						if(ResponseType.Bang.equals(turnNode.getAction()) && turnNode.getCharacter().getHero() instanceof SlabTheKiller && !turnNode.getPlayerUsedMissed().contains(userName)) {
-							turnNode.getCharacter().getHero().useSkill(match, turnNode.getCharacter(), commonService, 1, null);
+							turnNode.getCharacter().getHero().useSkill(match, character, commonService, 1, null);
 							if (turnNode.getNextPlayer().peek() == null) {
 								// request player in turn continue using card
 								turnNode.requestPlayerUseCard();
@@ -127,6 +130,10 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 								turnNode.requestOtherPlayerUseCard(match);
 							}
 							return;
+						} else {
+							turnNode.getPlayerUsedMissed().clear();
+							turnNode.getPlayerUsedBarrel().clear();
+							turnNode.getPlayerSkillBarrel().clear();
 						}
 					} else {
 						logger.error("%%%%%%%%%%%%%%%%%%%%%%%Bang Gatling Error");

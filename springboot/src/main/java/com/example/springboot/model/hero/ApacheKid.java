@@ -23,7 +23,7 @@ public class ApacheKid extends Hero {
 		this.name = "ApacheKid";
 		this.skillDescription = "Description " + name;
 		this.id = "ApacheKid";
-		this.lifePoint = 4;
+		this.lifePoint = 3;
 		this.setImage("Hero-ApacheKid.jpg");
 	}
 
