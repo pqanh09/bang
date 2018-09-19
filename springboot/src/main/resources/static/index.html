@@ -174,7 +174,7 @@
 								<button type="button" class="btn btn-info"
 									ng-show="userName === playerGettingCard && userName === characterTurn"
 									ng-click="getCardFunc()">Get Card</button>
-								<button type="button" class="btn btn-info" ng-show="!myInfo.hero.autoUseSkill"
+								<button type="button" class="btn btn-info" ng-show="!myInfo.hero.autoUseSkill && !(userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello'))"
 									ng-click="useHeroSkillFunc()">Use Hero'skill</button>
 								<button type="button" class="btn btn-info"
 									ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"
@@ -309,7 +309,7 @@
 							<div class="container">
 								<div class="row">
 									<div class="col-12"
-										style="display: flex; justify-content: center; width: max-content;">
+										style="display: flex; justify-content: center; width: max-content;flex-wrap: wrap;">
 										<div ng-repeat="card in cards" class="item-hero-card">
 											<div class="item-card-hand-image-div">
 												<img ng-src="{{card.image}}" alt="{{card.name}}"
@@ -373,16 +373,19 @@
 						<div class="modal-body">
 							<div class="container">
 								<div class="row">
-									<div class="col-12" style="display: -webkit-box;">
-										<div ng-repeat="card in skillInfo.cards" class="item-hero-card">
-											<div class="item-hero-image-dialog">
-												<img ng-src="{{card.image}}" alt="{{card.name}}"
-													class="img-thumbnail item-dialog-image">
+									<div class="col-12" style="display: flex; justify-content: center; width: max-content;flex-wrap: wrap;">
+										<div ng-repeat="card in skillInfo.cards">
+											<div ng-show="!card.selected" class="item-hero-card">
+												<div class="item-hero-image-dialog">
+													<img ng-src="{{card.image}}" alt="{{card.name}}"
+														class="img-thumbnail item-dialog-image">
+												</div>
+												<button type="button" 
+													ng-click="pickHeroCardSelectionDialogFunc(card.id)"
+													class="btn btn-primary">{{skillInfo.titleBtnCard}}</button>
 											</div>
-											<button type="button" data-dismiss="modal"
-												ng-click="pickHeroCardSelectionDialogFunc(card.id)"
-												class="btn btn-primary">{{skillInfo.titleBtnCard}}</button>
 										</div>
+										
 									</div>
 
 								</div>
@@ -390,7 +393,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
-								data-dismiss="modal" ng-click="okHeroCardSelectionDialogFunc()">OK</button>
+								data-dismiss="modal" ng-show="skillInfo.enableOkBtn" ng-click="okHeroCardSelectionDialogFunc()">OK</button>
 						</div>
 					</div>
 				</div>

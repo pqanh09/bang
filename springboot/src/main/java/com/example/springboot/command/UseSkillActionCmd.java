@@ -49,7 +49,7 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 			} else {
 				returnFalse(userName, sessionId, match);
 			}
-		}  else if (hero instanceof JesseJones || hero instanceof PatBrennan || hero instanceof SidKetchum || hero instanceof UncleWill || hero instanceof JoseDelgado || hero instanceof VeraCuster) {
+		}  else if (hero instanceof JesseJones || hero instanceof SidKetchum || hero instanceof UncleWill || hero instanceof JoseDelgado || hero instanceof VeraCuster) {
 			if(request.getStep() == 1) {
 				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else if(request.getStep() == 2) {
@@ -69,7 +69,7 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 			} else {
 				returnFalse(userName, sessionId, match);
 			}
-		} else if (hero instanceof DocHolyday) {
+		} else if (hero instanceof DocHolyday || hero instanceof PatBrennan) {
 			if(request.getStep() == 1) {
 				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else if(request.getStep() == 2) {

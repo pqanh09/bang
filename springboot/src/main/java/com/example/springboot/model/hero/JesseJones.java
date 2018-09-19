@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
+import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
@@ -43,13 +44,19 @@ public class JesseJones extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
+		TurnNode turnNode = match.getCurrentTurn();
+		if(!turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail() || turnNode.isAlreadyGetCard()) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
+		}
 		if(step == 1) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, otherPlayers , null, character.getHero()));
+					new SkillResponse(userName, true, 2 , otherPlayers, null, character.getHero(), null));
 		} else {
-			String targetPlayer =  (String) others.get(userName);
+			String targetPlayer =  (String) others.get("targetUser");
 			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
 			int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
 			Card card = commonService.getCardInHand(targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId());
@@ -59,9 +66,9 @@ public class JesseJones extends Hero {
 			character.setNumCardsInHand(character.getCardsInHand().size());
 			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 			
-			match.getCurrentTurn().setAlreadyGetCard(true);
+			turnNode.setAlreadyGetCard(true);
 			
-			match.getCurrentTurn().run(match);
+			turnNode.run(match);
 		}
 		return true;
 	}

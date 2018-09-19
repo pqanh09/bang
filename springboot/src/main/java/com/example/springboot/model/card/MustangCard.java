@@ -13,6 +13,7 @@ public class MustangCard extends Card{
 		this.description = "";
 		this.name = "MUSTANG";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

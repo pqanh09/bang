@@ -48,40 +48,48 @@ public class SidKetchum extends Hero {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
+		if(character.getLifePoint() == character.getCapacityLPoint() || !turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail() || !turnNode.isAlreadyGetCard()) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
+		}
 		if(step == 1) {
 			List<Card> cards = new ArrayList<>();
 			cards.addAll(character.getCardsInFront());
 			cards.addAll(character.getCardsInHand());
-			if(cards.size() < 2 || character.getLifePoint() < character.getCapacityLPoint() || !turnNode.isAlreadyCheckedDynamite() 
-					|| !turnNode.isAlreadyCheckedJail() 
-					|| !turnNode.isAlreadyGetCard()) {
+			if(cards.size() < 2) {
 				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 						new SkillResponse(userName, false));
 				return false;
 			}
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, null , cards, character.getHero()));
+					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 		} else {
-			for (String cardId : others.keySet()) {
+			List<String> cardIds =  (List<String>) others.get("cards");
+			List<Card> cards = new ArrayList<>();
+			for (String cardId : cardIds) {
 				Card  card = BangUtils.findCardInFront(character, cardId);
 				if(card == null)  {
 					card = BangUtils.findCardInHand(character, cardId);
 				}
 				if(card == null) {
 					logger.error("Error when perform SidKetchum's skill");
-					return false;
+					continue;
 				}
-				List<Card> cards = new ArrayList<>();
 				cards.add(card);
-				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, cards));
+				//commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, cards));
 			}
-			if(others.keySet().size() > 2) {
-				character.setLifePoint(character.getLifePoint() + 1);
-			} else {
-				logger.error("Error when perform SidKetchum's skill: size  < 2");
+			if(cards.size() < 2) {
+				logger.error("Error when perform SidKetchum's skill < 2");
 				return false;
 			}
+			for (Card card : cards) {
+				character.getCardsInFront().remove(card);
+				character.getCardsInHand().remove(card);
+			}
+			character.setLifePoint(character.getLifePoint() + 1);
+			character.setNumCardsInHand(character.getCardsInHand().size());
 			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 		}
 		return true;

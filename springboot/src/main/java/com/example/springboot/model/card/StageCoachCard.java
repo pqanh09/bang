@@ -15,6 +15,7 @@ public class StageCoachCard extends Card{
 		this.description = "";
 		this.name = "STAGE COACH";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

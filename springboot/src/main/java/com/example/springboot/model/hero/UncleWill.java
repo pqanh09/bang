@@ -70,7 +70,7 @@ public class UncleWill extends Hero {
 			}
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, null , cards, character.getHero()));
+					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 		} else {
 			turnNode.setUncleWill(true);
 			Entry<String, Object> entry =  others.entrySet().iterator().next();

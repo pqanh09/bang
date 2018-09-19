@@ -25,15 +25,17 @@ myapp.controller('FirstCtrl',
 		};
 		$scope.skillInfo = {
 			enableCancelBtn: true,
+			enableOkBtn: true,
 			titleBtnCard: '',
 			titleDialog: '',
 			step: 1,
 			players: [],
 			selectedPlayer: '',
 			cards: [],
-			selectedCard: [],
+			selectedCards: [],
 			numberCard: 0,
-			selectedCardMap: {}
+			selectedCardMap: {},
+			targetUser: ''
 		}
 		$scope.dialogSelectCardTitle = '';
 		$scope.dialogSelectCardActionType = '';
@@ -121,22 +123,52 @@ myapp.controller('FirstCtrl',
 					}));
 		};
 		$scope.okHeroUserSelectionDialogFunc = function() {
-			console.log($scope.skillInfo.selectedPlayer);
-//			stompClient.send("/app/game.execute", {}, JSON
-//					.stringify({
-//						id : $scope.selectedCard,
-//						actionType : 'UseCard',
-//						targetUser : $scope.selectedUser
-//					}));
+			stompClient.send("/app/game.execute", {}, JSON
+			.stringify({
+				actionType : 'UseSkill',
+				step:  $scope.skillInfo.step,
+				others: {
+					targetUser: $scope.skillInfo.selectedPlayer
+				}
+			}));
 		};
 		$scope.pickHeroCardSelectionDialogFunc = function(cardId) {
-			console.log($scope.skillInfo.selectedPlayer);
-//			stompClient.send("/app/game.execute", {}, JSON
-//					.stringify({
-//						id : $scope.selectedCard,
-//						actionType : 'UseCard',
-//						targetUser : $scope.selectedUser
-//					}));
+			if($scope.myInfo.hero.name === "PatBrennan" || $scope.myInfo.hero.name === "KitCarlson" || $scope.myInfo.hero.name === 'LuckyDuke'){
+				$scope.skillInfo.selectedCards.push(cardId);
+				heroCardSelectionDialog.modal('hide');
+				stompClient.send("/app/game.execute", {}, JSON
+						.stringify({
+							actionType : 'UseSkill',
+							step:  $scope.skillInfo.step,
+							others: {
+								targetUser: $scope.skillInfo.selectedPlayer,
+								cards: $scope.skillInfo.selectedCards
+							}
+						}));
+			} else if($scope.myInfo.hero.name === "SidKetchum"){ 
+				angular.forEach($scope.skillInfo.cards, function(card){
+					if(card.id === cardId){
+						$scope.skillInfo.selectedCards.push(cardId);
+						card.selected = true;
+					}
+			    });
+				if($scope.skillInfo.selectedCards.length >= $scope.skillInfo.numberCard){
+					heroCardSelectionDialog.modal('hide');
+					stompClient.send("/app/game.execute", {}, JSON
+						.stringify({
+							actionType : 'UseSkill',
+							step:  $scope.skillInfo.step,
+							others: {
+								targetUser: $scope.skillInfo.selectedPlayer,
+								cards: $scope.skillInfo.selectedCards
+							}
+					}));
+				}
+				
+			} else {
+				console.log('Not yet handled.');
+			}
+			
 		};
 		$scope.okHeroCardSelectionDialogFunc = function() {
 			console.log($scope.skillInfo.selectedPlayer);
@@ -236,7 +268,8 @@ myapp.controller('FirstCtrl',
 		function onConnected() {
 			// ok
 			stompClient.subscribe('/user/queue/user', onUserReceived);
-			stompClient.subscribe('/user/queue/game', onGameReceived);
+			stompClient.subscribe('/user/queue/game', onGameQueueReceived);
+			stompClient.subscribe('/topic/game', onGameTopicReceived);
 			
 			$scope.userName = $scope.userName.replace(/ /g,'');
 			// Tell your username to the server
@@ -249,8 +282,13 @@ myapp.controller('FirstCtrl',
 		
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		
-		
-		function onGameReceived(payload) {
+		function onGameTopicReceived(payload) {
+			var response = JSON.parse(payload.body);
+			if (response.responseType === 'Create') {
+				stompClient.send("/app/game.get", {});
+			}
+		}
+		function onGameQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Get') {
 				$scope.matches = response.matches;
@@ -672,12 +710,82 @@ myapp.controller('FirstCtrl',
 		function onSkillQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Skill') {
-				addMessage(JSON.stringify(response));
-				if($scope.userName = response.UserName && response.hero && response.status){
-					
+				//addMessage(JSON.stringify(response));
+				if(response.status && $scope.userName === response.userName && response.hero && $scope.myInfo.hero.name === response.hero.name){
+					if(response.hero.name === 'JesseJones'){
+						$scope.skillInfo.step = response.step;
+						$scope.skillInfo.players = response.players;
+						$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
+						$timeout(function() {
+							heroUserSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+						}, 500);
+						
+					} else if(response.hero.name === 'PatBrennan'){
+						$scope.skillInfo.step = response.step;
+						if($scope.skillInfo.step === 2 && response.players){
+							$scope.skillInfo.players = response.players;
+							$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
+							$timeout(function() {
+								heroUserSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							}, 500);
+						}
+						if($scope.skillInfo.step === 3 && response.targetUser){
+							$scope.skillInfo.targetUser = response.targetUser;
+							$scope.skillInfo.cards = response.cards;
+							$scope.skillInfo.titleBtnCard = 'Get';
+							$scope.skillInfo.enableOkBtn = false;
+							$scope.skillInfo.enableCancelBtn = false;
+							$scope.skillInfo.selectedCards.length = 0;
+							$scope.skillInfo.titleDialog = 'Select card instead of getting card in your turn.'
+							$timeout(function() {
+								heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							}, 500);
+						}
+						
+					} else if(response.hero.name === 'KitCarlson'){
+						$scope.skillInfo.step = response.step;
+						$scope.skillInfo.cards = response.cards;
+						$scope.skillInfo.titleBtnCard = 'Remove';
+						$scope.skillInfo.enableOkBtn = false;
+						$scope.skillInfo.enableCancelBtn = false;
+						$scope.skillInfo.selectedCards.length = 0;
+						$scope.skillInfo.titleDialog = 'Choose 2 in 3. Remove 1 card..'
+						$timeout(function() {
+							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+						}, 500);
+					} else if(response.hero.name === 'LuckyDuke'){
+						$scope.skillInfo.step = response.step;
+						$scope.skillInfo.cards = response.cards;
+						$scope.skillInfo.titleBtnCard = 'Select';
+						$scope.skillInfo.enableOkBtn = false;
+						$scope.skillInfo.enableCancelBtn = false;
+						$scope.skillInfo.selectedCards.length = 0;
+						$scope.skillInfo.titleDialog = 'Select card which is use to draw'
+						$timeout(function() {
+							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+						}, 500);
+					} else if(response.hero.name === 'SidKetchum'){
+						$scope.skillInfo.step = response.step;
+						$scope.skillInfo.cards = response.cards;
+						angular.forEach($scope.skillInfo.cards, function(card){
+							card.selected = false;
+					    });
+						$scope.skillInfo.titleBtnCard = 'Remove';
+						$scope.skillInfo.enableOkBtn = false;
+						$scope.skillInfo.enableCancelBtn = false;
+						$scope.skillInfo.selectedCards.length = 0;
+						$scope.skillInfo.numberCard = 2;
+						$scope.skillInfo.titleDialog = 'Remove 2 card to get 1 life point'
+						$timeout(function() {
+							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+						}, 500);
+					} else {
+						//
+						console.log('Unknown hero');
+						console.log(JSON.stringify(response));
+					}
 				} else {
 					console.log('Cant not use skill');
-					console.log(JSON.stringify(response));
 				}
 			}  else {
 				console.log('ERROR');
@@ -688,7 +796,11 @@ myapp.controller('FirstCtrl',
 		function onSkillTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Skill') {
-				addMessage(JSON.stringify(response));
+				var msg = response.userName + ' use skill of ' + response.hero.name;
+				if(response.targetUser){
+					msg = msg + ' to ' + response.targetUser;
+				}
+				addMessage(msg);
 			}  else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));

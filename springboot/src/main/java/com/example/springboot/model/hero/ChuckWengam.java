@@ -45,7 +45,7 @@ public class ChuckWengam extends Hero {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
-		if(character.getLifePoint() <= 1 || !turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail()) {
+		if(character.getLifePoint() <= 1 || !turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail() || !turnNode.isAlreadyGetCard()) {
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, false));
 			return false;

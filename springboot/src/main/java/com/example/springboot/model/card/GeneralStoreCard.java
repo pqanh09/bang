@@ -15,6 +15,7 @@ public class GeneralStoreCard extends Card{
 		this.description = "";
 		this.name = "GENERAL STORE";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

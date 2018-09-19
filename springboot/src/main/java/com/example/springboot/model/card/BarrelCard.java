@@ -15,6 +15,7 @@ public class BarrelCard extends Card{
 		this.description = "";
 		this.name = "BARREL";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

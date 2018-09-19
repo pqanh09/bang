@@ -62,7 +62,7 @@ public class DocHolyday extends Hero {
 			}
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, null , cards, character.getHero()));
+					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 		} if(step == 2) {
 			for (String cardId : others.keySet()) {
 				Card  card = BangUtils.findCardInFront(character, cardId);
@@ -81,7 +81,7 @@ public class DocHolyday extends Hero {
 				BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 				List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
 				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(true, 3, otherPlayers , null, character.getHero()));
+						new SkillResponse(userName, true, 3 , otherPlayers, null, character.getHero(), null));
 			} else {
 				logger.error("Error when perform DocHolyday's skill: size  < 2");
 				return false;

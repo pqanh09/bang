@@ -15,6 +15,7 @@ public class IndiansCard extends Card{
 		this.description = "All other players discard a BANG! or lose 1 life point.";
 		this.name = "INDIANS";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

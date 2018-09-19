@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
+import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.BangCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.MissedCard;
@@ -45,7 +46,8 @@ public class PedroRamirez extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
-		if(match.getCurrentTurn().isAlreadyGetCard()) {
+		TurnNode turnNode = match.getCurrentTurn();
+		if(turnNode.isAlreadyGetCard() || !turnNode.isAlreadyCheckedJail() || !turnNode.isAlreadyCheckedDynamite()) {
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, false));
 			return false;
@@ -63,9 +65,9 @@ public class PedroRamirez extends Hero {
 		character.setNumCardsInHand(character.getCardsInHand().size());
 		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, match.getUserMap().get(userName));
 		
-		match.getCurrentTurn().setAlreadyGetCard(true);
+		turnNode.setAlreadyGetCard(true);
 		
-		match.getCurrentTurn().run(match);
+		turnNode.run(match);
 		return true;
 	}
 

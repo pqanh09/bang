@@ -49,31 +49,33 @@ public class LuckyDuke extends Hero {
 			List<Card> cards = commonService.getFromNewCardList(match, 2);
 			turnNode.setCardTemp(cards);
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, null, cards, character.getHero()));
+					new SkillResponse(userName, true, 2, null, cards, character.getHero(), null));
 		} else {
-			String cardId =  (String) others.get(userName);
+			List<String> cardIds =  (List<String>) others.get("cards");
 			Card card = null;
 			for (Card cd : turnNode.getCardTemp()) {
-				if(cd.getId().equals(cardId)) {
+				if(cd.getId().equals(cardIds.get(0))) {
 					card = cd;
 					break;
 				} else {
 					commonService.addToOldCardList(cd, match);
 				}
 			}
-			if(card == null) {
+			if(card != null) {
+				turnNode.getCardTemp().clear();
+				if(character.isHasDynamite()) {
+					DynamiteActionCmd.checkDynamite(match, card, commonService);
+					return true;
+				}
+				if(character.isBeJailed()) {
+					JailActionCmd.checkJail(match, card, commonService);
+					return true;
+				}
+			} else {
 				logger.error("ERROR in LuckyDuke");
 				return false;
 			}
-			turnNode.getCardTemp().clear();
-			if(turnNode.isAlreadyCheckedDynamite()) {
-				DynamiteActionCmd.checkDynamite(match, card, commonService);
-				return true;
-			}
-			if(turnNode.isAlreadyCheckedJail()) {
-				JailActionCmd.checkJail(match, card, commonService);
-				return true;
-			}
+			
 		}
 		return true;
 	}

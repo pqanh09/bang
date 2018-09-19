@@ -44,23 +44,44 @@ public class KitCarlson extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step, Map<String, Object> others) {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
+		TurnNode turnNode = match.getCurrentTurn();
+		if(!turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail() || turnNode.isAlreadyGetCard()) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
+		}
 		if(step == 1) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<Card> cards = commonService.getFromNewCardList(match, 3);
-			character.getCardsInHand().addAll(cards);
+			turnNode.getCardTemp().clear();
+			turnNode.getCardTemp().addAll(cards);
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, null, cards, character.getHero()));
+					new SkillResponse(userName, true, 2, null, cards, character.getHero(), null));
 		} else {
-			Entry<String, Object> entry =  others.entrySet().iterator().next();
-			Card card =  commonService.getCardInHand(character, (String) entry.getValue());
-			match.getNewCards().addFirst(card);
-			character.setNumCardsInHand(character.getCardsInHand().size());
-
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 			
-			match.getCurrentTurn().setAlreadyGetCard(true);
+			List<String> cardIds =  (List<String>) others.get("cards");
+			Card card = null;
+			for (Card cd : turnNode.getCardTemp()) {
+				if(cd.getId().equals(cardIds.get(0))) {
+					card = cd;
+					break;
+				}
+			}
+			if(card != null) {
+				turnNode.getCardTemp().remove(card);
+				character.getCardsInHand().addAll(turnNode.getCardTemp());
+				character.setNumCardsInHand(character.getCardsInHand().size());
+				turnNode.getCardTemp().clear();
+				BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+				
+				match.getNewCards().addFirst(card);
+				turnNode.setAlreadyGetCard(true);
+				
+				turnNode.run(match);
+			} else {
+				logger.error("KitCarlson : Card null ");
+			}
 			
-			match.getCurrentTurn().run(match);
 		}
 		return true;
 	}

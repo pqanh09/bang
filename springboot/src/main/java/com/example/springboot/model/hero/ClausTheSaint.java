@@ -51,7 +51,7 @@ public class ClausTheSaint extends Hero {
 			character.getCardsInHand().addAll(cards);
 			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, otherPlayers , cards, character.getHero()));
+					new SkillResponse(userName, true, 2 , otherPlayers, cards, character.getHero(), null));
 		} else {
 			for (Entry<String, Object> entry : others.entrySet()) {
 				Character playerCharacter = match.getCharacterMap().get(entry.getKey());

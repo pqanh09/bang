@@ -14,6 +14,7 @@ public class WinchesterCard extends Card {
 		this.description = "";
 		this.name = "WINCHESTER";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

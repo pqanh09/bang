@@ -17,6 +17,7 @@ public class VolcanicCard extends Card{
 		this.description = "You can play any number of BANG!";
 		this.name = "VOLCANIC";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

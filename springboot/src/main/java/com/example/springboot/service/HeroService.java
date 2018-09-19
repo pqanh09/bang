@@ -71,17 +71,17 @@ public class HeroService {
 //		heros.add(new ElGringo());
 		// manual
 		heros.add(new ChuckWengam());
-//		heros.add(new VeraCuster());
+//		heros.add(new PedroRamirez());
 //		heros.add(new JesseJones());
 //		heros.add(new PatBrennan());
-		heros.add(new PedroRamirez());
-//		heros.add(new SidKetchum());
+		heros.add(new SidKetchum());
 //		heros.add(new UncleWill());
 //		heros.add(new JoseDelgado());
 //		heros.add(new DocHolyday());
 		// auto-manual
+//		heros.add(new VeraCuster());
 //		heros.add(new LuckyDuke());
-//		heros.add(new KitCarlson());
+		heros.add(new KitCarlson());
 //		heros.add(new ClausTheSaint());
 
 		Collections.shuffle(heros);

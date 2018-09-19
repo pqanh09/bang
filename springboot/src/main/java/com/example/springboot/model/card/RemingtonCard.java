@@ -14,6 +14,7 @@ public class RemingtonCard extends Card {
 		this.description = "";
 		this.name = "REMINGTON";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

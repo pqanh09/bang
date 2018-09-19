@@ -15,6 +15,8 @@ public class JailCard extends Card{
 		this.description = "";
 		this.name = "JAIL";
 		this.setImage(image);
+		this.number = number;
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

@@ -225,7 +225,7 @@ public class TurnNode {
 
 	public void run(Match match) {
 		//Check Dynamite
-		if(character.isHasDynamite()) {
+		if(!this.alreadyCheckedDynamite && character.isHasDynamite()) {
 			if(character.getHero() instanceof LuckyDuke) {
 				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
@@ -235,7 +235,7 @@ public class TurnNode {
 		}
 		this.alreadyCheckedDynamite = true;
 		//Check jail
-		if(character.isBeJailed()) {
+		if(!this.alreadyCheckedJail && character.isBeJailed()) {
 			if(character.getHero() instanceof LuckyDuke) {
 				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
@@ -243,43 +243,19 @@ public class TurnNode {
 			}
 			return;
 		}
-		this.alreadyCheckedJail = false;
+		this.alreadyCheckedJail = true;
 		//get cards
-		getCard();
-	}
-	private void getCard() {
 		if(!alreadyGetCard) {
 			// request player get card
 			// request player use cards
 			cardTemp.clear();
 			nextPlayer.clear();
 			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.GetCard, character.getUserName()));
+		} else {
+			requestPlayerUseCard();
 		}
 	}
 	
-	
-	
-	
-	private void checkJail() {
-		if(!alreadyCheckedJail) {
-			// notify begin turn
-			if(character.isBeJailed()) {
-				//TODO
-			}
-			alreadyCheckedJail = true;
-		}
-		
-	}
-	private void checkDynamite() {
-		if(!alreadyCheckedDynamite) {
-			if(character.isHasDynamite()) {
-				//TODO
-			}
-			alreadyCheckedDynamite = true;
-		}
-		
-	}
-
 
 	public boolean isAlreadyCheckedJail() {
 		return alreadyCheckedJail;

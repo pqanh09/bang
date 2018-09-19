@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
+import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
@@ -46,25 +47,53 @@ public class PatBrennan extends Hero {
 			Map<String, Object> others) {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
+		TurnNode turnNode = match.getCurrentTurn();
+		if(!turnNode.isAlreadyCheckedDynamite() || !turnNode.isAlreadyCheckedJail() || turnNode.isAlreadyGetCard()) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
+		}
 		if(step == 1) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
-			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
+			List<String> temp = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
+			List<String> otherPlayers = new ArrayList<>();
+			for (String player : temp) {
+				if(match.getCharacterMap().get(player).getCardsInFront().isEmpty()) {
+					continue;
+				}
+				otherPlayers.add(player);
+			}
+			if(otherPlayers.isEmpty()) {
+				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+						new SkillResponse(userName, false));
+				return false;
+			}
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(true, 2, otherPlayers , null, character.getHero()));
+					new SkillResponse(userName, true, 2 , otherPlayers, null, character.getHero(), null));
+		} else  if(step == 2) {
+			String targetPlayer =  (String) others.get("targetUser");
+			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
+			turnNode.getNextPlayer().clear();
+			turnNode.getNextPlayer().add(targetPlayer);
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, true, 3 , null, targetCharacter.getCardsInFront(), character.getHero(), targetPlayer));
 		} else {
-			Entry<String, Object> entry =  others.entrySet().iterator().next();
-			Character targetCharacter = match.getCharacterMap().get(entry.getKey());
-			String sessionIdTarget =  match.getUserMap().get(entry.getKey());
-			character.getCardsInHand().add(commonService.getCardInHand(targetCharacter, (String) entry.getValue()));
+			String targetPlayer =  turnNode.getNextPlayer().poll();
+			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
+			String sessionIdTarget =  match.getUserMap().get(targetPlayer);
+			@SuppressWarnings("unchecked")
+			List<String> cardIds =  (List<String>) others.get("cards");
+			Card card = commonService.getCardInFront(targetCharacter, cardIds.get(0));
 			
 			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), targetCharacter, sessionIdTarget);
 			
+			character.getCardsInHand().add(card);
 			character.setNumCardsInHand(character.getCardsInHand().size());
 			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
 			
-			match.getCurrentTurn().setAlreadyGetCard(true);
+			turnNode.setAlreadyGetCard(true);
 			
-			match.getCurrentTurn().run(match);
+			turnNode.run(match);
 		}
 		return true;
 	}

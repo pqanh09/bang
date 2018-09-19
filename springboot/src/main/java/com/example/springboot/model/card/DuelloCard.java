@@ -15,6 +15,7 @@ public class DuelloCard extends Card{
 		this.description = "";
 		this.name = "DUELLO";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

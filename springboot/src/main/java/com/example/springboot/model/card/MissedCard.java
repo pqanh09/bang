@@ -14,6 +14,7 @@ public class MissedCard extends Card{
 		this.description = "Missed!";
 		this.name = "MISSED";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

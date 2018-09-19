@@ -15,6 +15,7 @@ public class SaloonCard extends Card{
 		this.description = "";
 		this.name = "SALOON";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

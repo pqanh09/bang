@@ -15,6 +15,7 @@ public class WellsFargoCard extends Card{
 		this.description = "";
 		this.name = "WELLS FARGO";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

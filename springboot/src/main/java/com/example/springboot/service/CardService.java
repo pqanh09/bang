@@ -95,6 +95,56 @@ public class CardService {
 		cards.add(new DuelloCard(Suit.diamonds, 11, "12R-Duello.jpg"));
 		//DynamiteCard
 		cards.add(new DynamiteCard(Suit.hearts, 2, "2C-Dynamite.jpg"));
+		
+		
+		
+//		cards.add(new DynamiteCard(Suit.hearts, 3, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 4, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 5, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 6, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 7, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 8, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 9, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 10, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 11, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 12, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 13, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 14, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 15, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 16, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 17, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 18, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 19, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 20, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 21, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 22, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 23, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 24, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 25, "2C-Dynamite.jpg"));
+//		cards.add(new DynamiteCard(Suit.hearts, 26, "2C-Dynamite.jpg"));
+//		cards.add(new JailCard(Suit.spades, 21, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 22, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 23, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 24, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 25, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 31, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 32, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 33, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 43, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 55, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 66, "11B-Jail.jpg"));
+//		cards.add(new JailCard(Suit.spades, 88, "11B-Jail.jpg"));
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//GatlingCard
 		cards.add(new GatlingCard(Suit.hearts, 10, "10C-Gatling.jpg"));
 		//GeneralStoreCard

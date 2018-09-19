@@ -15,6 +15,7 @@ public class BeerCard extends Card{
 		this.description = "";
 		this.name = "BEER";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

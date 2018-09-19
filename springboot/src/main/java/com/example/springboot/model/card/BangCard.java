@@ -14,6 +14,7 @@ public class BangCard extends Card{
 		this.description = "Bang!";
 		this.name = "BANG";
 		this.setImage(image);
+		this.number = number;
 		this.id = name + suit.toString() + String.valueOf(number);
 	}
 

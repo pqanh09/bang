@@ -131,6 +131,7 @@ public class BangController {
 			matchService.getMatchMap().put(matchId, match);
 			MatchResponse createResponse = new MatchResponse(ResponseType.Create, matchId, true);
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
+			simpMessageSendingOperations.convertAndSend("/topic/game", createResponse);
 		}
 	}
 	
