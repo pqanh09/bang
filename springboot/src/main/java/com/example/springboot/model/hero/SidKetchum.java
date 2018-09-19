@@ -4,18 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.assertj.core.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
-import com.example.springboot.model.card.BangCard;
 import com.example.springboot.model.card.Card;
-import com.example.springboot.model.card.MissedCard;
 import com.example.springboot.response.HeroSkillResponse;
-import com.example.springboot.response.RemoveCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.SkillResponse;
 import com.example.springboot.service.CommonService;

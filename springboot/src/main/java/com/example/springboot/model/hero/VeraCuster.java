@@ -51,11 +51,12 @@ public class VeraCuster extends Hero {
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , otherPlayers, null, character.getHero(), null));
 		} else {
-			String targetPlayer =  (String) others.get(userName);
+			String targetPlayer =  (String) others.get("targetUser");
 			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
-			character.setHero(targetCharacter.getHero());
+			character.attachHero(targetCharacter.getHero(), false);
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), targetPlayer, null));
 			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			match.getCurrentTurn().run(match);
 		}
 		return true;
 	}

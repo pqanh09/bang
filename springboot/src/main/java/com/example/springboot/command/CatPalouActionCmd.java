@@ -10,9 +10,12 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
+import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.model.card.JailCard;
+import com.example.springboot.model.card.MustangCard;
+import com.example.springboot.model.card.ScopeCard;
 import com.example.springboot.model.card.Card.CardType;
 import com.example.springboot.request.Request;
 import com.example.springboot.service.HeroService;
@@ -36,7 +39,7 @@ public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
 		Card card = null;
 		if (StringUtils.isNotBlank(request.getId())) {
 			card = commonService.getCardInFront(targetCharacter, request.getId());
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
+//			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 		} else {
 			if (!targetCharacter.getCardsInHand().isEmpty()) {
 				int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
@@ -46,20 +49,10 @@ public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 		}
 		if(card != null) {
-			if (CardType.gun.equals(card.getCardType())) {
-				targetCharacter.setGun(1);
-			} else if (CardType.barrel.equals(card.getCardType())) {
-				targetCharacter.setBarrel(false);
-			}  else if (CardType.otherviews.equals(card.getCardType())) {
-				targetCharacter.setOthersView(targetCharacter.getOthersView()-1);
-			}  else if (CardType.viewothers.equals(card.getCardType())) {
-				targetCharacter.setViewOthers(targetCharacter.getViewOthers()-1);
+			if (CardType.gun.equals(card.getCardType()) || card instanceof BarrelCard || card instanceof MustangCard || card instanceof ScopeCard || card instanceof JailCard || card instanceof DynamiteCard) {
+				card.remove(targetCharacter);
 			} 
-			if(card instanceof JailCard) {
-				targetCharacter.setBeJailed(false);
-			} else if(card instanceof DynamiteCard) {
-				targetCharacter.setHasDynamite(false);
-			}
+			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
 			commonService.addToOldCardList(card, match);
 			turnNode.getNextPlayer().poll();
 			if (turnNode.getNextPlayer().peek() == null) {

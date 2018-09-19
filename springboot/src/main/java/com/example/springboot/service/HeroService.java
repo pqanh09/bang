@@ -47,42 +47,43 @@ public class HeroService {
 	private List<Hero> heros = new ArrayList<>();
 
 	public HeroService() {
-//		heros.add(new ApacheKid());
-//		heros.add(new BartCassidy());
-//		heros.add(new BelleStar());
-//		heros.add(new BillNoface());
-//		heros.add(new BlackJack());
-//		heros.add(new CalamityJanet());
-//		heros.add(new ElenaFuente());
-//		heros.add(new GregDigger());
-//		heros.add(new HerbHunter());
-//		heros.add(new JohnnyKisch());
-//		heros.add(new Jourdonnais());
-//		heros.add(new MollyStark());
-//		heros.add(new PaulRegret());
-//		heros.add(new PixiePete());
-//		heros.add(new RoseDoolan());
-//		heros.add(new SeanMallory());
-//		heros.add(new SlabTheKiller());
-//		heros.add(new SuzyLafayette());
-//		heros.add(new TequilaJoe());
-//		heros.add(new VultureSam());
-//		heros.add(new WillyTheKid());
-//		heros.add(new ElGringo());
+		// auto
+		heros.add(new ApacheKid());
+		heros.add(new BartCassidy());
+		heros.add(new BelleStar());
+		heros.add(new BillNoface());
+		heros.add(new BlackJack());
+		heros.add(new CalamityJanet());
+		heros.add(new ElenaFuente());
+		heros.add(new GregDigger());
+		heros.add(new HerbHunter());
+		heros.add(new JohnnyKisch());
+		heros.add(new Jourdonnais());
+		heros.add(new MollyStark());
+		heros.add(new PaulRegret());
+		heros.add(new PixiePete());
+		heros.add(new RoseDoolan());
+		heros.add(new SeanMallory());
+		heros.add(new SlabTheKiller());
+		heros.add(new SuzyLafayette());
+		heros.add(new TequilaJoe());
+		heros.add(new VultureSam());
+		heros.add(new WillyTheKid());
+		heros.add(new ElGringo());
 		// manual
 		heros.add(new ChuckWengam());
-//		heros.add(new PedroRamirez());
-//		heros.add(new JesseJones());
-//		heros.add(new PatBrennan());
+		heros.add(new PedroRamirez());
+		heros.add(new JesseJones());
+		heros.add(new PatBrennan());
 		heros.add(new SidKetchum());
-//		heros.add(new UncleWill());
-//		heros.add(new JoseDelgado());
-//		heros.add(new DocHolyday());
+		heros.add(new UncleWill());
+		heros.add(new JoseDelgado());
+		heros.add(new DocHolyday());
 		// auto-manual
-//		heros.add(new VeraCuster());
-//		heros.add(new LuckyDuke());
+		heros.add(new VeraCuster());
+		heros.add(new LuckyDuke());
 		heros.add(new KitCarlson());
-//		heros.add(new ClausTheSaint());
+		heros.add(new ClausTheSaint());
 
 		Collections.shuffle(heros);
 	}

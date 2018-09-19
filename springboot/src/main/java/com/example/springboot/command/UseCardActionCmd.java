@@ -204,7 +204,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 						//end game
 						return;
 					}
-					commonService.callNextPlayerTurn(match);
+					commonService.callNextPlayerTurn(match, userName);
 				} else {
 					turnNode.setAction(ResponseType.Unknown);
 					turnNode.requestPlayerUseCard();

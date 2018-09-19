@@ -97,16 +97,30 @@ public class CommonService {
 		}
 		return addToOldCardList;
 	}
-	public void playerDead(String userName, boolean beKilled, Match match) {
-		Character character = match.getCharacterMap().get(userName);
-		character.setRoleImage(character.getRole().getImage());
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
-//		BangUtils.notifyCharacter(simpMessageSendingOperations, character,userMap.get(userName));
-		match.getPlayerTurnQueue().remove(userName);
+	private boolean checkEndGame(Match match, Character character) {
+		boolean endGame = false;
 		if(match.getPlayerTurnQueue().size() == 1) {
 			String lastPlayer = match.getPlayerTurnQueue().peek();
 			Character lastCharacter = match.getCharacterMap().get(lastPlayer);
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, lastCharacter.getRole().getRoleType().toString()));
+			endGame = true;
+		} else {
+			if(RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
+				endGame = true;
+			}
+		}
+		return endGame;
+	}
+	public void playerDead(String userName, boolean beKilled, Match match) {
+		Character character = match.getCharacterMap().get(userName);
+		if(character.getRole() != null) {
+			character.setRoleImage(character.getRole().getImage());
+		}
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
+//		BangUtils.notifyCharacter(simpMessageSendingOperations, character,userMap.get(userName));
+		match.getPlayerTurnQueue().remove(userName);
+		if(checkEndGame(match, character)) {
 			return;
 		}
 		//
@@ -217,36 +231,42 @@ public class CommonService {
 		return cards;
 	}
 
-	public void createTurnNode(Match match) {
+	public boolean createTurnNode(Match match) {
 		String firstTurn = match.getPlayerTurnQueue().peekFirst();
 		Character firstCharacter = match.getCharacterMap().get(firstTurn);
 		match.setCurrentTurn(new TurnNode(this, match.getMatchId()));
 		match.getCurrentTurn().resetTurnNode(firstCharacter);
-		useSkillOfVeraCuster(firstCharacter, match);
+		return useSkillOfVeraCuster(firstCharacter, match);
 		
 	}
-	private void useSkillOfVeraCuster(Character character, Match match) {
+	private boolean useSkillOfVeraCuster(Character character, Match match) {
+		boolean canStart = true;
 		if(match.getVeraCuster() != null && character.getUserName().equals(match.getVeraCusterPlayer())) {
 			match.getVeraCuster().useSkill(match, match.getCurrentTurn().getCharacter(),  this, 1, null);
+			//wait to copy hero's skill
+			canStart =  false;
+			
 		}
+		return canStart;
 	}
 	public void endTurn(String userName, Match match) {
 		if(match.getPlayerTurnQueue().peek().equals(userName)){
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/turn", new TurnResponse(ResponseType.EndTurn, userName));
 			match.getPlayerTurnQueue().poll();
-			callNextPlayerTurn(match);
-			match.getPlayerTurnQueue().add(userName);
+			callNextPlayerTurn(match, userName);
 		} else {
 			logger.error("Turn service endTurn ERROR @!@@@@@!");
 		}
 	}
-	public void callNextPlayerTurn(Match match) {
+	public void callNextPlayerTurn(Match match, String oldPlayer) {
 		String nextPlayer = match.getPlayerTurnQueue().peek();
 		if(StringUtils.isNotBlank(nextPlayer)) {
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			match.getCurrentTurn().resetTurnNode(nextCharacter);
-			useSkillOfVeraCuster(nextCharacter, match);
-			match.getCurrentTurn().run(match);
+			match.getPlayerTurnQueue().add(oldPlayer);
+			if(useSkillOfVeraCuster(nextCharacter, match)) {
+				match.getCurrentTurn().run(match);
+			}
 		} else {
 			logger.error("Turn service callNextPlayerTurn ERROR @!@@@@@!");
 //			tableService.getsimpMessageSendingOperations().convertAndSend("/topic/turn", new TurnResponse(ResponseType.Winner, userName));

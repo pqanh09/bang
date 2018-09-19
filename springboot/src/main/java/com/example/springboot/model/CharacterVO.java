@@ -80,6 +80,15 @@ public class CharacterVO {
 		this.lifePoint += hero.getLifePoint();
 		this.capacityLPoint = this.lifePoint;
 	}
+	
+	public void attachHero(Hero hero, boolean updateLifePoint) {
+		this.hero = hero;
+		if(updateLifePoint) {
+			this.lifePoint += hero.getLifePoint();
+			this.capacityLPoint = this.lifePoint;
+		}
+	
+	}
 
 	public List<Card> getCardsInFront() {
 		return cardsInFront;

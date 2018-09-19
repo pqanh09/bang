@@ -55,7 +55,7 @@
 				<div class="container" style="max-width: 100%;">
 					<div class="row">
 						<div class="col-12"
-							style="display: flex; justify-content: center;"
+							style="display: flex; justify-content: center; height: 400px;"
 							id="charaterListElement">
 							<div ng-repeat="character in characters" style="width: 183px">
 								<div class="container" style="padding: 0 0 0 0;">
@@ -174,7 +174,7 @@
 								<button type="button" class="btn btn-info"
 									ng-show="userName === playerGettingCard && userName === characterTurn"
 									ng-click="getCardFunc()">Get Card</button>
-								<button type="button" class="btn btn-info" ng-show="!myInfo.hero.autoUseSkill && !(userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello'))"
+								<button type="button" class="btn btn-info" ng-show="!myInfo.hero.autoUseSkill && userName === characterTurn && skillInfo.enableUseSkillBtn"
 									ng-click="useHeroSkillFunc()">Use Hero'skill</button>
 								<button type="button" class="btn btn-info"
 									ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"
@@ -277,7 +277,7 @@
 						<div class="modal-body">
 							<div class="container">
 								<div class="row">
-									<div class="col-12" style="display: -webkit-box;">
+									<div class="col-12" style="display: flex; justify-content: center; width: max-content;flex-wrap: wrap;">
 										<div ng-repeat="hero in heros" class="item-hero-card">
 											<div class="item-hero-image-dialog">
 												<img ng-src="{{hero.image}}" alt="{{hero.name}}"
@@ -404,7 +404,7 @@
 					<!-- Modal content-->
 					<div class="modal-content" style="width: max-content;">
 						<div class="modal-header">
-							<h4 class="modal-title">Select player:</h4>
+							<h4 class="modal-title">{{skillInfo.titleDialog}}</h4>
 						</div>
 						<div class="modal-body">
 							<select ng-model="skillInfo.selectedPlayer"
@@ -417,7 +417,42 @@
 					</div>
 				</div>
 			</div>
+			<div id="heroUserCardSelectionDialog" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content" style="width: max-content;">
+						<div class="modal-header">
+							<h4 class="modal-title">{{skillInfo.titleDialog}}</h4>
+							<button type="button" class="close" data-dismiss="modal"
+								ng-show="skillInfo.enableCancelBtn">&times;</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="col-12" style="display: flex; justify-content: center; width: max-content;flex-wrap: wrap;">
+										<div ng-repeat="card in skillInfo.cards">
+											<div class="item-hero-card">
+												<div class="item-hero-image-dialog">
+													<img ng-src="{{card.image}}" alt="{{card.name}}"
+														class="img-thumbnail item-dialog-image">
+												</div>
+												<select ng-model="card.assignedPlayer" ng-change="updateAssignedPlayerHeroUserCardSelectionDialog()"
+													ng-options="user for user in skillInfo.players"></select>
+											</div>
+										</div>
+										
+									</div>
 
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								data-dismiss="modal" ng-show="skillInfo.enableOkBtn" ng-click="okHeroUserCardSelectionDialogFunc()">OK</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
 	</div>

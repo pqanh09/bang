@@ -50,16 +50,16 @@ public class UncleWill extends Hero {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
+		if((character.getCardsInFront().isEmpty() && character.getCardsInHand().isEmpty()) 
+				|| !turnNode.isAlreadyCheckedDynamite() 
+				|| !turnNode.isAlreadyCheckedJail() 
+				|| !turnNode.isAlreadyGetCard()
+				|| turnNode.isUncleWill()) {
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, false));
+			return false;
+		}
 		if(step == 1) {
-			if((character.getCardsInFront().isEmpty() && character.getCardsInHand().isEmpty()) 
-					|| !turnNode.isAlreadyCheckedDynamite() 
-					|| !turnNode.isAlreadyCheckedJail() 
-					|| !turnNode.isAlreadyGetCard()
-					|| turnNode.isUncleWill()) {
-				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(userName, false));
-				return false;
-			}
 			List<Card> cards = new ArrayList<>();
 			cards.addAll(character.getCardsInFront());
 			cards.addAll(character.getCardsInHand());
@@ -72,11 +72,20 @@ public class UncleWill extends Hero {
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 		} else {
-			turnNode.setUncleWill(true);
-			Entry<String, Object> entry =  others.entrySet().iterator().next();
-			Card card =  commonService.getCardInHand(character, (String) entry.getValue());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			List<String> cardIds =  (List<String>) others.get("cards");
+			Card card =  commonService.getCardInFront(character, cardIds.get(0));
+			if(card == null)  {
+				card =  commonService.getCardInHand(character, cardIds.get(0));
+			}
+			if(card == null) {
+				logger.error("Error when perform UncleWill's skill");
+				return false;
+			}
 			commonService.addToOldCardList(card, match);
+
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			
+			turnNode.setUncleWill(true);
 			
 			turnNode.setAction(ResponseType.GeneralStore);
 			turnNode.setCardTemp(commonService.getFromNewCardList(match, match.getPlayerTurnQueue().size()));

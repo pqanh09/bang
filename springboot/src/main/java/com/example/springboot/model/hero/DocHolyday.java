@@ -63,31 +63,36 @@ public class DocHolyday extends Hero {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
-		} if(step == 2) {
-			for (String cardId : others.keySet()) {
+		} else if(step == 2) {
+			List<String> cardIds =  (List<String>) others.get("cards");
+			List<Card> cards = new ArrayList<>();
+			for (String cardId : cardIds) {
 				Card  card = BangUtils.findCardInFront(character, cardId);
 				if(card == null)  {
 					card = BangUtils.findCardInHand(character, cardId);
 				}
 				if(card == null) {
-					logger.error("Error when perform DocHolyday skill");
-					return false;
+					logger.error("Error when perform SidKetchum's skill");
+					continue;
 				}
-				List<Card> cards = new ArrayList<>();
 				cards.add(card);
-				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, cards));
+				//commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, cards));
 			}
-			if(others.keySet().size() > 2) {
-				BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
-				List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
-				commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-						new SkillResponse(userName, true, 3 , otherPlayers, null, character.getHero(), null));
-			} else {
-				logger.error("Error when perform DocHolyday's skill: size  < 2");
+			if(cards.size() < 2) {
+				logger.error("Error when perform DocHolyday's skill < 2");
 				return false;
 			}
+			for (Card card : cards) {
+				character.getCardsInFront().remove(card);
+				character.getCardsInHand().remove(card);
+			}
+			character.setNumCardsInHand(character.getCardsInHand().size());
+			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
+			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
+					new SkillResponse(userName, true, 3 , otherPlayers, null, character.getHero(), null));
 		} else {
-			String targetPlayer =  (String) others.get(userName);
+			String targetPlayer =  (String) others.get("targetUser");
 			turnNode.setAction(ResponseType.Bang);
 			turnNode.setDocHolyday(true);
 			turnNode.getNextPlayer().clear();

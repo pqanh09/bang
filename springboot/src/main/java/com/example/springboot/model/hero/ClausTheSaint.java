@@ -47,16 +47,23 @@ public class ClausTheSaint extends Hero {
 		String sessionId = match.getUserMap().get(userName);
 		if(step == 1) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
-			List<Card> cards = commonService.getFromNewCardList(match, match.getPlayerTurnQueue().size() + 2);
+			List<Card> cards = commonService.getFromNewCardList(match, match.getPlayerTurnQueue().size() + 1);
 			character.getCardsInHand().addAll(cards);
-			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
+			List<String> players = new ArrayList<>(match.getPlayerTurnQueue());
+			players.add(userName);
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
-					new SkillResponse(userName, true, 2 , otherPlayers, cards, character.getHero(), null));
+					new SkillResponse(userName, true, 2 , players, cards, character.getHero(), null));
 		} else {
+			String player, cardId;
 			for (Entry<String, Object> entry : others.entrySet()) {
-				Character playerCharacter = match.getCharacterMap().get(entry.getKey());
-				String sessionIdPlayer =  match.getUserMap().get(entry.getKey());
-				playerCharacter.getCardsInHand().add(commonService.getCardInHand(character, (String) entry.getValue()));
+				player = (String) entry.getValue();
+				if(player.equals(userName)) {
+					continue;
+				}
+				cardId = entry.getKey();
+				Character playerCharacter = match.getCharacterMap().get(player);
+				String sessionIdPlayer =  match.getUserMap().get(player);
+				playerCharacter.getCardsInHand().add(commonService.getCardInHand(character, cardId));
 				playerCharacter.setNumCardsInHand(playerCharacter.getCardsInHand().size());
 				BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), playerCharacter, sessionIdPlayer);
 			}

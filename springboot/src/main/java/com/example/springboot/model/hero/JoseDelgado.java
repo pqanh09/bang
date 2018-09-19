@@ -90,14 +90,15 @@ public class JoseDelgado extends Hero {
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 		} else {
-			turnNode.setJoseDelgado(turnNode.getJoseDelgado() + 1);
-			Entry<String, Object> entry =  others.entrySet().iterator().next();
-			Card card =  commonService.getCardInHand(character, (String) entry.getValue());
+			List<String> cardIds =  (List<String>) others.get("cards");
+			Card card =  commonService.getCardInHand(character, cardIds.get(0));
 			if(card == null) {
 				logger.error("Error when perform JoseDelgado's skill");
 				return false;
 			}
 			commonService.addToOldCardList(card, match);
+			
+			turnNode.setJoseDelgado(turnNode.getJoseDelgado() + 1);
 			
 			character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 2));
 			character.setNumCardsInHand(character.getCardsInHand().size());

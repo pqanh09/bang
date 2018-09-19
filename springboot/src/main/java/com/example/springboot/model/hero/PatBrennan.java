@@ -11,7 +11,13 @@ import org.slf4j.LoggerFactory;
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
+import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.card.DynamiteCard;
+import com.example.springboot.model.card.JailCard;
+import com.example.springboot.model.card.MustangCard;
+import com.example.springboot.model.card.ScopeCard;
+import com.example.springboot.model.card.Card.CardType;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.SkillResponse;
@@ -70,7 +76,7 @@ public class PatBrennan extends Hero {
 			}
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , otherPlayers, null, character.getHero(), null));
-		} else  if(step == 2) {
+		} else if(step == 2) {
 			String targetPlayer =  (String) others.get("targetUser");
 			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
 			turnNode.getNextPlayer().clear();
@@ -84,6 +90,10 @@ public class PatBrennan extends Hero {
 			@SuppressWarnings("unchecked")
 			List<String> cardIds =  (List<String>) others.get("cards");
 			Card card = commonService.getCardInFront(targetCharacter, cardIds.get(0));
+			
+			if (CardType.gun.equals(card.getCardType()) || card instanceof BarrelCard || card instanceof MustangCard || card instanceof ScopeCard || card instanceof JailCard || card instanceof DynamiteCard) {
+				card.remove(targetCharacter);
+			} 
 			
 			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), targetCharacter, sessionIdTarget);
 			

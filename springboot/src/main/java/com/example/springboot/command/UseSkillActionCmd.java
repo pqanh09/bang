@@ -43,13 +43,13 @@ public class UseSkillActionCmd extends AbsActionCmd implements ActionCmd {
 			return;
 		}
 		Hero hero = character.getHero();
-		if (hero instanceof ClausTheSaint || hero instanceof LuckyDuke || hero instanceof KitCarlson) {
+		if (hero instanceof ClausTheSaint || hero instanceof LuckyDuke || hero instanceof KitCarlson || hero instanceof VeraCuster) {
 			if(request.getStep() == 2) {
 				hero.useSkill(match, character, commonService, 2, request.getOthers());
 			} else {
 				returnFalse(userName, sessionId, match);
 			}
-		}  else if (hero instanceof JesseJones || hero instanceof SidKetchum || hero instanceof UncleWill || hero instanceof JoseDelgado || hero instanceof VeraCuster) {
+		}  else if (hero instanceof JesseJones || hero instanceof SidKetchum || hero instanceof UncleWill || hero instanceof JoseDelgado) {
 			if(request.getStep() == 1) {
 				hero.useSkill(match, character, commonService, 1, request.getOthers());
 			} else if(request.getStep() == 2) {
