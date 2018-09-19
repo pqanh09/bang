@@ -2,27 +2,26 @@ package com.example.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class SpringbootApplication {
+public class SpringbootApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringbootApplication.class, args);
-		//pick hero
-		//{"actionType":"PickHero","id":"VultureSam1"}
-		
-		//get cards
-		//{"actionType":"GetCard"}
-		
-		//check card
-		//{"actionType":"CheckCard","id":"11"}
-		
-		//use card
-		//{"actionType":"UseCard","id":"11","noneResponse":false,"targetUser":"aa"}
-		//{"actionType":"UseCard","id":"61"}
-		//{"actionType":"UseCard","id":"47"}
-		
-		
-		//{"actionType":"EndTurn"}
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(SpringbootApplication.class);
 	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SpringbootApplication.class, args);
+	}
+
 }
+//@SpringBootApplication
+//public class SpringbootApplication {
+//	
+//	public static void main(String[] args) {
+//		SpringApplication.run(SpringbootApplication.class, args);
+//	}
+//}
