@@ -87,7 +87,7 @@ public class DocHolyday extends Hero {
 				character.getCardsInHand().remove(card);
 			}
 			character.setNumCardsInHand(character.getCardsInHand().size());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 3 , otherPlayers, null, character.getHero(), null));

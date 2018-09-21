@@ -65,10 +65,10 @@ public class ClausTheSaint extends Hero {
 				String sessionIdPlayer =  match.getUserMap().get(player);
 				playerCharacter.getCardsInHand().add(commonService.getCardInHand(character, cardId));
 				playerCharacter.setNumCardsInHand(playerCharacter.getCardsInHand().size());
-				BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), playerCharacter, sessionIdPlayer);
+				commonService.notifyCharacter(match.getMatchId(), playerCharacter, sessionIdPlayer);
 			}
 			character.setNumCardsInHand(character.getCardsInHand().size());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			match.getCurrentTurn().setAlreadyGetCard(true);
 			match.getCurrentTurn().run(match);
 		}

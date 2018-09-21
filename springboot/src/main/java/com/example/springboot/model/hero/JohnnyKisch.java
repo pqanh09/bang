@@ -54,7 +54,7 @@ public class JohnnyKisch extends Hero {
 						notified = true;
 					}
 					card.remove(character);
-					BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), entry.getValue(), match.getUserMap().get(entry.getValue().getUserName()));
+					commonService.notifyCharacter(match.getMatchId(), entry.getValue(), match.getUserMap().get(entry.getValue().getUserName()));
 					commonService.addToOldCardList(card, match);
 				}
 			}

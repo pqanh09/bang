@@ -41,7 +41,7 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Card card = null;
 		if (StringUtils.isNotBlank(request.getId())) {
 			card = commonService.getCardInFront(targetCharacter, request.getId());
-//			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
+//			commonService.notifyCharacter(match.getMatchId(), targetCharacter, sessionTargetId);
 		} else {
 			if (!targetCharacter.getCardsInHand().isEmpty()) {
 				int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
@@ -54,10 +54,10 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 			if (CardType.gun.equals(card.getCardType()) || card instanceof BarrelCard || card instanceof MustangCard || card instanceof ScopeCard || card instanceof JailCard || card instanceof DynamiteCard) {
 				card.remove(targetCharacter);
 			} 
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), targetCharacter, sessionTargetId);
+			commonService.notifyCharacter(match.getMatchId(), targetCharacter, sessionTargetId);
 			
 			character.getCardsInHand().add(card);
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			turnNode.getNextPlayer().poll();
 			if (turnNode.getNextPlayer().peek() == null) {
 				// request player in turn continue using card

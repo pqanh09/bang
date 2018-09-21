@@ -169,7 +169,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		else if (CardType.magic.equals(card.getCardType())) {
 			// BeerCard
 			if (card instanceof BeerCard) {
-				if (character.getLifePoint() < character.getCapacityLPoint()) {
+				if (character.getLifePoint() < character.getCapacityLPoint() && match.getPlayerTurnQueue().size() > 2) {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 							new CheckCardResponse(true));
 				} else {

@@ -63,7 +63,7 @@ public class PedroRamirez extends Hero {
 		character.getCardsInHand().add(card);
 		character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 1));
 		character.setNumCardsInHand(character.getCardsInHand().size());
-		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, match.getUserMap().get(userName));
+		commonService.notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
 		
 		turnNode.setAlreadyGetCard(true);
 		

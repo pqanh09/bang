@@ -60,11 +60,11 @@ public class JesseJones extends Hero {
 			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
 			int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
 			Card card = commonService.getCardInHand(targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), targetCharacter, match.getUserMap().get(targetCharacter.getUserName()));
+			commonService.notifyCharacter(match.getMatchId(), targetCharacter, match.getUserMap().get(targetCharacter.getUserName()));
 			character.getCardsInHand().add(card);
 			character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 1));
 			character.setNumCardsInHand(character.getCardsInHand().size());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			
 			turnNode.setAlreadyGetCard(true);
 			

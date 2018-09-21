@@ -48,10 +48,10 @@ public class ElGringo extends Hero {
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
 		Card card = commonService.getCardInHand(targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId());
-		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), targetCharacter, match.getUserMap().get(targetCharacter.getUserName()));
+		commonService.notifyCharacter(match.getMatchId(), targetCharacter, match.getUserMap().get(targetCharacter.getUserName()));
 		character.getCardsInHand().add(card);
 		character.setNumCardsInHand(character.getCardsInHand().size());
-		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, match.getUserMap().get(userName));
+		commonService.notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
 		return true;
 	}
 

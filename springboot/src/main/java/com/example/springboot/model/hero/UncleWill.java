@@ -83,7 +83,7 @@ public class UncleWill extends Hero {
 			}
 			commonService.addToOldCardList(card, match);
 
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			
 			turnNode.setUncleWill(true);
 			

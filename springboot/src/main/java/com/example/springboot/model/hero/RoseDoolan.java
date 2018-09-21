@@ -42,7 +42,7 @@ public class RoseDoolan extends Hero {
 		String userName = character.getUserName();
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		character.setViewOthers(1);
-		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, match.getUserMap().get(userName));
+		commonService.notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
 		return true;
 	}
 

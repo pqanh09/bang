@@ -11,13 +11,12 @@ import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
-import com.example.springboot.model.hero.BartCassidy;
 import com.example.springboot.model.card.DynamiteCard;
+import com.example.springboot.model.hero.BartCassidy;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.service.CommonService;
-import com.example.springboot.utils.BangUtils;
 
 public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 	private static final Logger logger = LoggerFactory.getLogger(DynamiteActionCmd.class);
@@ -69,7 +68,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 				others.put("numberNewCard", 3);
 				character.getHero().useSkill(match, character, commonService, 1, others);
 			}
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			if (character.getLifePoint() <= 0) {
 				commonService.playerDead(userName, false, match);
 				if(match.getPlayerTurnQueue().size() <=1) {
@@ -81,7 +80,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 				match.getCurrentTurn().run(match);
 			}
 		} else {
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			match.getPlayerTurnQueue().poll();
 			String nextPlayer = match.getPlayerTurnQueue().peek();
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeDynamite, null, nextPlayer));
@@ -90,7 +89,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 			nextCharacter.getCardsInFront().add(dynamiteCard);
 			nextCharacter.setHasDynamite(true);
 			String sessionIdNextPlayer = match.getUserMap().get(nextPlayer);
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), nextCharacter, sessionIdNextPlayer);
+			commonService.notifyCharacter(match.getMatchId(), nextCharacter, sessionIdNextPlayer);
 			match.getCurrentTurn().run(match);
 		}
 	}

@@ -13,7 +13,6 @@ import com.example.springboot.request.Request;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.service.CommonService;
-import com.example.springboot.utils.BangUtils;
 
 public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 	private static final Logger logger = LoggerFactory.getLogger(JailActionCmd.class);
@@ -54,7 +53,7 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		character.getCardsInFront().remove(jailCard);
 		
-		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+		commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 		
 		commonService.addToOldCardList(jailCard, match);
 		match.getCurrentTurn().setAlreadyCheckedJail(true);

@@ -39,7 +39,7 @@ public class GenelralStoreActionCmd extends AbsActionCmd implements ActionCmd {
 		} else {
 			turnNode.getCardTemp().remove(card);
 			character.getCardsInHand().add(card);
-			BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			turnNode.getNextPlayer().poll();
 			if (turnNode.getNextPlayer().peek() == null) {
 				// request player in turn continue using card

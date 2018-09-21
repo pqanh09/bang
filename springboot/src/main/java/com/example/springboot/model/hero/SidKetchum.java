@@ -86,7 +86,7 @@ public class SidKetchum extends Hero {
 			}
 			character.setLifePoint(character.getLifePoint() + 1);
 			character.setNumCardsInHand(character.getCardsInHand().size());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 		}
 		return true;
 	}

@@ -72,7 +72,7 @@ public class KitCarlson extends Hero {
 				character.getCardsInHand().addAll(turnNode.getCardTemp());
 				character.setNumCardsInHand(character.getCardsInHand().size());
 				turnNode.getCardTemp().clear();
-				BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+				commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 				
 				match.getNewCards().addFirst(card);
 				turnNode.setAlreadyGetCard(true);

@@ -16,9 +16,6 @@ import com.example.springboot.service.CommonService;
 import com.example.springboot.service.MatchService;
 import com.example.springboot.service.UserService;
 
-/**
- * Created by rajeevkumarsingh on 25/07/17.
- */
 @Component
 public class WebSocketEventListener {
 

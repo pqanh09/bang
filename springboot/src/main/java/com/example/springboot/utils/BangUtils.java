@@ -3,11 +3,8 @@ package com.example.springboot.utils;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
@@ -50,36 +47,9 @@ public class BangUtils {
 		result.poll();
 		return result;
 	}
-	public static void notifyCharacter(SimpMessageSendingOperations messagingTemplate, String matchId, Character character, String sessionId) {
-		messagingTemplate.convertAndSend("/topic/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character.getVO()));
-		messagingTemplate.convertAndSendToUser(sessionId, "/queue/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character));
-	}
-//	public static Card getCardInHand(Character character, String id) {
-//		Card result = null;
-//		for (Card card : character.getCardsInHand()) {
-//			if(card.getId().equals(id)) {
-//				result = card;
-//				break;
-//			}
-//		}
-//		if(result != null) {
-//			character.getCardsInHand().remove(result);
-//			character.setNumCardsInHand(character.getCardsInHand().size());
-//		}
-//		return result;
-//	}
-//	public static Card getCardInFront(Character character, String id) {
-//		Card result = null;
-//		for (Card card : character.getCardsInFront()) {
-//			if(card.getId().equals(id)) {
-//				result = card;
-//				break;
-//			}
-//		}
-//		if(result != null) {
-//			character.getCardsInFront().remove(result);
-//		}
-//		return result;
+//	public static void notifyCharacter(SimpMessageSendingOperations messagingTemplate, String matchId, Character character, String sessionId) {
+//		messagingTemplate.convertAndSend("/topic/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character.getVO()));
+//		messagingTemplate.convertAndSendToUser(sessionId, "/queue/"+matchId+"/character", new CharacterResponse(ResponseType.Character, character.getUserName(), character));
 //	}
 	public static Card getCardByCardType(List<Card> list, CardType cardType) {
 		Card result = null;
@@ -99,21 +69,4 @@ public class BangUtils {
 		}
 		return false;
 	}
-//	//return list of player can use Bang  or Panic card 
-//	public static List<String> checkRangeToUseCard(Map<Pair<String, String>, Integer> rangeMap, Character rootPlayer, Map<String, Character> characterMap, int rangeCard, LinkedList<String> playerTurnQueue) {
-//		List<String> userCanBeAffectList = new ArrayList<>();
-//		Character targetPlayer;
-//		for (Entry<String, Character> entry : characterMap.entrySet()) {
-//			targetPlayer = entry.getValue();
-//			if(targetPlayer.getUserName().equals(rootPlayer.getUserName()) || !playerTurnQueue.contains(entry.getKey())) {
-//				continue;
-//			}
-//			int range = (rangeMap.get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) != null) ? rangeMap.get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) : rangeMap.get(Pair.of(targetPlayer.getUserName(), rootPlayer.getUserName()));
-//			range += targetPlayer.getOthersView();
-//			if((rootPlayer.getViewOthers() + rangeCard) >= range) {
-//				userCanBeAffectList.add(targetPlayer.getUserName());
-//			}
-//		}
-//		return userCanBeAffectList;
-//	}
 }

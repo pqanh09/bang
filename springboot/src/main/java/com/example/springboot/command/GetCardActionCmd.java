@@ -61,7 +61,7 @@ public class GetCardActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		
 		//udpate character for user 
-		BangUtils.notifyCharacter(simpMessageSendingOperations, match.getMatchId(), character, sessionId);
+		commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 		// update alreadyGetCard = true
 		match.getCurrentTurn().setAlreadyGetCard(true);
 		match.getCurrentTurn().requestPlayerUseCard();

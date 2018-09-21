@@ -57,7 +57,7 @@ public class ChuckWengam extends Hero {
 		character.getCardsInHand().addAll(commonService.getFromNewCardList(match, 2));
 		character.setNumCardsInHand(character.getCardsInHand().size());
 		
-		BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+		commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 		
 		match.getCurrentTurn().run(match);
 		return true;

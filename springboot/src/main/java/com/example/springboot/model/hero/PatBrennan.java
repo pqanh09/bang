@@ -95,11 +95,11 @@ public class PatBrennan extends Hero {
 				card.remove(targetCharacter);
 			} 
 			
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), targetCharacter, sessionIdTarget);
+			commonService.notifyCharacter(match.getMatchId(), targetCharacter, sessionIdTarget);
 			
 			character.getCardsInHand().add(card);
 			character.setNumCardsInHand(character.getCardsInHand().size());
-			BangUtils.notifyCharacter(commonService.getSimpMessageSendingOperations(), match.getMatchId(), character, sessionId);
+			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			
 			turnNode.setAlreadyGetCard(true);
 			
