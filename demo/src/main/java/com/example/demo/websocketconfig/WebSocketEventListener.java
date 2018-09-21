@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.websocketconfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.demo.ChatMessage;
+import com.example.demo.ChatMessage.MessageType;
 
 /**
  * Created by rajeevkumarsingh on 25/07/17.

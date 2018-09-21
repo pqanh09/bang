@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.websocketconfig;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
