@@ -27,6 +27,7 @@ import com.example.springboot.model.role.RoleType;
 import com.example.springboot.request.Request;
 import com.example.springboot.request.RequestType;
 import com.example.springboot.response.HeroResponse;
+import com.example.springboot.response.HostResponse;
 import com.example.springboot.response.MatchResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.RoleResponse;
@@ -114,8 +115,8 @@ public class BangController {
 		for (Entry<String, Match> entry : matchService.getMatchMap().entrySet()) {
 			matches.add(new MatchVO(entry.getValue()));
 		}
-		MatchResponse createResponse = new MatchResponse(ResponseType.Read, matches);
-		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
+		MatchResponse matchResponse = new MatchResponse(ResponseType.Read, matches);
+		simpMessageSendingOperations.convertAndSend("/topic/game", matchResponse);
 	}
 	@MessageMapping("/game.create")
 	public void createNewMatch(SimpMessageHeaderAccessor sha) {
@@ -129,9 +130,9 @@ public class BangController {
 			Match match = new Match(matchId, userName, sessionId, simpMessageSendingOperations);
 			matchService.getUserMap().put(userName, matchId);
 			matchService.getMatchMap().put(matchId, match);
-			MatchResponse createResponse = new MatchResponse(ResponseType.Create, matchId, true);
+			HostResponse createResponse = new HostResponse(ResponseType.Create, userName, matchId, true);
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
-			simpMessageSendingOperations.convertAndSend("/topic/game", createResponse);
+			simpMessageSendingOperations.convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
 		}
 	}
 	
@@ -160,10 +161,12 @@ public class BangController {
 		
 		matchService.getUserMap().put(userName, match.getMatchId());
 		
-		MatchResponse joinResponse = new MatchResponse(ResponseType.Join, match.getMatchId(), false);
+		HostResponse joinResponse = new HostResponse(ResponseType.Join, userName, match.getMatchId(), false);
 		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", joinResponse);
-		simpMessageSendingOperations.convertAndSend("/topic/game",  new MatchResponse(ResponseType.Update, match.getMatchId(), false));
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Join, userName));
+		
+		simpMessageSendingOperations.convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
+		
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Join, userName));
 	}
 	
 	@MessageMapping("/game.start")

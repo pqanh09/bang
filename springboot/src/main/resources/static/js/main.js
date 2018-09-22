@@ -298,6 +298,7 @@ myapp.controller('FirstCtrl',
 		function onConnected() {
 			// ok
 			stompClient.subscribe('/user/queue/user', onUserReceived);
+			
 			stompClient.subscribe('/user/queue/game', onGameQueueReceived);
 			stompClient.subscribe('/topic/game', onGameTopicReceived);
 			
@@ -314,20 +315,22 @@ myapp.controller('FirstCtrl',
 		
 		function onGameTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'Create' || response.responseType === 'Delete' || response.responseType === 'Update') {
+			if (response.responseType === 'Read') {
+				$scope.matches = response.matches;
+				$scope.$apply();
+			} else if (response.responseType === 'Update') {
 				stompClient.send("/app/game.get", {});
 			}
 		}
 		function onGameQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'Read') {
-				$scope.matches = response.matches;
-			} else if (response.responseType === 'Join' || response.responseType === 'Create') {
+			if (response.responseType === 'Join' || response.responseType === 'Create') {
 				$scope.myInfo.matchId = response.matchId;
 				$scope.gamePage = true;
 				$scope.hallPage = false;
 				$scope.host = response.host;
 				//subscribe
+//				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/game', onGameTopicReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/role', onRoleReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/hero', onHeroReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/server', onServerReceived);
@@ -917,7 +920,12 @@ myapp.controller('FirstCtrl',
 		}
 		function onServerReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'Gitf') {
+			if (response.responseType === 'Update') {
+				if($scope.userName === response.userName){
+					$scope.host = response.host;
+				}
+			
+			} else if (response.responseType === 'Gitf') {
 				addMessage(response.userName
 						+ ' receives 3 cards after killing a FUORILEGGE');
 			} else if (response.responseType === 'LoseCard') {

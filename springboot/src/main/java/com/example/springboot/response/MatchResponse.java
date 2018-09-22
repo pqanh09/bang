@@ -6,26 +6,7 @@ import java.util.List;
 import com.example.springboot.model.MatchVO;
 
 public class MatchResponse extends Response{
-	private String matchId;
 	private List<MatchVO> matches = new ArrayList<MatchVO>();
-	private boolean host = false;
-
-	
-	public boolean isHost() {
-		return host;
-	}
-
-	public void setHost(boolean host) {
-		this.host = host;
-	}
-
-	public String getMatchId() {
-		return matchId;
-	}
-
-	public void setMatchId(String matchId) {
-		this.matchId = matchId;
-	}
 
 	public List<MatchVO> getMatches() {
 		return matches;
@@ -35,10 +16,8 @@ public class MatchResponse extends Response{
 		this.matches = matches;
 	}
 
-	public MatchResponse(ResponseType responseType, String matchId, boolean host) {
+	public MatchResponse(ResponseType responseType) {
 		super(responseType);
-		this.matchId = matchId;
-		this.host = host;
 	}
 	public MatchResponse(ResponseType responseType, List<MatchVO> matches) {
 		super(responseType);

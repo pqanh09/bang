@@ -12,6 +12,8 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.springboot.model.Constants;
 import com.example.springboot.model.Match;
+import com.example.springboot.model.Match.MatchStatus;
+import com.example.springboot.response.HostResponse;
 import com.example.springboot.response.MatchResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UserResponse;
@@ -49,23 +51,28 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        String username = (String) stompHeaderAccessor.getSessionAttributes().get(Constants.HEADER_ACCESSOR_USER);
-        if(username != null) {
-            logger.info("User Disconnected : " + username);
-            String matchId = matchService.getUserMap().get(username);
+        String userName = (String) stompHeaderAccessor.getSessionAttributes().get(Constants.HEADER_ACCESSOR_USER);
+        if(userName != null) {
+            logger.info("User Disconnected : " + userName);
+            String matchId = matchService.getUserMap().get(userName);
             if(StringUtils.isNotBlank(matchId)) {
             	Match match = matchService.getMatchMap().get(matchId);
-        		commonService.disconnecPlayer(match, username);
+        		commonService.disconnecPlayer(match, userName);
+        		match.getUserMap().remove(userName);
         		if(match.getPlayerTurnQueue().isEmpty()) {
             		matchService.getMatchMap().remove(matchId);
-            		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Delete, matchId, false));
+            		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
             	} else {
-            		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update, matchId, false));
+            		if(MatchStatus.waiting.equals(match.getStatus())) {
+            			String host = match.getPlayerTurnQueue().peekFirst();
+            			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Update, userName, matchId, true));
+            		}
+            		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
             	}
-            	matchService.getUserMap().remove(username);
+            	matchService.getUserMap().remove(userName);
             }
-            userService.getSessionIdMap().remove(userService.getUserMap().get(username));
-            userService.getUserMap().remove(username);
+            userService.getSessionIdMap().remove(userService.getUserMap().get(userName));
+            userService.getUserMap().remove(userName);
         }
     }
 }
