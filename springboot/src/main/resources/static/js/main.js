@@ -287,7 +287,6 @@ myapp.controller('FirstCtrl',
 		};
 		$scope.startGameFunc = function() {
 			stompClient.send("/app/game.start", {});
-			$scope.host = false;
 		};
 		$scope.refreshMatchFunc = function() {
 			stompClient.send("/app/game.get", {});
@@ -374,6 +373,7 @@ myapp.controller('FirstCtrl',
 			if (response.responseType === 'Role') {
 				$scope.myInfo.role = response.role;
 				$scope.$apply();
+				$scope.host = false;
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
