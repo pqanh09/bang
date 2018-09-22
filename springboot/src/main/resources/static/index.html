@@ -40,7 +40,7 @@
 									<td>{{match.matchId}}</td>
 									<td>{{match.status}}</td>
 									<td>{{match.players}}</td>
-									<td><button ng-show="match.status === 'waiting'"
+									<td><button ng-show="match.status === 'waiting' && match.players.length < 3" 
 											type="submit" ng-click="joinMatchFunc(match.matchId)"
 											class="btn btn-success">Join</button></td>
 								</tr>
@@ -222,7 +222,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
-								data-dismiss="modal" ng-click="createUserFunc()">Create</button>
+								data-dismiss="modal" ng-show="userName" ng-click="createUserFunc()">Create</button>
 						</div>
 					</div>
 

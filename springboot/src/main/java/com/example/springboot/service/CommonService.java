@@ -113,13 +113,17 @@ public class CommonService {
 		return endGame;
 	}
 	public void playerDead(String userName, boolean beKilled, Match match) {
+		match.getPlayerTurnQueue().remove(userName);
 		Character character = match.getCharacterMap().get(userName);
+		if(character == null) {
+			return;
+		}
 		if(character.getRole() != null) {
 			character.setRoleImage(character.getRole().getImage());
 		}
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
 //		notifyCharacter(character,userMap.get(userName));
-		match.getPlayerTurnQueue().remove(userName);
+		
 		if(checkEndGame(match, character)) {
 			return;
 		}
@@ -200,7 +204,8 @@ public class CommonService {
 	
 	public void disconnecPlayer(Match match, String playerName) {
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Leave, playerName));
-		playerDead(playerName, false, match);
+   		playerDead(playerName, false, match);
+		
 //		match.getPlayerTurnQueue().remove(playerName);
 //		Character playerCharacter = match.getCharacterMap().get(playerName);
 //		playerCharacter.setRoleImage(playerCharacter.getRole().getImage());

@@ -314,13 +314,13 @@ myapp.controller('FirstCtrl',
 		
 		function onGameTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'Create') {
+			if (response.responseType === 'Create' || response.responseType === 'Delete' || response.responseType === 'Update') {
 				stompClient.send("/app/game.get", {});
 			}
 		}
 		function onGameQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'Get') {
+			if (response.responseType === 'Read') {
 				$scope.matches = response.matches;
 			} else if (response.responseType === 'Join' || response.responseType === 'Create') {
 				$scope.myInfo.matchId = response.matchId;

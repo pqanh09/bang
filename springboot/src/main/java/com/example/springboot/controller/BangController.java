@@ -95,7 +95,7 @@ public class BangController {
 		String sessionId = sha.getUser().getName();
 		if(userService.getUserMap().containsKey(userName)) {
 			logger.error("Error Existed..........");
-			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/user", new UserResponse(ResponseType.Existed, userName));
+			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/user", new UserResponse(ResponseType.Existed, userName, "UserName is already existed."));
 			return;
 		} else {
 			// Add username in web socket session
@@ -114,7 +114,7 @@ public class BangController {
 		for (Entry<String, Match> entry : matchService.getMatchMap().entrySet()) {
 			matches.add(new MatchVO(entry.getValue()));
 		}
-		MatchResponse createResponse = new MatchResponse(ResponseType.Get, matches);
+		MatchResponse createResponse = new MatchResponse(ResponseType.Read, matches);
 		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
 	}
 	@MessageMapping("/game.create")
@@ -162,6 +162,7 @@ public class BangController {
 		
 		MatchResponse joinResponse = new MatchResponse(ResponseType.Join, match.getMatchId(), false);
 		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", joinResponse);
+		simpMessageSendingOperations.convertAndSend("/topic/game",  new MatchResponse(ResponseType.Update, match.getMatchId(), false));
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Join, userName));
 	}
 	
