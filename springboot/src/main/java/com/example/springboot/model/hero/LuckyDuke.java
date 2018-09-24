@@ -2,6 +2,7 @@ package com.example.springboot.model.hero;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,37 +44,48 @@ public class LuckyDuke extends Hero {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
-		
 		if(step == 1) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<Card> cards = commonService.getFromNewCardList(match, 2);
+			turnNode.getCardTemp().clear();
 			turnNode.setCardTemp(cards);
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2, null, cards, character.getHero(), null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 10));
+			
 		} else {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			List<String> cardIds =  (List<String>) others.get("cards");
 			Card card = null;
-			for (Card cd : turnNode.getCardTemp()) {
-				if(cd.getId().equals(cardIds.get(0))) {
-					card = cd;
-					break;
-				} else {
-					commonService.addToOldCardList(cd, match);
+			if(cardIds != null && !cardIds.isEmpty() && cardIds.size() == 1) {
+				for (Card cd : turnNode.getCardTemp()) {
+					if(cd.getId().equals(cardIds.get(0))) {
+						card = cd;
+						break;
+					} else {
+						commonService.addToOldCardList(cd, match);
+					}
 				}
 			}
-			if(card != null) {
-				turnNode.getCardTemp().clear();
-				if(character.isHasDynamite()) {
-					DynamiteActionCmd.checkDynamite(match, card, commonService);
-					return true;
+			
+			if(card == null) {
+				if(cardIds != null && !cardIds.isEmpty() && cardIds.size() == 1) {
+					logger.error("ERROR in LuckyDuke: not found {}", cardIds);
 				}
-				if(character.isBeJailed()) {
-					JailActionCmd.checkJail(match, card, commonService);
-					return true;
-				}
-			} else {
-				logger.error("ERROR in LuckyDuke");
-				return false;
+				List<Card> cards = turnNode.getCardTemp();
+				card = cards.get(new Random().nextInt(cards.size()));
+				cards.remove(card);
+				commonService.addToOldCardList(cards.get(0), match);
+			}
+			turnNode.getCardTemp().clear();
+			
+			if(character.isHasDynamite()) {
+				DynamiteActionCmd.checkDynamite(match, card, commonService);
+				return true;
+			}
+			if(character.isBeJailed()) {
+				JailActionCmd.checkJail(match, card, commonService);
+				return true;
 			}
 			
 		}

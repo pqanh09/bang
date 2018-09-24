@@ -3,6 +3,7 @@ package com.example.springboot.model.hero;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import com.example.springboot.model.card.JailCard;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.SkillResponse;
+import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
@@ -86,14 +88,32 @@ public class JoseDelgado extends Hero {
 						new SkillResponse(userName, false));
 				return false;
 			}
+			//auto
+			turnNode.getCardTemp().clear();
+			turnNode.setCardTemp(cards);
+			//
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 10));
 		} else {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			List<String> cardIds =  (List<String>) others.get("cards");
+			
+			//auto
+			String cardId;
+			if(cardIds == null || cardIds.isEmpty() || cardIds.size() != 1) {
+				List<Card> cards = turnNode.getCardTemp();
+				cardId = cards.get(new Random().nextInt(cards.size())).getId();
+			} else {
+				cardId = cardIds.get(0);
+			}
+			turnNode.getCardTemp().clear();
+			//
+			
 			Card card =  commonService.getCardInHand(character, cardIds.get(0));
 			if(card == null) {
-				logger.error("Error when perform JoseDelgado's skill");
+				logger.error("Error when perform JoseDelgado's skill {}", cardId);
 				return false;
 			}
 			commonService.addToOldCardList(card, match);

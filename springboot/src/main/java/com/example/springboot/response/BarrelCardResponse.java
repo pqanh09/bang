@@ -12,10 +12,11 @@ public class BarrelCardResponse extends CardResponse {
 		this.canUseBarrel = canUseBarrel;
 	}
 	
-	public BarrelCardResponse(ResponseType responseType, String userName, boolean canUseBarrel) {
+	public BarrelCardResponse(ResponseType responseType, String userName, boolean canUseBarrel, int countDown) {
 		this.responseType = responseType;
 		this.userName = userName;
 		this.canUseBarrel = canUseBarrel;
+		this.countDown = countDown;
 	}
 	
 	public BarrelCardResponse() {

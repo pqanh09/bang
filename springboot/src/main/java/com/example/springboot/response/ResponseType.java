@@ -47,6 +47,9 @@ public enum ResponseType {
 	Gatling,
 	Indians,
 	//
-	Skill
+	Skill,
+	CountDownStart,
+	CountDownEnd
+	
 	
 }

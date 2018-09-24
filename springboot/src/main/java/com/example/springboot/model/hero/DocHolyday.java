@@ -1,9 +1,12 @@
 package com.example.springboot.model.hero;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +15,9 @@ import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.response.HeroSkillResponse;
-import com.example.springboot.response.RemoveCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.SkillResponse;
+import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
@@ -60,28 +63,41 @@ public class DocHolyday extends Hero {
 						new SkillResponse(userName, false));
 				return false;
 			}
+			//auto
+			turnNode.getCardTemp().clear();
+			turnNode.setCardTemp(cards);
+			//
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 5));
 		} else if(step == 2) {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			List<String> cardIds =  (List<String>) others.get("cards");
 			List<Card> cards = new ArrayList<>();
-			for (String cardId : cardIds) {
-				Card  card = BangUtils.findCardInFront(character, cardId);
-				if(card == null)  {
-					card = BangUtils.findCardInHand(character, cardId);
+			//auto
+			if(cardIds == null || cardIds.isEmpty() || cardIds.size() != 2) {
+				List<Card> cardTemps = turnNode.getCardTemp();
+				Collections.shuffle(cardTemps);
+				cards.add(cardTemps.get(0));
+				cards.add(cardTemps.get(1));
+			} else {
+				for (String cardId : cardIds) {
+					Card  card = BangUtils.findCardInFront(character, cardId);
+					if(card == null)  {
+						card = BangUtils.findCardInHand(character, cardId);
+					}
+					if(card == null) {
+						logger.error("Error when perform DocHolyday's skill");
+						continue;
+					}
+					cards.add(card);
 				}
-				if(card == null) {
-					logger.error("Error when perform SidKetchum's skill");
-					continue;
-				}
-				cards.add(card);
-				//commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, cards));
 			}
-			if(cards.size() < 2) {
-				logger.error("Error when perform DocHolyday's skill < 2");
-				return false;
-			}
+			turnNode.getCardTemp().clear();
+
+			//
+			
 			for (Card card : cards) {
 				character.getCardsInFront().remove(card);
 				character.getCardsInHand().remove(card);
@@ -89,17 +105,29 @@ public class DocHolyday extends Hero {
 			character.setNumCardsInHand(character.getCardsInHand().size());
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
+			//auto
+			turnNode.getTemp().clear();
+			turnNode.setTemp(otherPlayers);
+			//
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 3 , otherPlayers, null, character.getHero(), null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 5));
 		} else {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			String targetPlayer =  (String) others.get("targetUser");
+			// auto
+			if(StringUtils.isBlank(targetPlayer)) {
+				List<String> otherPlayers = turnNode.getTemp();
+				targetPlayer = otherPlayers.get(new Random().nextInt(otherPlayers.size()));
+			}
+			turnNode.getTemp().clear();
+			//
 			turnNode.setAction(ResponseType.Bang);
 			turnNode.setDocHolyday(true);
 			turnNode.getNextPlayer().clear();
 			turnNode.getNextPlayer().add(targetPlayer);
 			turnNode.requestOtherPlayerUseCard(match);
 		}
-		
 		return true;
 	}
 

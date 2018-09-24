@@ -47,7 +47,17 @@ public class TurnNode {
 	private String matchId;
 	private CommonService commonService;
 	
+	private List<String> temp = new ArrayList<>();
 	
+	
+	public List<String> getTemp() {
+		return temp;
+	}
+
+	public void setTemp(List<String> temp) {
+		this.temp = temp;
+	}
+
 	public List<String> getPlayerUsedMissed() {
 		return playerUsedMissed;
 	}
@@ -146,6 +156,8 @@ public class TurnNode {
 		this.docHolyday = false;
 		//for JoseDelgado
 		this.joseDelgado = 0;
+		
+		this.temp.clear();
 	}
 
 	public TurnNode(CommonService commonService, String matchId) {
@@ -193,12 +205,12 @@ public class TurnNode {
 				// request player use cards
 				if(hasBarrel) {
 					if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && match.getCurrentTurn().getCharacter().getHero() instanceof BelleStar) {
-						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, false));
+						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, false, 5));
 					} else {
-						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true));
+						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true, 5));
 					}
 				} else {
-					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(action, targetUser));
+					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(action, targetUser, 5));
 				}
 			} else {
 				logger.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 87");
@@ -208,13 +220,13 @@ public class TurnNode {
 			Character targetCharacter = match.getCharacterMap().get(targetUser);
 			List<Card> cards = targetCharacter.getCardsInFront();
 			// request player use cards
-			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new GetCardResponse(character.getUserName(), action, targetUser, cards, !targetCharacter.getCardsInHand().isEmpty()));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new GetCardResponse(character.getUserName(), action, targetUser, cards, !targetCharacter.getCardsInHand().isEmpty(), 5));
 		} else if(ResponseType.GeneralStore.equals(action)) {
 			// request player use cards
 			String targetUser = nextPlayer.peek();
 			if(targetUser != null) {
 				// request player use cards
-				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(ResponseType.GeneralStore, targetUser, cardTemp));
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(ResponseType.GeneralStore, targetUser, cardTemp, 5));
 			} else {
 				logger.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Null nextplayer");
 			}	

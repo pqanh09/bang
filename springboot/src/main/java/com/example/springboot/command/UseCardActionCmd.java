@@ -362,6 +362,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				} else if (card instanceof GeneralStoreCard) {
 					commonService.addToOldCardList(card, match);
 					turnNode.setAction(ResponseType.GeneralStore);
+					turnNode.getCardTemp().clear();
 					turnNode.setCardTemp(commonService.getFromNewCardList(match, match.getPlayerTurnQueue().size()));
 					LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(match.getPlayerTurnQueue(),
 							userName);

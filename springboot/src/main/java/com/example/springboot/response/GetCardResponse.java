@@ -25,13 +25,14 @@ public class GetCardResponse extends CardResponse {
 		this.targetUser = targetUser;
 	}
 
-	public GetCardResponse(String userName, ResponseType responseType, String targetUser, List<Card> cards, boolean hasCardInHand) {
+	public GetCardResponse(String userName, ResponseType responseType, String targetUser, List<Card> cards, boolean hasCardInHand, int countDown) {
 		super();
 		this.userName = userName;
 		this.cards = cards;
 		this.targetUser = targetUser;
 		this.responseType = responseType;
 		this.hasCardInHand = hasCardInHand;
+		this.countDown = countDown;
 	}
 
 	public GetCardResponse() {

@@ -11,6 +11,19 @@
 	display: flow-root;
 	text-align: center;
 }
+.item-hero-image-countdown {
+	position: relative;
+    text-align: center;
+    color: red;
+    font-size: -webkit-xxx-large;
+}
+.item-hero-countdown {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
 .item-hero-image {
 	text-align: center;

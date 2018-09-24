@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +18,7 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.SkillResponse;
+import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 import com.rabbitmq.client.AMQP.Connection.Tune;
@@ -68,17 +71,34 @@ public class UncleWill extends Hero {
 						new SkillResponse(userName, false));
 				return false;
 			}
+			//auto
+			turnNode.getCardTemp().clear();
+			turnNode.setCardTemp(cards);
+			//
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 10));
 		} else {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			List<String> cardIds =  (List<String>) others.get("cards");
-			Card card =  commonService.getCardInFront(character, cardIds.get(0));
+			//auto
+			String cardId;
+			if(cardIds == null || cardIds.isEmpty() || cardIds.size() != 1) {
+				List<Card> cards = turnNode.getCardTemp();
+				cardId = cards.get(new Random().nextInt(cards.size())).getId();
+			} else {
+				cardId = cardIds.get(0);
+			}
+			 turnNode.getCardTemp().clear();
+			//
+			 
+			Card card =  commonService.getCardInFront(character, cardId);
 			if(card == null)  {
-				card =  commonService.getCardInHand(character, cardIds.get(0));
+				card =  commonService.getCardInHand(character, cardId);
 			}
 			if(card == null) {
-				logger.error("Error when perform UncleWill's skill");
+				logger.error("Error when perform UncleWill's skilla {}", cardId);
 				return false;
 			}
 			commonService.addToOldCardList(card, match);
@@ -88,6 +108,7 @@ public class UncleWill extends Hero {
 			turnNode.setUncleWill(true);
 			
 			turnNode.setAction(ResponseType.GeneralStore);
+			turnNode.getCardTemp().clear();
 			turnNode.setCardTemp(commonService.getFromNewCardList(match, match.getPlayerTurnQueue().size()));
 			LinkedList<String> otherPlayers = BangUtils.getOtherPlayer(match.getPlayerTurnQueue(),
 					userName);

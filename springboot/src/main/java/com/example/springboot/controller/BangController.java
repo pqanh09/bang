@@ -188,11 +188,11 @@ public class BangController {
 			return;
 		}
 		int nRole = match.getPlayerTurnQueue().size();
-		if (nRole < 4) {
-			logger.error("Not enough number player to play");
-			//TODO
-			return;
-		}
+//		if (nRole < 4) {
+//			logger.error("Not enough number player to play");
+//			//TODO
+//			return;
+//		}
 		match.setStatus(MatchStatus.playing);
 		// get roles
 		List<Role> roles = roleService.getRoles(nRole);

@@ -1,6 +1,7 @@
 package com.example.springboot.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -33,27 +34,38 @@ public class RemoveCardEndTurnActionCmd extends AbsActionCmd implements ActionCm
 		Character character = match.getCharacterMap().get(userName);
 		// get cards for removing;
 		List<Card> cards = new ArrayList<>();
-		Card card = commonService.getCardInHand(match, character, request.getId(), null);
-		if(card != null) {
-			cards.add(card);
-			commonService.addToOldCardList(card, match);
-		}
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, cards));
 		
-		//check number card is  not ok
-		if(character.getCardsInHand().size() > character.getLifePoint()) {
-			if(character.getHero() instanceof SeanMallory) {
-				if(character.getHero().useSkill(match, character, commonService, 1, null)) {
-					//character.getCardsInHand().size() > 10)
-					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
-					return;
+		List<String> cardIds =  (List<String>) request.getOthers().get("cards");
+		int numberCard = 0;
+		if(character.getHero() instanceof SeanMallory) {
+			numberCard = character.getCardsInHand().size() - 10;
+		} else {
+			numberCard = character.getCardsInHand().size() - character.getLifePoint();
+		}
+		//auto
+		if(cardIds == null || cardIds.isEmpty() || cardIds.size() < numberCard) {
+			for (int i = 0; i < numberCard; i++) {
+				cards.add(character.getCardsInHand().get(i));
+			}
+		} else {
+			for (String cardId : cardIds) {
+				Card  card = BangUtils.findCardInHand(character, cardId);
+				if(card == null) {
+					logger.error("Error when removing card {}", cardId);
+					continue;
 				}
-			} else {
-				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
-				return;
+				cards.add(card);
 			}
 		}
-		// if ok -> next turn
+		//
+		
+		for (Card card : cards) {
+			character.getCardsInHand().remove(card);
+		}
+		commonService.addToOldCardList(cards, match);
+		character.setNumCardsInHand(character.getCardsInHand().size());
+		commonService.notifyCharacter(match.getMatchId(), character, sessionId);
+		
 		commonService.endTurn(userName, match);
 	}
 

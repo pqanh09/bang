@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.SkillResponse;
+import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
@@ -53,10 +55,23 @@ public class JesseJones extends Hero {
 		if(step == 1) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
+			//auto
+			turnNode.getTemp().clear();
+			turnNode.setTemp(otherPlayers);
+			//
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , otherPlayers, null, character.getHero(), null));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 10));
 		} else {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			String targetPlayer =  (String) others.get("targetUser");
+			// auto
+			if(StringUtils.isBlank(targetPlayer)) {
+				List<String> otherPlayers = turnNode.getTemp();
+				targetPlayer = otherPlayers.get(new Random().nextInt(otherPlayers.size()));
+			}
+			turnNode.getTemp().clear();
+			//
 			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
 			int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
 			Card card = commonService.getCardInHand(targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId());

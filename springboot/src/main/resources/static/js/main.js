@@ -1,18 +1,89 @@
 'use strict';
 var myapp = angular.module('myapp', []);
 myapp.controller('FirstCtrl',
-	function($scope, $timeout) {
+	function($scope, $timeout, $interval) {
 		var socket = null;
 		var stompClient = null;
 		var dialogInputUserName = angular.element('#dialogInputUserName');
 		var dialogSelectUser = angular.element('#dialogSelectUser');
 		var dialogSelectHero = angular.element('#dialogSelectHero');
-		var dialogSelectCard = angular.element('#dialogSelectCard');
-		var dialogSelectCardPC = angular.element('#dialogSelectCardPC');
 		var dialogFullImage = angular.element('#dialogFullImage');
-		var heroUserSelectionDialog = angular.element('#heroUserSelectionDialog');
-		var heroCardSelectionDialog = angular.element('#heroCardSelectionDialog');
-		var heroUserCardSelectionDialog = angular.element('#heroUserCardSelectionDialog');
+		//card: Panic - Cat Palou - General Store - Remove Card when ending turn
+		var cardDialog = angular.element('#cardDialog');
+		//skill
+		var userSkillDialog = angular.element('#userSkillDialog');
+		var cardSkillDialog = angular.element('#cardSkillDialog');
+		var userCardSkillDialog = angular.element('#userCardSkillDialog');
+		$scope.timeSkill = 10;
+		var timerSkill;
+		var timerSkillFunc = function() {
+            if( $scope.timeSkill > 0 ) {
+            	$scope.timeSkill -=1;
+            } else {
+            	$interval.cancel(timerSkill);
+            	if($scope.playerCountDown === $scope.userName){
+            		if($scope.actionType === 'Skill'){
+            			$scope.playerCountDown = '';
+                    	userSkillDialog.modal('hide');
+                    	userCardSkillDialog.modal('hide');
+                    	cardSkillDialog.modal('hide');
+                    	stompClient.send('/app/game.execute', {}, JSON
+        	    			.stringify({
+        	    				actionType : 'UseSkill',
+        	    				step:  $scope.skillInfo.step
+        	    			}));
+            		} 
+            		else if($scope.actionType === 'GetCard'){
+            			stompClient.send('/app/game.execute', {}, JSON
+            					.stringify({
+            						actionType : 'GetCard'
+            					}));
+            			$scope.playerGettingCard = '';
+            		}
+            		else if($scope.actionType === 'UseCard'){
+//            			dialogSelectCardPC.modal('hide');
+            			dialogSelectUser.modal('hide');
+            			stompClient.send('/app/game.execute', {}, JSON
+            					.stringify({
+            						actionType : 'EndTurn'
+            					}));
+            			$scope.playerGettingCard = '';
+            		}
+            		else if($scope.actionType === 'DrawCardDynamite' || $scope.actionType === 'DrawCardJail'){
+            			$scope.drawFunc();
+            		}
+            		else if($scope.actionType === 'CatPalou' || $scope.actionType === 'Panic'){
+            			$scope.pickRandomCardDialogFunc();
+            		}
+            		else if($scope.actionType === 'GeneralStore'){
+        				cardDialog.modal('hide');
+        				stompClient.send('/app/game.execute', {}, JSON
+        					.stringify({
+        						actionType : $scope.actionType,
+        						id : $scope.cardInfo.cards[0].id
+        					}));
+            		}
+            		else if($scope.actionType === 'RemoveCardEndTurn'){
+        				cardDialog.modal('hide');
+        				stompClient.send('/app/game.execute', {}, JSON
+        					.stringify({
+        						actionType : $scope.actionType
+        					}));
+            		}
+            		else if($scope.actionType === 'Bang' 
+            			|| $scope.actionType === 'Gatling'
+    					|| $scope.actionType=== 'Duello'
+						|| $scope.actionType === 'Indians'){
+            			$scope.lostLifePointFunc();
+            		}
+            		else {
+            			console.log('Something is error!');
+            		}
+            		
+            	}
+            	
+            }
+        }
 		
 		$scope.hallPage = true;
 		$scope.gamePage = false;
@@ -24,6 +95,18 @@ myapp.controller('FirstCtrl',
 			hero: null,
 			role: null
 		};
+		$scope.cardInfo = {
+			hasCardInHand: false,
+			enableCancelBtn: true,
+			enableOkBtn: true,
+			titleBtnCard: '',
+			titleDialog: '',
+			cards: [],
+			selectedCards: [],
+			numberCard: 0
+		};
+		
+		$scope.playerCountDown = '';
 		$scope.skillInfo = {
 			enableUseSkillBtn: false,
 			enableCancelBtn: true,
@@ -32,7 +115,6 @@ myapp.controller('FirstCtrl',
 			titleDialog: '',
 			step: 1,
 			players: [],
-			tempPlayers: [],
 			selectedPlayer: '',
 			cards: [],
 			selectedCards: [],
@@ -40,9 +122,9 @@ myapp.controller('FirstCtrl',
 			selectedCardMap: {},
 			targetUser: ''
 		}
-		$scope.dialogSelectCardTitle = '';
-		$scope.dialogSelectCardActionType = '';
-		$scope.dialogSelectCardActionStr = '';
+//		$scope.dialogSelectCardTitle = '';
+//		$scope.dialogSelectCardActionType = '';
+//		$scope.dialogSelectCardActionStr = '';
 		$scope.userCanBeAffectList = [];
 		$scope.selectedUser = '';
 		$scope.selectedCard = '';
@@ -65,7 +147,7 @@ myapp.controller('FirstCtrl',
 		$scope.hasCardInHand = false;
 		$scope.sendMessage = function(keyEvent) {
 			 if (keyEvent.which === 13){
-				 stompClient.send("/app/game.execute", {}, JSON
+				 stompClient.send('/app/game.execute', {}, JSON
 							.stringify({
 								id : $scope.chattingMsg,
 								actionType : 'Chatting'
@@ -74,7 +156,7 @@ myapp.controller('FirstCtrl',
 			 }
 		};
 		$scope.useBarrelCardFunc = function(cardId) {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						id : cardId,
 						actionType : 'UseBarrel'
@@ -90,7 +172,7 @@ myapp.controller('FirstCtrl',
 			});
 		}
 		$scope.getCardFunc = function() {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						actionType : 'GetCard'
 					}));
@@ -98,35 +180,37 @@ myapp.controller('FirstCtrl',
 
 		};
 		$scope.drawFunc = function() {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						actionType : $scope.actionType
 					}));
 			// $scope.playerDrawingCard = '';
 		};
 		$scope.useHeroSkillFunc = function() {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						actionType : 'UseSkill',
 						step: 1
 					}));
 		};
 		$scope.endTurnFunc = function() {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						actionType : 'EndTurn'
 					}));
 		};
 		$scope.okUserDialogFunc = function() {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						id : $scope.selectedCard,
 						actionType : 'UseCard',
 						targetUser : $scope.selectedUser
 					}));
 		};
-		$scope.okHeroUserSelectionDialogFunc = function() {
-			stompClient.send("/app/game.execute", {}, JSON
+		$scope.okUserSkillDialogFunc = function() {
+			$interval.cancel(timerSkill);
+			$scope.playerCountDown = '';
+			stompClient.send('/app/game.execute', {}, JSON
 			.stringify({
 				actionType : 'UseSkill',
 				step:  $scope.skillInfo.step,
@@ -135,20 +219,22 @@ myapp.controller('FirstCtrl',
 				}
 			}));
 		};
-		$scope.okHeroUserCardSelectionDialogFunc = function() {
+		$scope.okUserCardSkillDialogFunc = function() {
+			$interval.cancel(timerSkill);
+			$scope.playerCountDown = '';
 			var cardPlayerMap = {};
 			angular.forEach($scope.skillInfo.cards, function(card){
 				cardPlayerMap[card.id] = card.assignedPlayer;
 		    });
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						actionType : 'UseSkill',
 						step:  $scope.skillInfo.step,
 						others: cardPlayerMap
 			}));
 		};
-		$scope.updateAssignedPlayerHeroUserCardSelectionDialog = function() {
-			var players = angular.copy($scope.skillInfo.tempPlayers);
+		$scope.updateAssignedPlayerUserCardSkillDialogFunc = function() {
+			var players = angular.copy($scope.skillInfo.players);
 			var index;
 			angular.forEach($scope.skillInfo.cards, function(card){
 				index = players.indexOf(card.assignedPlayer);
@@ -162,11 +248,45 @@ myapp.controller('FirstCtrl',
 				$scope.skillInfo.enableOkBtn = false;
 			}
 		};
-		$scope.pickHeroCardSelectionDialogFunc = function(cardId) {
-			if($scope.myInfo.hero.name === "PatBrennan" || $scope.myInfo.hero.name === "KitCarlson" || $scope.myInfo.hero.name === 'LuckyDuke' || $scope.myInfo.hero.name === 'UncleWill' || $scope.myInfo.hero.name === "JoseDelgado"){
+		$scope.pickCardDialogFunc = function(cardId) {
+			if($scope.actionType === 'Panic' || $scope.actionType === 'CatPalou' || $scope.actionType === 'GeneralStore'){
+				$interval.cancel(timerSkill);
+				cardDialog.modal('hide');
+				stompClient.send('/app/game.execute', {}, JSON
+					.stringify({
+						actionType : $scope.actionType,
+						id : cardId
+					}));
+			} else if($scope.actionType === 'RemoveCardEndTurn'){ 
+				angular.forEach($scope.cardInfo.cards, function(card){
+					if(card.id === cardId){
+						$scope.cardInfo.selectedCards.push(cardId);
+						card.selected = true;
+					}
+				});
+				if($scope.cardInfo.selectedCards.length >= $scope.cardInfo.numberCard){
+					$interval.cancel(timerSkill);
+					cardDialog.modal('hide');
+					stompClient.send('/app/game.execute', {}, JSON
+						.stringify({
+							actionType : $scope.actionType,
+							others: {
+								cards: $scope.cardInfo.selectedCards
+							}
+						}));
+				}
+			} else {
+				console.log('Not yet handled.');
+			}
+			
+		};
+		$scope.pickCardSkillDialogFunc = function(cardId) {
+			if($scope.myInfo.hero.name === 'PatBrennan' || $scope.myInfo.hero.name === 'KitCarlson' || $scope.myInfo.hero.name === 'LuckyDuke' || $scope.myInfo.hero.name === 'UncleWill' || $scope.myInfo.hero.name === 'JoseDelgado'){
 				$scope.skillInfo.selectedCards.push(cardId);
-				heroCardSelectionDialog.modal('hide');
-				stompClient.send("/app/game.execute", {}, JSON
+				$interval.cancel(timerSkill);
+				$scope.playerCountDown = '';
+				cardSkillDialog.modal('hide');
+				stompClient.send('/app/game.execute', {}, JSON
 						.stringify({
 							actionType : 'UseSkill',
 							step:  $scope.skillInfo.step,
@@ -175,7 +295,7 @@ myapp.controller('FirstCtrl',
 								cards: $scope.skillInfo.selectedCards
 							}
 						}));
-			} else if($scope.myInfo.hero.name === "SidKetchum" || $scope.myInfo.hero.name === "DocHolyday"){ 
+			} else if($scope.myInfo.hero.name === 'SidKetchum' || $scope.myInfo.hero.name === 'DocHolyday'){ 
 				angular.forEach($scope.skillInfo.cards, function(card){
 					if(card.id === cardId){
 						$scope.skillInfo.selectedCards.push(cardId);
@@ -183,8 +303,10 @@ myapp.controller('FirstCtrl',
 					}
 			    });
 				if($scope.skillInfo.selectedCards.length >= $scope.skillInfo.numberCard){
-					heroCardSelectionDialog.modal('hide');
-					stompClient.send("/app/game.execute", {}, JSON
+					$interval.cancel(timerSkill);
+					$scope.playerCountDown = '';
+					cardSkillDialog.modal('hide');
+					stompClient.send('/app/game.execute', {}, JSON
 						.stringify({
 							actionType : 'UseSkill',
 							step:  $scope.skillInfo.step,
@@ -200,17 +322,11 @@ myapp.controller('FirstCtrl',
 			}
 			
 		};
-		$scope.okHeroCardSelectionDialogFunc = function() {
-			console.log($scope.skillInfo.selectedPlayer);
-//			stompClient.send("/app/game.execute", {}, JSON
-//					.stringify({
-//						id : $scope.selectedCard,
-//						actionType : 'UseCard',
-//						targetUser : $scope.selectedUser
-//					}));
+		$scope.okCardSkillDialogFunc = function() {
+			console.log('TODO');
 		};
 		$scope.lostLifePointFunc = function() {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						actionType : 'UseCard',
 						noneResponse : true
@@ -221,44 +337,46 @@ myapp.controller('FirstCtrl',
 		};
 
 		$scope.heroPickFunc = function(heroId) {
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						id : heroId,
 						actionType : 'PickHero'
 					}));
 			$scope.dialogTitle = '';
 		};
-		$scope.pickCardToRemoveFunc = function(cardId) {
-			if ($scope.dialogSelectCardActionType === 'RemoveCardEndTurn') {
-				stompClient.send("/app/game.execute", {}, JSON
-						.stringify({
-							id : cardId,
-							actionType : 'RemoveCardEndTurn'
-						}));
-			} else if ($scope.dialogSelectCardActionType === 'GeneralStore') {
-				stompClient.send("/app/game.execute", {}, JSON
-						.stringify({
-							id : cardId,
-							actionType : 'GeneralStore'
-						}));
-			}
-		};
-		$scope.pickCardToRemoveFuncPC = function(cardId) {
-			stompClient.send("/app/game.execute",{},
+//		$scope.pickCardToRemoveFunc = function(cardId) {
+//			if ($scope.dialogSelectCardActionType === 'RemoveCardEndTurn') {
+//				stompClient.send('/app/game.execute', {}, JSON
+//						.stringify({
+//							id : cardId,
+//							actionType : 'RemoveCardEndTurn'
+//						}));
+//			} else if ($scope.dialogSelectCardActionType === 'GeneralStore') {
+//				stompClient.send('/app/game.execute', {}, JSON
+//						.stringify({
+//							id : cardId,
+//							actionType : 'GeneralStore'
+//						}));
+//			}
+//		};
+//		$scope.pickCardToRemoveFuncPC = function(cardId) {
+//			stompClient.send('/app/game.execute',{},
+//				JSON.stringify({
+//					id : cardId,
+//					actionType : $scope.dialogSelectCardActionType
+//				}));
+//		};
+		$scope.pickRandomCardDialogFunc = function(cardId) {
+			$interval.cancel(timerSkill);
+			cardDialog.modal('hide');
+			stompClient.send('/app/game.execute',{},
 				JSON.stringify({
-					id : cardId,
-					actionType : $scope.dialogSelectCardActionType
-				}));
-		};
-		$scope.pickCardToRemoveFuncPCRandom = function(cardId) {
-			stompClient.send("/app/game.execute",{},
-				JSON.stringify({
-					actionType : $scope.dialogSelectCardActionType
+					actionType : $scope.actionType
 				}));
 		};
 		$scope.useCardFunc = function(cardId) {
 			$scope.selectedCard = cardId;
-			stompClient.send("/app/game.execute", {}, JSON
+			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						id : cardId,
 						actionType : 'CheckCard'
@@ -276,20 +394,20 @@ myapp.controller('FirstCtrl',
 			}
 		};
 		$scope.joinMatchFunc = function(matchId) {
-			stompClient.send("/app/game.join", {}, 
+			stompClient.send('/app/game.join', {}, 
 					JSON.stringify({
 						id : matchId,
 						actionType : 'Join'
 					}));
 		};
 		$scope.createNewMatchFunc = function(matchId) {
-			stompClient.send("/app/game.create", {});
+			stompClient.send('/app/game.create', {});
 		};
 		$scope.startGameFunc = function() {
-			stompClient.send("/app/game.start", {});
+			stompClient.send('/app/game.start', {});
 		};
 		$scope.refreshMatchFunc = function() {
-			stompClient.send("/app/game.get", {});
+			stompClient.send('/app/game.get', {});
 		};
 		
 		//normal func
@@ -303,7 +421,7 @@ myapp.controller('FirstCtrl',
 			
 			$scope.userName = $scope.userName.replace(/ /g,'');
 			// Tell your username to the server
-			stompClient.send("/app/user.create", {}, JSON.stringify({
+			stompClient.send('/app/user.create', {}, JSON.stringify({
 				id : $scope.userName,
 				actionType : 'Create'
 			}));
@@ -318,7 +436,7 @@ myapp.controller('FirstCtrl',
 				$scope.matches = response.matches;
 				$scope.$apply();
 			} else if (response.responseType === 'Update') {
-				stompClient.send("/app/game.get", {});
+				stompClient.send('/app/game.get', {});
 			}
 		}
 		function onGameQueueReceived(payload) {
@@ -329,13 +447,13 @@ myapp.controller('FirstCtrl',
 				$scope.hallPage = false;
 				$scope.host = response.host;
 				//subscribe
-//				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/game', onGameTopicReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/role', onRoleReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/hero', onHeroReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/server', onServerReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/skill', onSkillTopicReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/character', onCharacterQueueReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/skill', onSkillQueueReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/countdown', onCountDownTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/character', onCharacterTopicReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/checkcard',onCheckCardQueueReceived);
 				stompClient.subscribe('/user/queue/'+ $scope.myInfo.matchId +'/removecard',onRemoveCardBeforeEndTurnQueueReceived);
@@ -357,7 +475,7 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Create') {
 				$scope.userName = response.userName;
-				stompClient.send("/app/game.get", {});
+				stompClient.send('/app/game.get', {});
 			} else {
 				console.log('ERROR: ' + response.responseType);
 				console.log(JSON.stringify(response));
@@ -405,6 +523,27 @@ myapp.controller('FirstCtrl',
 				$scope.myInfo.hero = response.character.hero;
 				$scope.$apply();
 			} else {
+				console.log('Error');
+				alert(JSON.stringify(response));
+			}
+		}
+		function onCountDownTopicReceived(payload) {
+			var response = JSON.parse(payload.body);
+			if (response.responseType === 'CountDownStart') {
+				$interval.cancel(timerSkill);
+				$scope.playerCountDown = response.userName;
+				$scope.timeSkill = response.countDown;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				$scope.$apply();
+			} 
+			else if (response.responseType === 'CountDownEnd') {
+//				$interval.cancel(timerSkill);
+//				$scope.playerCountDown = '';
+//				$scope.timeSkill = 0;
+//				$scope.$apply();
+				console.log('Do nothing');
+			} 
+			else {
 				console.log('Error');
 				alert(JSON.stringify(response));
 			}
@@ -480,7 +619,7 @@ myapp.controller('FirstCtrl',
 							console.log('ERROR');
 						}
 					} else {
-						stompClient.send("/app/game.execute", {},
+						stompClient.send('/app/game.execute', {},
 								JSON.stringify({
 									id : $scope.selectedCard,
 									actionType : 'UseCard'
@@ -498,36 +637,51 @@ myapp.controller('FirstCtrl',
 		function onRemoveCardBeforeEndTurnQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'RemoveCardEndTurn') {
-				$timeout(
-						function() {
-							$scope.cards = response.cards;
-							$scope.dialogSelectCardTitle = 'remove';
-							$scope.dialogSelectCardActionType = response.responseType;
-							$scope.dialogSelectCardActionStr = 'Remove';
-							$scope.playerUsingCard = response.userName;
-							$scope.actionType = response.responseType;
-							dialogSelectCard.modal({backdrop:'static',keyboard:true,show:true});
-						}, 500);
+				
+				$scope.actionType = response.responseType;
+				$scope.cardInfo.cards = response.cards;
+				angular.forEach($scope.skillInfo.cards, function(card){
+					card.selected = false;
+			    });
+				$scope.cardInfo.titleBtnCard = 'Remove';
+				$scope.cardInfo.hasCardInHand = false;
+				$scope.cardInfo.enableOkBtn = false;
+				$scope.cardInfo.enableCancelBtn = false;
+				$scope.cardInfo.selectedCards.length = 0;
+				$scope.cardInfo.numberCard = response.numberCard;
+				$scope.cardInfo.titleDialog = 'You must remove ' + response.numberCard + ' before ending turn.';
+				$timeout(function() {
+					cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+				}, 500);
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = 10;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
 			}
 		}
 		
+		//TODO not use
 		function onRemoveCardBeforeEndTurnTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'RemoveCardEndTurn') {
-				addMessage(response.userName
-						+ ' has just removed card '
-						+ response.cards[0].name
-						+ ' before ending turn!');
-
+				if($scope.userName !== response.userName){
+					/// count down time
+					$interval.cancel(timerSkill);
+					$scope.timeSkill = 10;
+					$scope.playerCountDown = response.userName;
+					timerSkill = $interval(timerSkillFunc, 1000);
+					///
+				}
 				$scope.$apply();
 			} else if (response.responseType === 'RemoveCard') {
 				addMessage(response.userName
 						+ ' has just removed card '
 						+ response.cards[0].name);
-
 				$scope.$apply();
 			} else {
 				console.log('ERROR');
@@ -634,9 +788,13 @@ myapp.controller('FirstCtrl',
 				$scope.playerGettingCard = response.userName;
 				$scope.playerUsingCard = '';
 				$scope.playerDrawingCard = '';
-				if($scope.userName === response.userName){
-					$scope.skillInfo.enableUseSkillBtn = true;
-				}
+				$scope.actionType = response.responseType;
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = 10;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
 				$scope.$apply();
 			} else if (response.responseType === 'UseCard') {
 				addMessage(response.userName
@@ -648,6 +806,14 @@ myapp.controller('FirstCtrl',
 				$scope.actionType = response.responseType;
 				$scope.playerGettingCard = ''
 				$scope.playerDrawingCard = '';
+				
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = 10;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
+				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardJail') {
 				addMessage(response.userName
@@ -657,6 +823,14 @@ myapp.controller('FirstCtrl',
 				$scope.actionType = response.responseType;
 				$scope.playerUsingCard = '';
 				$scope.playerGettingCard = '';
+				
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = 10;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
+				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardDynamite') {
 				addMessage(response.userName
@@ -666,6 +840,14 @@ myapp.controller('FirstCtrl',
 				$scope.actionType = response.responseType;
 				$scope.playerUsingCard = '';
 				$scope.playerGettingCard = '';
+				
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = 10;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
+				
 				$scope.$apply();
 			} else {
 				console.log('ERROR');
@@ -687,86 +869,111 @@ myapp.controller('FirstCtrl',
 				} else {
 					$scope.playerUsingBarrel = '';
 				}
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = response.countDown;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
 				$scope.$apply();
 			} else if (response.responseType === 'Panic') {
+				$scope.actionType = response.responseType;
 				if ($scope.userName === response.userName) {
-					$timeout(
-							function() {
-								$scope.playerUsingCard = '';
-								$scope.cards = response.cards;
-								$scope.hasCardInHand = response.hasCardInHand;
-								$scope.dialogSelectCardTitle = 'get';
-								$scope.dialogSelectCardActionType = response.responseType;
-								$scope.dialogSelectCardActionStr = 'Get';
-								dialogSelectCardPC.modal({backdrop:'static',keyboard:true,show:true});
-							}, 500);
+					$scope.cardInfo.cards = response.cards;
+					$scope.cardInfo.titleBtnCard = 'Get';
+					$scope.cardInfo.hasCardInHand = response.hasCardInHand;
+					$scope.cardInfo.enableOkBtn = false;
+					$scope.cardInfo.enableCancelBtn = false;
+					$scope.cardInfo.selectedCards.length = 0;
+					$scope.cardInfo.numberCard = 1;
+					$scope.cardInfo.titleDialog = 'Get 1 card from ' + response.targetUser;
+					$timeout(function() {
+						cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+					}, 500);
 				}
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = response.countDown;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
 			} else if (response.responseType === 'CatPalou') {
 				if ($scope.userName === response.userName) {
-					$timeout(
-							function() {
-								$scope.playerUsingCard = '';
-								$scope.cards = response.cards;
-								$scope.hasCardInHand = response.hasCardInHand;
-								$scope.dialogSelectCardTitle = 'remove';
-								$scope.dialogSelectCardActionType = response.responseType;
-								$scope.dialogSelectCardActionStr = 'Remove';
-								dialogSelectCardPC.modal({backdrop:'static',keyboard:true,show:true});
-							}, 500);
+					$scope.actionType = response.responseType;
+					
+					$scope.cardInfo.cards = response.cards;
+					$scope.cardInfo.titleBtnCard = 'Remove';
+					$scope.cardInfo.hasCardInHand = response.hasCardInHand;
+					$scope.cardInfo.enableOkBtn = false;
+					$scope.cardInfo.enableCancelBtn = false;
+					$scope.cardInfo.selectedCards.length = 0;
+					$scope.cardInfo.numberCard = 1;
+					$scope.cardInfo.titleDialog = 'Remove 1 card from ' + response.targetUser;
+					$timeout(function() {
+						cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+					}, 500);
 				}
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = response.countDown;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
 			} else if (response.responseType === 'GeneralStore') {
 				if ($scope.userName === response.userName) {
-					$timeout(
-							function() {
-								$scope.playerUsingCard = '';
-								$scope.cards = response.cards;
-								$scope.dialogSelectCardTitle = 'get';
-								$scope.dialogSelectCardActionType = response.responseType;
-								$scope.dialogSelectCardActionStr = 'Get';
-								$scope.actionType = response.responseType;
-								dialogSelectCard.modal({backdrop:'static',keyboard:true,show:true});
-							}, 500);
+					$scope.actionType = response.responseType;
+					$scope.cardInfo.cards = response.cards;
+					$scope.cardInfo.titleBtnCard = 'Get';
+					$scope.cardInfo.hasCardInHand = false;
+					$scope.cardInfo.enableOkBtn = false;
+					$scope.cardInfo.enableCancelBtn = false;
+					$scope.cardInfo.selectedCards.length = 0;
+					$scope.cardInfo.numberCard = 1;
+					$scope.cardInfo.titleDialog = 'General Store! Get 1 card. ';
+					$timeout(function() {
+						cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+					}, 500);
 				}
+				/// count down time
+				$interval.cancel(timerSkill);
+				$scope.timeSkill = response.countDown;
+				$scope.playerCountDown = response.userName;
+				timerSkill = $interval(timerSkillFunc, 1000);
+				///
 			} else {
 				$scope.playerUsingBarrel = '';
-				$scope.$apply();
 				console.log('ERROR');
 				alert(JSON.stringify(response));
 			}
+			$scope.$apply();
 
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		function onSkillQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Skill') {
+				$scope.actionType = response.responseType;
 				//addMessage(JSON.stringify(response));
 				if(response.status && $scope.userName === response.userName && response.hero && $scope.myInfo.hero.name === response.hero.name){
 					if(response.hero.name === 'JesseJones'){
+						$scope.skillInfo.enableOkBtn = true;
+						$scope.skillInfo.enableCancelBtn = false;
 						$scope.skillInfo.step = response.step;
 						$scope.skillInfo.players = response.players;
 						$scope.skillInfo.titleDialog = 'Select player to get card';
 						$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 						$timeout(function() {
-							heroUserSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					} else if(response.hero.name === 'PatBrennan'){
 						$scope.skillInfo.step = response.step;
 						if($scope.skillInfo.step === 2 && response.players){
+							$scope.skillInfo.enableOkBtn = true;
+							$scope.skillInfo.enableCancelBtn = false;
 							$scope.skillInfo.players = response.players;
 							$scope.skillInfo.titleDialog = 'Select player to get card';
 							$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 							$timeout(function() {
-								heroUserSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+								userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 							}, 500);
 						}
 						if($scope.skillInfo.step === 3){
@@ -777,7 +984,7 @@ myapp.controller('FirstCtrl',
 							$scope.skillInfo.selectedCards.length = 0;
 							$scope.skillInfo.titleDialog = 'Select card instead of getting card in your turn.';
 							$timeout(function() {
-								heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+								cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 							}, 500);
 						}
 						
@@ -790,7 +997,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Choose 2 in 3. Remove 1 card..';
 						$timeout(function() {
-							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					} else if(response.hero.name === 'LuckyDuke'){
 						$scope.skillInfo.step = response.step;
@@ -801,7 +1008,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Select card which is use to draw';
 						$timeout(function() {
-							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					} else if(response.hero.name === 'SidKetchum'){
 						$scope.skillInfo.step = response.step;
@@ -816,7 +1023,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.numberCard = 2;
 						$scope.skillInfo.titleDialog = 'Remove 2 card to get 1 life point';
 						$timeout(function() {
-							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					} else if(response.hero.name === 'UncleWill'){
 						$scope.skillInfo.step = response.step;
@@ -827,7 +1034,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Remove 1 card to use General Store';
 						$timeout(function() {
-							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					} else if(response.hero.name === 'JoseDelgado'){
 						$scope.skillInfo.step = response.step;
@@ -838,7 +1045,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Remove 1 blue card to get 2 new cards';
 						$timeout(function() {
-							heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					}  else if(response.hero.name === 'DocHolyday'){
 						$scope.skillInfo.step = response.step;
@@ -855,32 +1062,33 @@ myapp.controller('FirstCtrl',
 							$scope.skillInfo.numberCard = 2;
 							$scope.skillInfo.titleDialog = 'Remove 2 card to bang a persopm';
 							$timeout(function() {
-								heroCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+								cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 							}, 500);
-						}
-						if($scope.skillInfo.step === 3 && response.players){
+						} else if($scope.skillInfo.step === 3 && response.players){
+							$scope.skillInfo.enableOkBtn = true;
+							$scope.skillInfo.enableCancelBtn = false;
 							$scope.skillInfo.players = response.players;
 							$scope.skillInfo.titleDialog = 'Select player to bang...';
 							$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 							$timeout(function() {
-								heroUserSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+								userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 							}, 500);
 						}
 						
 					} else if(response.hero.name === 'VeraCuster'){
+						$scope.skillInfo.enableOkBtn = true;
+						$scope.skillInfo.enableCancelBtn = false;
 						$scope.skillInfo.step = response.step;
 						$scope.skillInfo.players = response.players;
 						$scope.skillInfo.titleDialog = 'Select player to copy skill...';
 						$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 						$timeout(function() {
-							heroUserSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					} else if(response.hero.name === 'ClausTheSaint'){
 						$scope.skillInfo.step = response.step;
 						$scope.skillInfo.cards = response.cards;
 						$scope.skillInfo.players = response.players;
-						$scope.skillInfo.tempPlayers = response.players;
-						$scope.skillInfo.tempPlayers.push(response.userName);
 						angular.forEach($scope.skillInfo.cards, function(card){
 							card.assignedPlayer = response.userName;
 					    });
@@ -888,10 +1096,9 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.enableCancelBtn = false;
 						$scope.skillInfo.titleDialog = 'Keep 2 for yourself, give 1 to each player.';
 						$timeout(function() {
-							heroUserCardSelectionDialog.modal({backdrop:'static',keyboard:true,show:true});
+							userCardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
 						}, 500);
 					} else {
-						//heroUserCardSelectionDialog  ClausTheSaint
 						console.log('Unknown hero');
 						console.log(JSON.stringify(response));
 					}

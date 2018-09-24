@@ -9,6 +9,15 @@ public class HeroSkillResponse extends UserResponse {
 	private Hero hero;
 	private String targetUser;
 	private Map<String, Object> others = new HashMap<>();
+	private int countDown = 10;
+	
+	
+	public int getCountDown() {
+		return countDown;
+	}
+	public void setCountDown(int countDown) {
+		this.countDown = countDown;
+	}
 	public Hero getHero() {
 		return hero;
 	}
@@ -36,8 +45,9 @@ public class HeroSkillResponse extends UserResponse {
 	}
 	
 
-	public HeroSkillResponse(ResponseType responseType, String userName) {
+	public HeroSkillResponse(ResponseType responseType, String userName, int countDown) {
 		super(responseType, userName);
+		this.countDown = countDown;
 	}
 
 }

@@ -5,18 +5,21 @@ import java.util.List;
 import com.example.springboot.model.card.Card;
 
 public class RemoveCardResponse extends CardResponse {
-
-	public RemoveCardResponse(String userName, List<Card> cards) {
-		super();
-		this.userName = userName;
-		this.cards = cards;
-		this.responseType = ResponseType.RemoveCard;
+	private int numberCard = 0;
+	
+	public int getNumberCard() {
+		return numberCard;
 	}
-	public RemoveCardResponse(String userName, ResponseType responseType ,List<Card> cards) {
+	public void setNumberCard(int numberCard) {
+		this.numberCard = numberCard;
+	}
+	public RemoveCardResponse(String userName, ResponseType responseType ,List<Card> cards, int numberCard, int countDown) {
 		super();
 		this.userName = userName;
 		this.cards = cards;
 		this.responseType = responseType;
+		this.numberCard = numberCard;
+		this.countDown = countDown;
 	}
 	public RemoveCardResponse() {
 		super();

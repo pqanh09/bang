@@ -31,11 +31,13 @@ public class EndTurnActionCmd extends AbsActionCmd implements ActionCmd {
 			if(character.getHero() instanceof SeanMallory) {
 				if(character.getHero().useSkill(match, character, commonService, 1, null)) {
 					//character.getCardsInHand().size() > 10)
-					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand(), character.getCardsInHand().size() - 10, 10));
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, null, 0, 10));
 					return;
 				}
 			} else {
-				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand()));
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, character.getCardsInHand(), character.getCardsInHand().size() - character.getLifePoint(), 10));
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/removecard", new RemoveCardResponse(userName, ResponseType.RemoveCardEndTurn, null, 0, 10));
 				return;
 			}
 			

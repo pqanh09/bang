@@ -69,10 +69,13 @@
 								</div>
 								<div class="item-hero-image-div"
 									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''">
+									<div class="item-hero-image-countdown">
 									<img ng-src="{{character.hero.image}}"
 										alt="{{character.hero.name}}"
 										class="img-thumbnail item-hero-image1"
 										ng-click="zoomImage(character.hero.image)">
+									<div ng-show="playerCountDown === character.userName" class="item-hero-countdown">{{timeSkill}}</div>
+									</div>
 									<div style="display: flow-root;">
 										<img ng-src="{{character.roleImage}}"
 											class="img-thumbnail item-role-mage">
@@ -293,64 +296,35 @@
 					</div>
 				</div>
 			</div>
-			<!-- for remove card when ending turn and general store -->
-			<div id="dialogSelectCard" class="modal fade" role="dialog">
-				<div class="modal-dialog"
-					style="display: flex; justify-content: center;">
-					<!-- Modal content-->
-					<div class="modal-content" style="width: max-content;">
-						<div class="modal-header">
-							<h4 class="modal-title">Select card to
-								{{dialogSelectCardTitle}}</h4>
-							<button type="button" class="close" data-dismiss="modal"
-								ng-show="actionType === 'RemoveCard'">&times;</button>
-						</div>
-						<div class="modal-body">
-							<div class="container">
-								<div class="row">
-									<div class="col-12"
-										style="display: flex; justify-content: center; width: max-content;flex-wrap: wrap;">
-										<div ng-repeat="card in cards" class="item-hero-card">
-											<div class="item-card-hand-image-div">
-												<img ng-src="{{card.image}}" alt="{{card.name}}"
-													class="img-thumbnail item-dialog-image">
-											</div>
-											<button type="button" data-dismiss="modal"
-												ng-click="pickCardToRemoveFunc(card.id)"
-												class="btn btn-primary">{{dialogSelectCardActionStr}}</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- for panic and catpalou cards -->
-			<div id="dialogSelectCardPC" class="modal fade" role="dialog">
+			
+			<!-- Panic - Cat Palou - General Store - Remove Card when ending turn -->
+			<div id="cardDialog" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 					<!-- Modal content-->
 					<div class="modal-content" style="width: max-content;">
 						<div class="modal-header">
-							<h4 class="modal-title">Select card to
-								{{dialogSelectCardTitle}}</h4>
+							<h4 class="modal-title">{{cardInfo.titleDialog}} ({{timeSkill}}s)</h4>
+							<button type="button" class="close" data-dismiss="modal"
+								ng-show="cardInfo.enableCancelBtn">&times;</button>
 						</div>
 						<div class="modal-body">
 							<div class="container">
 								<div class="row">
-									<div class="col-12" style="display: -webkit-box;">
-										<div ng-repeat="card in cards" class="item-hero-card">
-											<div class="item-hero-image-dialog">
-												<img ng-src="{{card.image}}" alt="{{card.name}}"
-													class="img-thumbnail item-dialog-image">
+									<div class="col-12" style="display: flex; justify-content: center; width: max-content;flex-wrap: wrap;">
+										<div ng-repeat="card in cardInfo.cards">
+											<div ng-show="!card.selected" class="item-hero-card">
+												<div class="item-hero-image-dialog">
+													<img ng-src="{{card.image}}" alt="{{card.name}}"
+														class="img-thumbnail item-dialog-image">
+												</div>
+												<button type="button" 
+													ng-click="pickCardDialogFunc(card.id)"
+													class="btn btn-primary">{{cardInfo.titleBtnCard}}</button>
 											</div>
-											<button type="button" data-dismiss="modal"
-												ng-click="pickCardToRemoveFuncPC(card.id)"
-												class="btn btn-primary">{{dialogSelectCardActionStr}}</button>
 										</div>
-										<div ng-show="hasCardInHand" class="random-from-hand-button">
+										<div ng-show="cardInfo.hasCardInHand" class="random-from-hand-button">
 											<button type="button" data-dismiss="modal"
-												ng-click="pickCardToRemoveFuncPCRandom()"
+												ng-click="pickRandomCardDialogFunc()"
 												class="btn btn-primary">Random from Hand</button>
 										</div>
 									</div>
@@ -358,15 +332,21 @@
 								</div>
 							</div>
 						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								data-dismiss="modal" ng-show="cardInfo.enableOkBtn" ng-click="okCardSelectionDialogFunc()">OK</button>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div id="heroCardSelectionDialog" class="modal fade" role="dialog">
+			
+			<!-- Hero Skill -->
+			<div id="cardSkillDialog" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 					<!-- Modal content-->
 					<div class="modal-content" style="width: max-content;">
 						<div class="modal-header">
-							<h4 class="modal-title">{{skillInfo.titleDialog}}</h4>
+							<h4 class="modal-title">{{skillInfo.titleDialog}} ({{timeSkill}}s)</h4>
 							<button type="button" class="close" data-dismiss="modal"
 								ng-show="skillInfo.enableCancelBtn">&times;</button>
 						</div>
@@ -381,7 +361,7 @@
 														class="img-thumbnail item-dialog-image">
 												</div>
 												<button type="button" 
-													ng-click="pickHeroCardSelectionDialogFunc(card.id)"
+													ng-click="pickCardSkillDialogFunc(card.id)"
 													class="btn btn-primary">{{skillInfo.titleBtnCard}}</button>
 											</div>
 										</div>
@@ -393,18 +373,18 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
-								data-dismiss="modal" ng-show="skillInfo.enableOkBtn" ng-click="okHeroCardSelectionDialogFunc()">OK</button>
+								data-dismiss="modal" ng-show="skillInfo.enableOkBtn" ng-click="okCardSkillDialogFunc()">OK</button>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div id="heroUserSelectionDialog" class="modal fade" role="dialog">
+			<div id="userSkillDialog" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 
 					<!-- Modal content-->
 					<div class="modal-content" style="width: max-content;">
 						<div class="modal-header">
-							<h4 class="modal-title">{{skillInfo.titleDialog}}</h4>
+							<h4 class="modal-title">{{skillInfo.titleDialog}} ({{timeSkill}}s)</h4>
 						</div>
 						<div class="modal-body">
 							<select ng-model="skillInfo.selectedPlayer"
@@ -412,17 +392,17 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
-								data-dismiss="modal" ng-click="okHeroUserSelectionDialogFunc()">OK</button>
+								data-dismiss="modal" ng-click="okUserSkillDialogFunc()">OK</button>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div id="heroUserCardSelectionDialog" class="modal fade" role="dialog">
+			<div id="userCardSkillDialog" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 					<!-- Modal content-->
 					<div class="modal-content" style="width: max-content;">
 						<div class="modal-header">
-							<h4 class="modal-title">{{skillInfo.titleDialog}}</h4>
+							<h4 class="modal-title">{{skillInfo.titleDialog}} ({{timeSkill}}s)</h4>
 							<button type="button" class="close" data-dismiss="modal"
 								ng-show="skillInfo.enableCancelBtn">&times;</button>
 						</div>
@@ -436,7 +416,7 @@
 													<img ng-src="{{card.image}}" alt="{{card.name}}"
 														class="img-thumbnail item-dialog-image">
 												</div>
-												<select ng-model="card.assignedPlayer" ng-change="updateAssignedPlayerHeroUserCardSelectionDialog()"
+												<select ng-model="card.assignedPlayer" ng-change="updateAssignedPlayerUserCardSkillDialogFunc()"
 													ng-options="user for user in skillInfo.players"></select>
 											</div>
 										</div>
@@ -448,7 +428,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
-								data-dismiss="modal" ng-show="skillInfo.enableOkBtn" ng-click="okHeroUserCardSelectionDialogFunc()">OK</button>
+								data-dismiss="modal" ng-show="skillInfo.enableOkBtn" ng-click="okUserCardSkillDialogFunc()">OK</button>
 						</div>
 					</div>
 				</div>

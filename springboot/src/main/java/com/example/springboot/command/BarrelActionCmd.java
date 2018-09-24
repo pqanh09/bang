@@ -36,7 +36,7 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 		TurnNode turnNode = match.getCurrentTurn();
 		turnNode.getPlayerUsedBarrel().add(userName);
 		if(Suit.hearts.equals(card.getSuit())) {
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, true));
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, true, 0));
 			if(ResponseType.Bang.equals(turnNode.getAction()) 
 					&& turnNode.getCharacter().getHero() instanceof SlabTheKiller
 					&& !turnNode.getPlayerUsedMissed().contains(userName)) {
@@ -45,7 +45,7 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 				turnNode.getNextPlayer().poll();
 			}
 		} else {
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, false));
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new BarrelCardResponse(ResponseType.UseBarrel, userName, false, 0));
 		}
 		if (turnNode.getNextPlayer().peek() == null) {
 			// request player in turn continue using card
