@@ -6,15 +6,7 @@ import com.example.springboot.model.card.Card;
 
 public class CardResponse extends UserResponse{
 	protected List<Card> cards;
-	protected int countDown = 10;
 	
-	public int getCountDown() {
-		return countDown;
-	}
-
-	public void setCountDown(int countDown) {
-		this.countDown = countDown;
-	}
 
 	public List<Card> getCards() {
 		return cards;

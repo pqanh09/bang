@@ -104,13 +104,13 @@ public class CommonService {
 			endGame = true;
 		} else {
 			if(RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
-				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
 				List<String> remains = new ArrayList<>(match.getPlayerTurnQueue()); 
 				for (String player : remains) {
 					Character plCharacter = match.getCharacterMap().get(player);
 					plCharacter.setRoleImage(plCharacter.getRole().getImage());
 					notifyCharacter(match.getMatchId(), plCharacter, match.getUserMap().get(plCharacter.getUserName()));
 				}
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
 				endGame = true;
 			}
 		}

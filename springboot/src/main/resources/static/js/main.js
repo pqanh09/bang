@@ -344,28 +344,6 @@ myapp.controller('FirstCtrl',
 					}));
 			$scope.dialogTitle = '';
 		};
-//		$scope.pickCardToRemoveFunc = function(cardId) {
-//			if ($scope.dialogSelectCardActionType === 'RemoveCardEndTurn') {
-//				stompClient.send('/app/game.execute', {}, JSON
-//						.stringify({
-//							id : cardId,
-//							actionType : 'RemoveCardEndTurn'
-//						}));
-//			} else if ($scope.dialogSelectCardActionType === 'GeneralStore') {
-//				stompClient.send('/app/game.execute', {}, JSON
-//						.stringify({
-//							id : cardId,
-//							actionType : 'GeneralStore'
-//						}));
-//			}
-//		};
-//		$scope.pickCardToRemoveFuncPC = function(cardId) {
-//			stompClient.send('/app/game.execute',{},
-//				JSON.stringify({
-//					id : cardId,
-//					actionType : $scope.dialogSelectCardActionType
-//				}));
-//		};
 		$scope.pickRandomCardDialogFunc = function(cardId) {
 			$interval.cancel(timerSkill);
 			cardDialog.modal('hide');
@@ -655,7 +633,7 @@ myapp.controller('FirstCtrl',
 				}, 500);
 				/// count down time
 				$interval.cancel(timerSkill);
-				$scope.timeSkill = 10;
+				$scope.timeSkill = response.countDown;
 				$scope.playerCountDown = response.userName;
 				timerSkill = $interval(timerSkillFunc, 1000);
 				///
@@ -672,7 +650,7 @@ myapp.controller('FirstCtrl',
 				if($scope.userName !== response.userName){
 					/// count down time
 					$interval.cancel(timerSkill);
-					$scope.timeSkill = 10;
+					$scope.timeSkill = response.userName;
 					$scope.playerCountDown = response.userName;
 					timerSkill = $interval(timerSkillFunc, 1000);
 					///
@@ -791,7 +769,7 @@ myapp.controller('FirstCtrl',
 				$scope.actionType = response.responseType;
 				/// count down time
 				$interval.cancel(timerSkill);
-				$scope.timeSkill = 10;
+				$scope.timeSkill = response.userName;
 				$scope.playerCountDown = response.userName;
 				timerSkill = $interval(timerSkillFunc, 1000);
 				///
@@ -809,7 +787,7 @@ myapp.controller('FirstCtrl',
 				
 				/// count down time
 				$interval.cancel(timerSkill);
-				$scope.timeSkill = 10;
+				$scope.timeSkill = response.userName;
 				$scope.playerCountDown = response.userName;
 				timerSkill = $interval(timerSkillFunc, 1000);
 				///
@@ -826,7 +804,7 @@ myapp.controller('FirstCtrl',
 				
 				/// count down time
 				$interval.cancel(timerSkill);
-				$scope.timeSkill = 10;
+				$scope.timeSkill = response.userName;
 				$scope.playerCountDown = response.userName;
 				timerSkill = $interval(timerSkillFunc, 1000);
 				///
@@ -843,7 +821,7 @@ myapp.controller('FirstCtrl',
 				
 				/// count down time
 				$interval.cancel(timerSkill);
-				$scope.timeSkill = 10;
+				$scope.timeSkill = response.userName;
 				$scope.playerCountDown = response.userName;
 				timerSkill = $interval(timerSkillFunc, 1000);
 				///
@@ -1149,6 +1127,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerGettingCard = '';
 				$scope.playerDrawingCard = '';
 				$scope.playerUsingBarrel = '';
+				$scope.playerCountDown = '';
 				$scope.playerUsingSkill = false;
 				$scope.actionType = '';
 			} else {

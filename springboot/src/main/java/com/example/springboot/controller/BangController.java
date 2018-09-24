@@ -103,7 +103,7 @@ public class BangController {
 			sha.getSessionAttributes().put(Constants.HEADER_ACCESSOR_USER, userName);
 			userService.getUserMap().put(userName, sessionId);
 			userService.getSessionIdMap().put(sessionId, userName);
-			UserResponse createResponse = new UserResponse(ResponseType.Create, userName);
+			UserResponse createResponse = new UserResponse(ResponseType.Create, userName, 0);
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/user", createResponse);
 		}
 	}
