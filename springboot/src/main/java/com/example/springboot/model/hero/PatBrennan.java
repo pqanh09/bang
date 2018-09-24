@@ -82,7 +82,7 @@ public class PatBrennan extends Hero {
 			//
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , otherPlayers, null, character.getHero(), null));
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 5));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 15));
 		} else if(step == 2) {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			String targetPlayer =  (String) others.get("targetUser");
@@ -102,7 +102,7 @@ public class PatBrennan extends Hero {
 			//
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 3 , null, targetCharacter.getCardsInFront(), character.getHero(), targetPlayer));
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 5));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 15));
 		} else {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			String targetPlayer =  turnNode.getNextPlayer().poll();

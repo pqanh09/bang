@@ -61,7 +61,7 @@ public class KitCarlson extends Hero {
 			turnNode.getCardTemp().addAll(cards);
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2, null, cards, character.getHero(), null));
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 10));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 20));
 		} else {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
 			List<String> cardIds =  (List<String>) others.get("cards");

@@ -169,7 +169,7 @@ public class TurnNode {
 	public void requestPlayerUseCard() {
 		cardTemp.clear();
 		nextPlayer.clear();
-		simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.UseCard, character.getUserName(), 20));
+		simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.UseCard, character.getUserName(), 30));
 	}
 	
 	public void requestOtherPlayerUseCard(Match match) {
@@ -205,12 +205,12 @@ public class TurnNode {
 				// request player use cards
 				if(hasBarrel) {
 					if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && match.getCurrentTurn().getCharacter().getHero() instanceof BelleStar) {
-						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, false, 10));
+						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, false, 2));
 					} else {
-						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true, 10));
+						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true, 20));
 					}
 				} else {
-					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(action, targetUser, 5));
+					this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(action, targetUser, 20));
 				}
 			} else {
 				logger.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 87");
@@ -220,13 +220,13 @@ public class TurnNode {
 			Character targetCharacter = match.getCharacterMap().get(targetUser);
 			List<Card> cards = targetCharacter.getCardsInFront();
 			// request player use cards
-			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new GetCardResponse(character.getUserName(), action, targetUser, cards, !targetCharacter.getCardsInHand().isEmpty(), 10));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new GetCardResponse(character.getUserName(), action, targetUser, cards, !targetCharacter.getCardsInHand().isEmpty(), 20));
 		} else if(ResponseType.GeneralStore.equals(action)) {
 			// request player use cards
 			String targetUser = nextPlayer.peek();
 			if(targetUser != null) {
 				// request player use cards
-				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(ResponseType.GeneralStore, targetUser, cardTemp, 10));
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new CardResponse(ResponseType.GeneralStore, targetUser, cardTemp, 20));
 			} else {
 				logger.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Null nextplayer");
 			}	
@@ -241,7 +241,7 @@ public class TurnNode {
 			if(character.getHero() instanceof LuckyDuke) {
 				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
-				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName(), 10));	
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName(), 20));	
 			}
 			return;
 		}
@@ -251,7 +251,7 @@ public class TurnNode {
 			if(character.getHero() instanceof LuckyDuke) {
 				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
-				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName(), 10));
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName(), 20));
 			}
 			return;
 		}
@@ -262,7 +262,7 @@ public class TurnNode {
 			// request player use cards
 			cardTemp.clear();
 			nextPlayer.clear();
-			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.GetCard, character.getUserName(), 10));
+			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.GetCard, character.getUserName(), 20));
 		} else {
 			requestPlayerUseCard();
 		}
