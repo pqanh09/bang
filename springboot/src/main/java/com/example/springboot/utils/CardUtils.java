@@ -8,4 +8,6 @@ public class CardUtils {
 	public static final Card lose3PointCard = new NoCard("Lose3Point.jpg");
 	public static final Card loseTurn = new NoCard("LoseTurn.jpg");
 	public static final Card backCard = new NoCard("Back.jpg");
+	public static final Card escapeJailCard = new NoCard("EscapeJail.jpg");
+	public static final Card escapeDynamiteCard = new NoCard("EscapeDynamite.jpg");
 }

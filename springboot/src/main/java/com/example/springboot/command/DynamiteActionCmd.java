@@ -17,6 +17,7 @@ import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.model.hero.BartCassidy;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardNotInTurnResponse;
 import com.example.springboot.response.UseCardResponse;
@@ -49,7 +50,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		
-		commonService.addToOldCardList(card, match);
+		
 		
 		character.setHasDynamite(false);
 		
@@ -59,10 +60,11 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 		match.getCurrentTurn().setAlreadyCheckedDynamite(true);
 		
 		List<Card> cards = new ArrayList<>();
-		cards.add(card);
+//		cards.add(card);
 		
 		if(Suit.spades.equals(card.getSuit()) && card.getNumber() >= 2 && card.getNumber() <=9) {
 			commonService.addToOldCardList(dynamiteCard, match);
+			commonService.addToOldCardList(card, match);
 			character.setLifePoint(character.getLifePoint() - 3);
 			cards.add(CardUtils.lose3PointCard);
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
@@ -84,6 +86,8 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 				match.getCurrentTurn().run(match);
 			}
 		} else {
+			commonService.addToOldCardList(card, match);
+			cards.add(CardUtils.escapeDynamiteCard);
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			match.getPlayerTurnQueue().poll();
@@ -96,6 +100,9 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 			commonService.notifyCharacter(match.getMatchId(), nextCharacter, sessionIdNextPlayer);
 			match.getCurrentTurn().run(match);
 		}
+		OldCardResponse oldCardResponse = new OldCardResponse();
+		oldCardResponse.getCards().add(card);
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/oldcard", oldCardResponse);
 	}
 
 }

@@ -100,9 +100,9 @@ public class CardService {
 //		cards.add(new GeneralStoreCard(Suit.clubs, 9, "9Ch-GeneralStore.jpg"));
 		//IndiansCard
 //		cards.add(new IndiansCard(Suit.diamonds, 13, "13R-Indians.jpg"));
-		cards.add(new BangCard(Suit.hearts, 12, "12C-Bang.jpg"));
-		cards.add(new BangCard(Suit.hearts, 13, "13C-Bang.jpg"));
-		cards.add(new BangCard(Suit.hearts, 14, "14C-Bang.jpg"));
+//		cards.add(new BangCard(Suit.hearts, 12, "12C-Bang.jpg"));
+//		cards.add(new BangCard(Suit.hearts, 13, "13C-Bang.jpg"));
+//		cards.add(new BangCard(Suit.hearts, 14, "14C-Bang.jpg"));
 //		cards.add(new IndiansCard(Suit.diamonds, 14, "14R-Indians.jpg"));
 		//JailCard
 		cards.add(new JailCard(Suit.hearts, 4, "4C-Jail.jpg"));
@@ -188,19 +188,19 @@ public class CardService {
 //		cards.add(new DynamiteCard(Suit.hearts, 16, "2C-Dynamite.jpg"));
 //		cards.add(new DynamiteCard(Suit.hearts, 17, "2C-Dynamite.jpg"));
 //		cards.add(new DynamiteCard(Suit.hearts, 18, "2C-Dynamite.jpg"));
-//		cards.add(new DynamiteCard(Suit.hearts, 19, "2C-Dynamite.jpg"));
-//		cards.add(new DynamiteCard(Suit.hearts, 20, "2C-Dynamite.jpg"));
-//		cards.add(new DynamiteCard(Suit.hearts, 21, "2C-Dynamite.jpg"));
-//		cards.add(new DynamiteCard(Suit.hearts, 22, "2C-Dynamite.jpg"));
-//		cards.add(new DynamiteCard(Suit.hearts, 23, "2C-Dynamite.jpg"));
-//		cards.add(new DynamiteCard(Suit.hearts, 24, "2C-Dynamite.jpg"));
-//		cards.add(new DynamiteCard(Suit.hearts, 25, "2C-Dynamite.jpg"));
+		cards.add(new DynamiteCard(Suit.hearts, 19, "2C-Dynamite.jpg"));
+		cards.add(new DynamiteCard(Suit.hearts, 20, "2C-Dynamite.jpg"));
+		cards.add(new DynamiteCard(Suit.hearts, 21, "2C-Dynamite.jpg"));
+		cards.add(new DynamiteCard(Suit.hearts, 22, "2C-Dynamite.jpg"));
+		cards.add(new DynamiteCard(Suit.hearts, 23, "2C-Dynamite.jpg"));
+		cards.add(new DynamiteCard(Suit.hearts, 24, "2C-Dynamite.jpg"));
+		cards.add(new DynamiteCard(Suit.hearts, 25, "2C-Dynamite.jpg"));
 //		cards.add(new DynamiteCard(Suit.hearts, 26, "2C-Dynamite.jpg"));
-//		cards.add(new JailCard(Suit.spades, 21, "11B-Jail.jpg"));
-//		cards.add(new JailCard(Suit.spades, 22, "11B-Jail.jpg"));
-//		cards.add(new JailCard(Suit.spades, 23, "11B-Jail.jpg"));
-//		cards.add(new JailCard(Suit.spades, 24, "11B-Jail.jpg"));
-//		cards.add(new JailCard(Suit.spades, 25, "11B-Jail.jpg"));
+		cards.add(new JailCard(Suit.spades, 21, "11B-Jail.jpg"));
+		cards.add(new JailCard(Suit.spades, 22, "11B-Jail.jpg"));
+		cards.add(new JailCard(Suit.spades, 23, "11B-Jail.jpg"));
+		cards.add(new JailCard(Suit.spades, 24, "11B-Jail.jpg"));
+		cards.add(new JailCard(Suit.spades, 25, "11B-Jail.jpg"));
 //		cards.add(new JailCard(Suit.spades, 31, "11B-Jail.jpg"));
 //		cards.add(new JailCard(Suit.spades, 32, "11B-Jail.jpg"));
 //		cards.add(new JailCard(Suit.spades, 33, "11B-Jail.jpg"));

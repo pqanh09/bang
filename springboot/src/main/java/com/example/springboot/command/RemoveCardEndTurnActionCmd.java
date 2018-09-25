@@ -13,6 +13,7 @@ import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.SeanMallory;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.RemoveCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.service.CommonService;
@@ -65,6 +66,13 @@ public class RemoveCardEndTurnActionCmd extends AbsActionCmd implements ActionCm
 		commonService.addToOldCardList(cards, match);
 		character.setNumCardsInHand(character.getCardsInHand().size());
 		commonService.notifyCharacter(match.getMatchId(), character, sessionId);
+		
+		OldCardResponse oldCardResponse = new OldCardResponse();
+		Card card = match.getOldCards().peekLast();
+		if(card != null) {
+			oldCardResponse.getCards().add(card);
+		}
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", oldCardResponse);
 		
 		commonService.endTurn(userName, match);
 	}

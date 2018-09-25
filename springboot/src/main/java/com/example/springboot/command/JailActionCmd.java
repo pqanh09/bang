@@ -14,6 +14,7 @@ import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.model.card.JailCard;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardNotInTurnResponse;
 import com.example.springboot.response.UseCardResponse;
@@ -46,7 +47,7 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		
-		commonService.addToOldCardList(card, match);
+		
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardJail, card, null));
 		
 		character.setBeJailed(false);
@@ -57,11 +58,13 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 		
 		commonService.addToOldCardList(jailCard, match);
+		commonService.addToOldCardList(card, match);
 		match.getCurrentTurn().setAlreadyCheckedJail(true);
 		
 		List<Card> cards = new ArrayList<>();
-		cards.add(card);
+//		cards.add(card);
 		if(Suit.hearts.equals(card.getSuit())) {
+			cards.add(CardUtils.escapeJailCard);
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
 			match.getCurrentTurn().run(match);
 		} else {
@@ -69,6 +72,9 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
 			commonService.endTurn(userName, match);
 		}
+		OldCardResponse oldCardResponse = new OldCardResponse();
+		oldCardResponse.getCards().add(card);
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/oldcard", oldCardResponse);
 	}
 
 }

@@ -266,6 +266,11 @@ public class CommonService {
 	public void endTurn(String userName, Match match) {
 		if(match.getPlayerTurnQueue().peek().equals(userName)){
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/turn", new TurnResponse(ResponseType.EndTurn, userName));
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				logger.error("endTurn: ", e);
+			}
 			match.getPlayerTurnQueue().poll();
 			callNextPlayerTurn(match, userName);
 		} else {

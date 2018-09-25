@@ -23,6 +23,14 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.item-hero-action {
+	color: blue;
+    font-size: large;
+	position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
 
 .item-hero-image {

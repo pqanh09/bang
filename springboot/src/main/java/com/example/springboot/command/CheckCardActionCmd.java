@@ -198,8 +198,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 			// DuelloCard
 			else if (card instanceof DuelloCard) {
-				List<String> userCanBeAffectList = BangUtils.getOtherPlayer(match.getCharacterMap().keySet(),
-						userName);
+				List<String> userCanBeAffectList = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
 				// skill hero ApacheKid
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
@@ -210,7 +209,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			else if (card instanceof SaloonCard) {
 				boolean findPlayerLoseLifePoint = false;
 				for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
-					if(entry.getValue().getLifePoint() < entry.getValue().getCapacityLPoint()) {
+					if(entry.getValue().getLifePoint() < entry.getValue().getCapacityLPoint() && match.getPlayerTurnQueue().contains(entry.getKey())) {
 						findPlayerLoseLifePoint = true;
 						break;
 					}
@@ -225,6 +224,9 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				List<String> userCanBeAffectList = new ArrayList<>();
 				Character targetCharater;
 				for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
+					if(!match.getPlayerTurnQueue().contains(entry.getKey())) {
+						continue;
+					}
 					targetCharater = entry.getValue();
 					if(targetCharater.getUserName().equals(userName) 
 							|| !match.getPlayerTurnQueue().contains(entry.getKey()) 
@@ -246,6 +248,9 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				List<String> userCanBeAffectList = new ArrayList<>();
 				Character targetCharater;
 				for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
+					if(!match.getPlayerTurnQueue().contains(entry.getKey())) {
+						continue;
+					}
 					targetCharater = entry.getValue();
 					if(targetCharater.getUserName().equals(userName) || RoleType.SCERIFFO.equals(targetCharater.getRole().getRoleType()) || targetCharater.isBeJailed()) {
 						continue;

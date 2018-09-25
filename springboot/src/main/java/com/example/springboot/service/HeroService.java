@@ -80,7 +80,7 @@ public class HeroService {
 		heros.add(new JoseDelgado());
 		heros.add(new DocHolyday());
 		// auto-manual
-		heros.add(new VeraCuster());
+//		heros.add(new VeraCuster());
 		heros.add(new LuckyDuke());
 		heros.add(new KitCarlson());
 		heros.add(new ClausTheSaint());

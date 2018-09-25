@@ -33,15 +33,15 @@ public class BangUtils {
 		}
 		return null;
 	}
-	public static List<String> getOtherPlayer(Set<String> players, String user){
-		List<String> result = new ArrayList<>();
-		for (String urs : players) {
-			if(!urs.equals(user)) {
-				result.add(urs);
-			}
-		}
-		return result;
-	}
+//	public static List<String> getOtherPlayer(Set<String> players, String user){
+//		List<String> result = new ArrayList<>();
+//		for (String urs : players) {
+//			if(!urs.equals(user)) {
+//				result.add(urs);
+//			}
+//		}
+//		return result;
+//	}
 	public static LinkedList<String> getOtherPlayer(LinkedList<String> playerTurnQueue, String user){
 		LinkedList<String> result = new LinkedList<>(playerTurnQueue);
 		result.poll();

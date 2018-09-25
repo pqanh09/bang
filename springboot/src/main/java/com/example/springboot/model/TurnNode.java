@@ -19,6 +19,7 @@ import com.example.springboot.response.BarrelCardResponse;
 import com.example.springboot.response.CardResponse;
 import com.example.springboot.response.DrawResponse;
 import com.example.springboot.response.GetCardResponse;
+import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
 import com.example.springboot.response.UserResponse;
@@ -268,7 +269,13 @@ public class TurnNode {
 			// request player use cards
 			cardTemp.clear();
 			nextPlayer.clear();
-			this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.GetCard, character.getUserName(), 20));
+			OldCardResponse oldCardResponse = new OldCardResponse();
+			Card card = match.getOldCards().peekLast();
+			if(card != null) {
+				oldCardResponse.getCards().add(card);
+			}
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", oldCardResponse);
+			simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.GetCard, character.getUserName(), 20));
 		} else {
 			requestPlayerUseCard();
 		}

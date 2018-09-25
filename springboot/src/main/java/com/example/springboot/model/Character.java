@@ -14,6 +14,7 @@ public class Character extends CharacterVO {
 	public Character(int id, String userName) {
 		this.userName = userName;
 		this.id = id;
+		this.roleImage = "/data/image/role/Anonymous.jpg";
 	}
 
 	private Role role;
