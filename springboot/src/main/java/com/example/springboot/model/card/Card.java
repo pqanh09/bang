@@ -77,6 +77,10 @@ public abstract class Card {
 		this.id = id;
 	}
 
+	public Card(String image) {
+		super();
+		this.image = this.image + image;
+	}
 	public Card() {
 		super();
 		// TODO Auto-generated constructor stub

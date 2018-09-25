@@ -220,7 +220,7 @@ public class CommonService {
 		while (match.getOldCards().size() > 2) {
 			match.getCardPool().add(match.getOldCards().poll());
 		}
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", new OldCardResponse(Arrays.asList(card)));
+//		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", new OldCardResponse(Arrays.asList(card)));
 	}
 
 	public void addToOldCardList(List<Card> cards, Match match) {
@@ -229,7 +229,7 @@ public class CommonService {
 			while (match.getOldCards().size() > 2) {
 				match.getCardPool().add(match.getOldCards().poll());
 			}
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", new OldCardResponse(cards));
+//			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/oldcard", new OldCardResponse(cards));
 		}
 	}
 	public List<Card> getFromNewCardList(Match match, int n) {
@@ -321,13 +321,13 @@ public class CommonService {
 		if(result != null) {
 			character.getCardsInHand().remove(result);
 			character.setNumCardsInHand(character.getCardsInHand().size());
-			if(StringUtils.isNoneBlank(targetUser)) {
-				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
-						new UseCardResponse(character.getUserName(), result, targetUser));
-			} else {
-				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
-						new UseCardResponse(character.getUserName(), result, null));
-			}
+//			if(StringUtils.isNoneBlank(targetUser)) {
+//				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
+//						new UseCardResponse(character.getUserName(), result, targetUser));
+//			} else {
+//				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
+//						new UseCardResponse(character.getUserName(), result, null));
+//			}
 			if(character.getHero() instanceof SuzyLafayette && character.getCardsInHand().isEmpty()) {
 				character.getHero().useSkill(match, character, this, 1, null);
 			}

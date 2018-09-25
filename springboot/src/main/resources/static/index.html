@@ -127,15 +127,43 @@
 						<div class="col-12"
 							style="display: flex; justify-content: center;">
 							<div>
-								<div class="page-header"
-									style="text-align: center; color: brown; width: 122px;">
-									<h5 style="margin-bottom: 0;">OldCard</h5>
-								</div>
+								<div ng-show="oldCard">
+									<div class="page-header"
+										style="text-align: center; color: brown; width: 122px;">
+										<h5 style="margin-bottom: 0; height: 24px;"></h5>
+									</div>
 								<div style="width: 121px; height: 180px;">
 									<img ng-src="{{oldCard.image}}" alt="{{oldCard.name}}"
 										class="img-thumbnail item-card-image"
 										ng-click="zoomImage(oldCard.image)">
 								</div>
+								</div>
+								<div ng-show="showCardInTurn">
+									<div class="page-header"
+										style="text-align: center; color: brown; width: 122px;">
+										<h5 ng-show="playerUserCardInTurn" style="margin-bottom: 0; height: 24px;">{{playerUserCardInTurn}}</h5>
+									</div>
+									<div style="width: 121px; height: 180px;">
+										<img ng-src="{{turnCard.image}}" alt="{{turnCard.name}}"
+											class="img-thumbnail item-card-image"
+											ng-click="zoomImage(turnCard.image)">
+									</div>
+								</div>
+								
+							</div>
+							<div ng-show="showCardNotInTurn">
+								<div class="page-header"
+									style="text-align: center; color: brown; height: 24px;">
+									<h5 style="margin-bottom: 0; text-align: left; padding-left: 17px;">{{playerUserCardNotInTurn}}</h5>
+								</div>
+								<div class="flex-container">
+									<div ng-repeat="card in notTurnCards" style="width: 121px; height: 180px;">
+										<img ng-src="{{card.image}}" alt="{{card.name}}"
+											class="img-thumbnail item-card-image"
+											ng-click="zoomImage(card.image)">
+									</div>
+								</div>
+								
 							</div>
 							<div>
 								<div class="page-header"

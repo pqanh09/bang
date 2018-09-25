@@ -5,6 +5,7 @@ public enum RequestType {
 	Create,
 	PickHero,
 	GetCard,
+	OldCard,
 	RemoveCardEndTurn,
 	CheckCard,
 	CheckSkill,

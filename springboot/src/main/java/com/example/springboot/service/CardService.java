@@ -51,8 +51,8 @@ public class CardService {
 		cards.add(new BangCard(Suit.diamonds, 10, "10R-Bang.jpg"));
 
 		
-		cards.add(new BangCard(Suit.spades, 14, "14B-Bang.jpg"));
-		//BarrelCard
+//		cards.add(new BangCard(Suit.spades, 14, "14B-Bang.jpg"));
+//		//BarrelCard
 		cards.add(new BarrelCard(Suit.hearts, 12, "12C-Barrel.jpg"));
 		cards.add(new BarrelCard(Suit.spades, 13, "13B-Barrel.jpg"));
 		//
@@ -61,11 +61,11 @@ public class CardService {
 		cards.add(new BeerCard(Suit.hearts, 9, "9C-Beer.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 10, "10C-Beer.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 11, "11C-Beer.jpg"));
-		//CatPalouCard
-		cards.add(new CatPalouCard(Suit.hearts, 13, "13C-CatPalou.jpg"));
-		cards.add(new CatPalouCard(Suit.diamonds, 9, "9R-CatPalou.jpg"));
-		cards.add(new CatPalouCard(Suit.diamonds, 10, "10R-CatPalou.jpg"));
-		cards.add(new CatPalouCard(Suit.diamonds, 11, "11R-CatPalou.jpg"));
+//		//CatPalouCard
+//		cards.add(new CatPalouCard(Suit.hearts, 13, "13C-CatPalou.jpg"));
+//		cards.add(new CatPalouCard(Suit.diamonds, 9, "9R-CatPalou.jpg"));
+//		cards.add(new CatPalouCard(Suit.diamonds, 10, "10R-CatPalou.jpg"));
+//		cards.add(new CatPalouCard(Suit.diamonds, 11, "11R-CatPalou.jpg"));
 		//DuelloCard
 		cards.add(new DuelloCard(Suit.clubs, 9, "8Ch-Duello.jpg"));
 		cards.add(new DuelloCard(Suit.spades, 10, "11B-Duello.jpg"));
@@ -75,9 +75,9 @@ public class CardService {
 		cards.add(new DuelloCard(Suit.diamonds, 11, "12R-Duello.jpg"));
 		//DynamiteCard
 		cards.add(new DynamiteCard(Suit.hearts, 2, "2C-Dynamite.jpg"));
-		cards.add(new BeerCard(Suit.hearts, 6, "6C-Beer.jpg"));
-		cards.add(new BeerCard(Suit.hearts, 7, "7C-Beer.jpg"));
-		cards.add(new BeerCard(Suit.hearts, 8, "8C-Beer.jpg"));
+//		cards.add(new BeerCard(Suit.hearts, 6, "6C-Beer.jpg"));
+//		cards.add(new BeerCard(Suit.hearts, 7, "7C-Beer.jpg"));
+//		cards.add(new BeerCard(Suit.hearts, 8, "8C-Beer.jpg"));
 		
 		
 		
@@ -94,81 +94,81 @@ public class CardService {
 		
 		
 		//GatlingCard
-		cards.add(new GatlingCard(Suit.hearts, 10, "10C-Gatling.jpg"));
+//		cards.add(new GatlingCard(Suit.hearts, 10, "10C-Gatling.jpg"));
 		//GeneralStoreCard
-		cards.add(new GeneralStoreCard(Suit.spades, 12, "12B-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 9, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.spades, 12, "12B-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 9, "9Ch-GeneralStore.jpg"));
 		//IndiansCard
-		cards.add(new IndiansCard(Suit.diamonds, 13, "13R-Indians.jpg"));
+//		cards.add(new IndiansCard(Suit.diamonds, 13, "13R-Indians.jpg"));
 		cards.add(new BangCard(Suit.hearts, 12, "12C-Bang.jpg"));
 		cards.add(new BangCard(Suit.hearts, 13, "13C-Bang.jpg"));
 		cards.add(new BangCard(Suit.hearts, 14, "14C-Bang.jpg"));
-		cards.add(new IndiansCard(Suit.diamonds, 14, "14R-Indians.jpg"));
+//		cards.add(new IndiansCard(Suit.diamonds, 14, "14R-Indians.jpg"));
 		//JailCard
 		cards.add(new JailCard(Suit.hearts, 4, "4C-Jail.jpg"));
-		cards.add(new BangCard(Suit.clubs, 2, "2Ch-Bang.jpg"));
-		cards.add(new BangCard(Suit.clubs, 3, "3Ch-Bang.jpg"));
-		cards.add(new BangCard(Suit.clubs, 4, "4Ch-Bang.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 2, "2Ch-Bang.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 3, "3Ch-Bang.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 4, "4Ch-Bang.jpg"));
 		cards.add(new JailCard(Suit.spades, 10, "10B-Jail.jpg"));
 		cards.add(new JailCard(Suit.spades, 11, "11B-Jail.jpg"));
 		//MissedCard
 
 
-
-		cards.add(new MissedCard(Suit.clubs, 13, "13Ch-Missed.jpg"));
-		cards.add(new MissedCard(Suit.clubs, 14, "14Ch-Missed.jpg"));
-		//MustangCard
-		cards.add(new MustangCard(Suit.hearts, 8, "8C-Mustang.jpg"));
-		cards.add(new MustangCard(Suit.hearts, 9, "9C-Mustang.jpg"));
-		//PanicCard
-		cards.add(new PanicCard(Suit.hearts, 11, "11C-Panic.jpg"));
-		cards.add(new BangCard(Suit.clubs, 8, "8Ch-Bang.jpg"));
-		cards.add(new BangCard(Suit.clubs, 9, "9Ch-Bang.jpg"));
-		
-		cards.add(new BangCard(Suit.diamonds, 2, "2R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 3, "3R-Bang.jpg"));
-		cards.add(new PanicCard(Suit.hearts, 12, "12C-Panic.jpg"));
-		cards.add(new PanicCard(Suit.hearts, 14, "14C-Panic.jpg"));
+//
+//		cards.add(new MissedCard(Suit.clubs, 13, "13Ch-Missed.jpg"));
+//		cards.add(new MissedCard(Suit.clubs, 14, "14Ch-Missed.jpg"));
+//		//MustangCard
+//		cards.add(new MustangCard(Suit.hearts, 8, "8C-Mustang.jpg"));
+//		cards.add(new MustangCard(Suit.hearts, 9, "9C-Mustang.jpg"));
+//		//PanicCard
+//		cards.add(new PanicCard(Suit.hearts, 11, "11C-Panic.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 8, "8Ch-Bang.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 9, "9Ch-Bang.jpg"));
+//		
+//		cards.add(new BangCard(Suit.diamonds, 2, "2R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 3, "3R-Bang.jpg"));
+//		cards.add(new PanicCard(Suit.hearts, 12, "12C-Panic.jpg"));
+//		cards.add(new PanicCard(Suit.hearts, 14, "14C-Panic.jpg"));
 		cards.add(new MissedCard(Suit.spades, 2, "2B-Missed.jpg"));
 		cards.add(new MissedCard(Suit.spades, 3, "3B-Missed.jpg"));
 		cards.add(new MissedCard(Suit.spades, 4, "4B-Missed.jpg"));
-		cards.add(new PanicCard(Suit.diamonds, 8, "8R-Panic.jpg"));
-		//RemingtonCard
-		cards.add(new RemingtonCard(Suit.clubs, 13, "13Ch-Remington.jpg"));
-		//RevCarabineCard
-		cards.add(new RevCarabineCard(Suit.clubs, 14, "14Ch-RevCarabine.jpg"));
-		//SaloonCard
-		cards.add(new SaloonCard(Suit.hearts, 5, "5C-Saloon.jpg"));
-		//SchofieldCard
-		cards.add(new SchofieldCard(Suit.clubs, 11, "11Ch-Schofield.jpg"));
+//		cards.add(new PanicCard(Suit.diamonds, 8, "8R-Panic.jpg"));
+//		//RemingtonCard
+//		cards.add(new RemingtonCard(Suit.clubs, 13, "13Ch-Remington.jpg"));
+//		//RevCarabineCard
+//		cards.add(new RevCarabineCard(Suit.clubs, 14, "14Ch-RevCarabine.jpg"));
+//		//SaloonCard
+//		cards.add(new SaloonCard(Suit.hearts, 5, "5C-Saloon.jpg"));
+//		//SchofieldCard
+//		cards.add(new SchofieldCard(Suit.clubs, 11, "11Ch-Schofield.jpg"));
 		cards.add(new MissedCard(Suit.spades, 5, "5B-Missed.jpg"));
 		cards.add(new MissedCard(Suit.spades, 6, "6B-Missed.jpg"));
 
 		cards.add(new SchofieldCard(Suit.clubs, 12, "12Ch-Schofield.jpg"));
 		cards.add(new MissedCard(Suit.spades, 7, "7B-Missed.jpg"));
 		cards.add(new MissedCard(Suit.spades, 8, "8B-Missed.jpg"));
-		cards.add(new SchofieldCard(Suit.spades, 13, "13B-Schofield.jpg"));
-		//ScopeCard
-		cards.add(new ScopeCard(Suit.spades, 14, "14B-Scope.jpg"));
-		//StageCoachCard
-		cards.add(new StageCoachCard(Suit.spades, 9, "9B-StageCoach.jpg"));
-		//VolcanicCard
-		cards.add(new VolcanicCard(Suit.spades, 10, "10B-Volcanic.jpg"));
-		cards.add(new MissedCard(Suit.clubs, 10, "10Ch-Missed.jpg"));
-		cards.add(new MissedCard(Suit.clubs, 11, "11Ch-Missed.jpg"));
-		cards.add(new MissedCard(Suit.clubs, 12, "12Ch-Missed.jpg"));
-		cards.add(new VolcanicCard(Suit.clubs, 10, "10Ch-Volcanic.jpg"));
-//		WellsFargoCard
-		cards.add(new WellsFargoCard(Suit.hearts, 3, "3C-WellsFargo.jpg"));
-		cards.add(new BangCard(Suit.clubs, 5, "5Ch-Bang.jpg"));
-		cards.add(new BangCard(Suit.clubs, 6, "6Ch-Bang.jpg"));
-		cards.add(new BangCard(Suit.clubs, 7, "7Ch-Bang.jpg"));
-		//WinchesterCard
-		cards.add(new WinchesterCard(Suit.spades, 8, "8B-Winchester.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 11, "11R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 12, "12R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 13, "13R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 14, "14R-Bang.jpg"));
+//		cards.add(new SchofieldCard(Suit.spades, 13, "13B-Schofield.jpg"));
+//		//ScopeCard
+//		cards.add(new ScopeCard(Suit.spades, 14, "14B-Scope.jpg"));
+//		//StageCoachCard
+//		cards.add(new StageCoachCard(Suit.spades, 9, "9B-StageCoach.jpg"));
+//		//VolcanicCard
+//		cards.add(new VolcanicCard(Suit.spades, 10, "10B-Volcanic.jpg"));
+//		cards.add(new MissedCard(Suit.clubs, 10, "10Ch-Missed.jpg"));
+//		cards.add(new MissedCard(Suit.clubs, 11, "11Ch-Missed.jpg"));
+//		cards.add(new MissedCard(Suit.clubs, 12, "12Ch-Missed.jpg"));
+//		cards.add(new VolcanicCard(Suit.clubs, 10, "10Ch-Volcanic.jpg"));
+////		WellsFargoCard
+//		cards.add(new WellsFargoCard(Suit.hearts, 3, "3C-WellsFargo.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 5, "5Ch-Bang.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 6, "6Ch-Bang.jpg"));
+//		cards.add(new BangCard(Suit.clubs, 7, "7Ch-Bang.jpg"));
+//		//WinchesterCard
+//		cards.add(new WinchesterCard(Suit.spades, 8, "8B-Winchester.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 11, "11R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 12, "12R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 13, "13R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 14, "14R-Bang.jpg"));
 		
 		
 		

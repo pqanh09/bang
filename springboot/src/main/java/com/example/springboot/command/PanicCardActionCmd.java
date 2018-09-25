@@ -18,8 +18,10 @@ import com.example.springboot.model.card.JailCard;
 import com.example.springboot.model.card.MustangCard;
 import com.example.springboot.model.card.ScopeCard;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.UseCardNotInTurnResponse;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
+import com.example.springboot.utils.CardUtils;
 
 public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 	private static final Logger logger = LoggerFactory.getLogger(PanicCardActionCmd.class);
@@ -41,11 +43,15 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Card card = null;
 		if (StringUtils.isNotBlank(request.getId())) {
 			card = commonService.getCardInFront(targetCharacter, request.getId());
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
+					new UseCardNotInTurnResponse(targetPlayer, card, null));
 //			commonService.notifyCharacter(match.getMatchId(), targetCharacter, sessionTargetId);
 		} else {
 			if (!targetCharacter.getCardsInHand().isEmpty()) {
 				int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
 				card = commonService.getCardInHand(match, targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId(), null);
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
+						new UseCardNotInTurnResponse(targetPlayer, CardUtils.backCard, null));
 			} else {
 				logger.error("Panic card error cmd");
 			}

@@ -61,6 +61,16 @@ public class BangUtils {
 		}
 		return result;
 	}
+	public static Card getCardByCardType(List<Card> list, Class classPath) {
+		Card result = null;
+		for (Card card : list) {
+			if(card.getClass().equals(classPath)) {
+				result = card; 
+				break;
+			}
+		}
+		return result;
+	}
 	public static boolean hasCard(Character character, Class classPath) {
 		for (Card card : character.getCardsInFront()) {
 			if(card.getClass().equals(classPath)) {

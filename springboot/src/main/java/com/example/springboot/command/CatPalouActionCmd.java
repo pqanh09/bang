@@ -18,6 +18,7 @@ import com.example.springboot.model.card.MustangCard;
 import com.example.springboot.model.card.ScopeCard;
 import com.example.springboot.model.card.Card.CardType;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.UseCardNotInTurnResponse;
 import com.example.springboot.service.HeroService;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.service.TurnService;
@@ -49,6 +50,8 @@ public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 		}
 		if(card != null) {
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
+					new UseCardNotInTurnResponse(targetPlayer, card, null));
 			if (CardType.gun.equals(card.getCardType()) || card instanceof BarrelCard || card instanceof MustangCard || card instanceof ScopeCard || card instanceof JailCard || card instanceof DynamiteCard) {
 				card.remove(targetCharacter);
 			} 

@@ -1,11 +1,12 @@
 package com.example.springboot.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.springboot.model.card.Card;
 
 public class CardResponse extends UserResponse{
-	protected List<Card> cards;
+	protected List<Card> cards = new ArrayList<>();
 	
 
 	public List<Card> getCards() {

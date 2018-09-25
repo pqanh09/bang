@@ -1,6 +1,8 @@
 package com.example.springboot.command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -9,14 +11,18 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
+import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.model.hero.BartCassidy;
 import com.example.springboot.request.Request;
 import com.example.springboot.response.ResponseType;
+import com.example.springboot.response.UseCardNotInTurnResponse;
 import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.service.CommonService;
+import com.example.springboot.utils.BangUtils;
+import com.example.springboot.utils.CardUtils;
 
 public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 	private static final Logger logger = LoggerFactory.getLogger(DynamiteActionCmd.class);
@@ -44,24 +50,22 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 		String sessionId = match.getUserMap().get(userName);
 		
 		commonService.addToOldCardList(card, match);
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardDynamite, card, null));
 		
 		character.setHasDynamite(false);
 		
 		// find dynamite card
-		Card dynamiteCard = null;
-		for (Card cd : character.getCardsInFront()) {
-			if(cd instanceof DynamiteCard) {
-				dynamiteCard = cd;
-				break;
-			}
-		}
+		Card dynamiteCard = BangUtils.getCardByCardType(character.getCardsInFront(),DynamiteCard.class);
 		character.getCardsInFront().remove(dynamiteCard);
 		match.getCurrentTurn().setAlreadyCheckedDynamite(true);
+		
+		List<Card> cards = new ArrayList<>();
+		cards.add(card);
+		
 		if(Suit.spades.equals(card.getSuit()) && card.getNumber() >= 2 && card.getNumber() <=9) {
 			commonService.addToOldCardList(dynamiteCard, match);
 			character.setLifePoint(character.getLifePoint() - 3);
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.LostLifePoint, null, null));
+			cards.add(CardUtils.lose3PointCard);
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
 			// skill hero  BartCassidy
 			if(character.getHero() instanceof BartCassidy) {
 				Map<String, Object> others = new HashMap<>();
@@ -80,10 +84,10 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 				match.getCurrentTurn().run(match);
 			}
 		} else {
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			match.getPlayerTurnQueue().poll();
 			String nextPlayer = match.getPlayerTurnQueue().peek();
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.EscapeDynamite, null, nextPlayer));
 			match.getPlayerTurnQueue().addFirst(userName);
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			nextCharacter.getCardsInFront().add(dynamiteCard);

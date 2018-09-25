@@ -85,6 +85,8 @@ myapp.controller('FirstCtrl',
             }
         }
 		
+		$scope.showCardInTurn = false;
+		$scope.showCardNotInTurn = false;
 		$scope.hallPage = true;
 		$scope.gamePage = false;
 		$scope.userName = '';
@@ -129,6 +131,10 @@ myapp.controller('FirstCtrl',
 		$scope.selectedUser = '';
 		$scope.selectedCard = '';
 		$scope.oldCard = null;
+		$scope.turnCard = null;
+		$scope.playerUserCardInTurn = '';
+		$scope.notTurnCards = [];
+		$scope.playerUserCardNotInTurn = '';
 		$scope.cardsInFront = [];
 		$scope.cardsInHand = [];
 		$scope.characters = [];
@@ -326,6 +332,8 @@ myapp.controller('FirstCtrl',
 			console.log('TODO');
 		};
 		$scope.lostLifePointFunc = function() {
+			$interval.cancel(timerSkill);
+			$scope.playerCountDown = '';
 			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
 						actionType : 'UseCard',
@@ -438,6 +446,8 @@ myapp.controller('FirstCtrl',
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/removecard',onRemoveCardBeforeEndTurnTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/turn',onTurnTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/usedCard',onUsedCardTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/usedCardInTurn',onUsedCardInTurnTopicReceived);
+				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/usedCardNotInTurn',onUsedCardNotInTurnTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/cardaction',onCardActionTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/oldcard',onOldCardTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/action',onActionTopicReceived);
@@ -508,10 +518,10 @@ myapp.controller('FirstCtrl',
 		function onCountDownTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'CountDownStart') {
-				$interval.cancel(timerSkill);
-				$scope.playerCountDown = response.userName;
-				$scope.timeSkill = response.countDown;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.playerCountDown = response.userName;
+//				$scope.timeSkill = response.countDown;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				$scope.$apply();
 			} 
 			else if (response.responseType === 'CountDownEnd') {
@@ -597,6 +607,8 @@ myapp.controller('FirstCtrl',
 							console.log('ERROR');
 						}
 					} else {
+						$interval.cancel(timerSkill);
+						$scope.playerCountDown = '';
 						stompClient.send('/app/game.execute', {},
 								JSON.stringify({
 									id : $scope.selectedCard,
@@ -632,10 +644,10 @@ myapp.controller('FirstCtrl',
 					cardDialog.modal({backdrop:'static',keyboard:true,show:true});
 				}, 500);
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 			} else {
 				console.log('ERROR');
@@ -649,10 +661,10 @@ myapp.controller('FirstCtrl',
 			if (response.responseType === 'RemoveCardEndTurn') {
 				if($scope.userName !== response.userName){
 					/// count down time
-					$interval.cancel(timerSkill);
-					$scope.timeSkill = response.countDown;
-					$scope.playerCountDown = response.userName;
-					timerSkill = $interval(timerSkillFunc, 1000);
+//					$interval.cancel(timerSkill);
+//					$scope.timeSkill = response.countDown;
+//					$scope.playerCountDown = response.userName;
+//					timerSkill = $interval(timerSkillFunc, 1000);
 					///
 				}
 				$scope.$apply();
@@ -665,6 +677,31 @@ myapp.controller('FirstCtrl',
 				console.log('ERROR');
 				alert(JSON.stringify(response));
 			}
+		}
+		function onUsedCardInTurnTopicReceived(payload) {
+			var response = JSON.parse(payload.body);
+			if (response.responseType === 'UseCardInTurn') {
+				$scope.playerUserCardInTurn = response.userName;
+				$scope.turnCard = response.card;
+				$scope.showCardNotInTurn = false;
+				$scope.showCardInTurn = true;
+			} else {
+				console.log('ERROR');
+				console.log(JSON.stringify(response));
+			}
+			$scope.$apply();
+		}
+		function onUsedCardNotInTurnTopicReceived(payload) {
+			var response = JSON.parse(payload.body);
+			if (response.responseType === 'UseCardNotInTurn') {
+				$scope.playerUserCardNotInTurn = response.userName;
+				$scope.notTurnCards = response.cards;
+				$scope.showCardNotInTurn = true;
+			} else {
+				console.log('ERROR');
+				console.log(JSON.stringify(response));
+			}
+			$scope.$apply();
 		}
 		function onUsedCardTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
@@ -723,8 +760,10 @@ myapp.controller('FirstCtrl',
 		function onOldCardTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'OldCard') {
-				$scope.oldCard = response.cards[0];
-				$scope.$apply();
+				if(response.cards.length > 0){
+					$scope.oldCard = response.cards[0];
+					$scope.$apply();
+				}
 			} else {
 				console.log('Error');
 				alert(JSON.stringify(response));
@@ -762,34 +801,43 @@ myapp.controller('FirstCtrl',
 			if (response.responseType === 'GetCard') {
 				addMessage(response.userName
 						+ ' will get card......');
-
+				stompClient.send('/app/game.execute', {}, JSON
+						.stringify({
+							actionType : 'OldCard'
+						}));
+				if($scope.actionType !== 'DrawCardDynamite' && $scope.actionType !== 'DrawCardJail'){
+					$scope.showCardInTurn = false;
+					$scope.showCardNotInTurn = false;
+				}
+				$scope.actionType = response.responseType;
 				$scope.playerGettingCard = response.userName;
 				$scope.playerUsingCard = '';
 				$scope.playerDrawingCard = '';
-				$scope.actionType = response.responseType;
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 				$scope.$apply();
 			} else if (response.responseType === 'UseCard') {
+				$scope.oldCard = null;
 				addMessage(response.userName
 						+ ' will use card......');
 				if($scope.userName === response.userName){
 					$scope.skillInfo.enableUseSkillBtn = true;
 				}
+				$scope.oldCard = null;
 				$scope.playerUsingCard = response.userName;
 				$scope.actionType = response.responseType;
 				$scope.playerGettingCard = ''
 				$scope.playerDrawingCard = '';
 				
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 				
 				$scope.$apply();
@@ -797,33 +845,44 @@ myapp.controller('FirstCtrl',
 				addMessage(response.userName
 						+ ' will draw card for escaping the Jail......');
 
+				$scope.showCardInTurn = true;
+				$scope.showCardNotInTurn = false;
+				$scope.playerUserCardInTurn = response.userName;
+				$scope.turnCard = response.card;
+				
+				
+				
 				$scope.playerDrawingCard = response.userName;
 				$scope.actionType = response.responseType;
 				$scope.playerUsingCard = '';
 				$scope.playerGettingCard = '';
 				
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardDynamite') {
 				addMessage(response.userName
 						+ ' will draw card for escaping dynamite......');
-
+				$scope.showCardInTurn = true;
+				$scope.showCardNotInTurn = false;
+				$scope.playerUserCardInTurn = response.userName;
+				$scope.turnCard = response.card;
+				
 				$scope.playerDrawingCard = response.userName;
 				$scope.actionType = response.responseType;
 				$scope.playerUsingCard = '';
 				$scope.playerGettingCard = '';
 				
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 				
 				$scope.$apply();
@@ -848,10 +907,10 @@ myapp.controller('FirstCtrl',
 					$scope.playerUsingBarrel = '';
 				}
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 				$scope.$apply();
 			} else if (response.responseType === 'Panic') {
@@ -870,10 +929,10 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 			} else if (response.responseType === 'CatPalou') {
 				if ($scope.userName === response.userName) {
@@ -892,10 +951,10 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 			} else if (response.responseType === 'GeneralStore') {
 				if ($scope.userName === response.userName) {
@@ -913,10 +972,10 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				$interval.cancel(timerSkill);
-				$scope.timeSkill = response.countDown;
-				$scope.playerCountDown = response.userName;
-				timerSkill = $interval(timerSkillFunc, 1000);
+//				$interval.cancel(timerSkill);
+//				$scope.timeSkill = response.countDown;
+//				$scope.playerCountDown = response.userName;
+//				timerSkill = $interval(timerSkillFunc, 1000);
 				///
 			} else {
 				$scope.playerUsingBarrel = '';

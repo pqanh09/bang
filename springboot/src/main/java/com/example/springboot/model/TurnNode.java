@@ -10,16 +10,20 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.model.card.Card.CardType;
+import com.example.springboot.model.card.DynamiteCard;
 import com.example.springboot.model.hero.BelleStar;
 import com.example.springboot.model.hero.Jourdonnais;
 import com.example.springboot.model.hero.LuckyDuke;
 import com.example.springboot.response.BarrelCardResponse;
 import com.example.springboot.response.CardResponse;
+import com.example.springboot.response.DrawResponse;
 import com.example.springboot.response.GetCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
 import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CommonService;
+import com.example.springboot.utils.BangUtils;
 
 public class TurnNode {
 	private static final Logger logger = LoggerFactory.getLogger(TurnNode.class);
@@ -241,7 +245,8 @@ public class TurnNode {
 			if(character.getHero() instanceof LuckyDuke) {
 				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
-				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardDynamite, character.getUserName(), 20));	
+				Card card = BangUtils.getCardByCardType(character.getCardsInFront(),DynamiteCard.class);
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new DrawResponse(ResponseType.DrawCardDynamite, character.getUserName(), card, 20));	
 			}
 			return;
 		}
@@ -251,7 +256,8 @@ public class TurnNode {
 			if(character.getHero() instanceof LuckyDuke) {
 				character.getHero().useSkill(match, character, commonService, 1, null);
 			} else {
-				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new UserResponse(ResponseType.DrawCardJail, character.getUserName(), 20));
+				Card card = BangUtils.getCardByCardType(character.getCardsInFront(),DynamiteCard.class);
+				this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/cardaction", new DrawResponse(ResponseType.DrawCardJail, character.getUserName(), card, 20));
 			}
 			return;
 		}

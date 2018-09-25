@@ -48,6 +48,7 @@ public class Dispatcher {
 			actionMap.put(RequestType.PickHero,
 					new PickHeroActionCmd(commonService, simpMessageSendingOperations, heroService));
 			actionMap.put(RequestType.GetCard, new GetCardActionCmd(commonService, simpMessageSendingOperations));
+			actionMap.put(RequestType.OldCard, new GetOldCardActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.RemoveCardEndTurn, new RemoveCardEndTurnActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.Panic, new PanicCardActionCmd(commonService, simpMessageSendingOperations));
 			actionMap.put(RequestType.GeneralStore,

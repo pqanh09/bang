@@ -11,6 +11,7 @@ import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.UseCardNotInTurnResponse;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 
@@ -37,6 +38,8 @@ public class GenelralStoreActionCmd extends AbsActionCmd implements ActionCmd {
 		if(card == null) {
 			logger.error("GenelralStoreActionCmd Error!!!!!!!!!!!!!!!!!!!");
 		} else {
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
+					new UseCardNotInTurnResponse(userName, card, null));
 			turnNode.getCardTemp().remove(card);
 			character.getCardsInHand().add(card);
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);

@@ -11,8 +11,15 @@ public class OldCardResponse extends CardResponse {
 		this.cards = cards;
 		this.responseType = ResponseType.OldCard;
 	}
+	public OldCardResponse(Card card) {
+		super();
+		this.cards.add(card);
+		this.responseType = ResponseType.OldCard;
+	}
 	public OldCardResponse() {
 		super();
+		this.responseType = ResponseType.OldCard;
 	}
+	
 
 }
