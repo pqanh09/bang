@@ -75,7 +75,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Character character = match.getCharacterMap().get(userName);
 		if (userCardRequest.isNoneResponse()) {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-					new UseCardNotInTurnResponse(userName, CardUtils.losePointCard, null));
+					new UseCardNotInTurnResponse(userName, CardUtils.losePointCard, null, null, null));
 			character.setLifePoint(character.getLifePoint() - 1);
 			// skill hero  BartCassidy
 			if(character.getHero() instanceof BartCassidy) {
@@ -112,7 +112,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				return;
 			}
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-					new UseCardNotInTurnResponse(userName, card, null));
+					new UseCardNotInTurnResponse(userName, card, null, null, null));
 			commonService.addToOldCardList(card, match);
 			//skill hero MollyStark
 			if(character.getHero() instanceof MollyStark) {
@@ -195,7 +195,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 		if (userCardRequest.isNoneResponse()) {
 			if (ResponseType.Duello.equals(turnNode.getAction())) {
 				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-						new UseCardNotInTurnResponse(userName, CardUtils.losePointCard, null));
+						new UseCardNotInTurnResponse(userName, CardUtils.losePointCard, null, null, null));
 				character.setLifePoint(character.getLifePoint() - 1);
 				// skill hero  BartCassidy
 				if(character.getHero() instanceof BartCassidy) {
@@ -228,7 +228,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			if (ResponseType.Duello.equals(turnNode.getAction())) {
 				if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
 					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-							new UseCardNotInTurnResponse(userName, card, null));
+							new UseCardNotInTurnResponse(userName, card, null, null, null));
 					commonService.addToOldCardList(card, match);
 					turnNode.getNextPlayer().poll();
 					if (turnNode.getNextPlayer().peek() == null) {

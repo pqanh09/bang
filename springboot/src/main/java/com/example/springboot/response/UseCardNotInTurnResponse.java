@@ -8,8 +8,14 @@ import com.example.springboot.model.card.Card;
 public class UseCardNotInTurnResponse extends UserResponse {
 	private String targetUser;
 	private List<Card> cards = new ArrayList<>();
-
-
+	private String serverMessage;
+	
+	public String getServerMessage() {
+		return serverMessage;
+	}
+	public void setServerMessage(String serverMessage) {
+		this.serverMessage = serverMessage;
+	}
 	public String getTargetUser() {
 		return targetUser;
 	}
@@ -28,18 +34,22 @@ public class UseCardNotInTurnResponse extends UserResponse {
 		this.cards.add(card);
 		this.responseType = ResponseType.UseCardNotInTurn;
 	}
-	public UseCardNotInTurnResponse(String userName, List<Card> cards) {
+	public UseCardNotInTurnResponse(String userName, List<Card> cards, String message, String serverMessage) {
 		super();
 		this.userName = userName;
 		this.cards = cards;
 		this.responseType = ResponseType.UseCardNotInTurn;
+		this.message = message;
+		this.serverMessage = serverMessage;
 	}
-	public UseCardNotInTurnResponse(String userName, Card card, String targetUser) {
+	public UseCardNotInTurnResponse(String userName, Card card, String targetUser, String message, String serverMessage) {
 		super();
 		this.userName = userName;
 		this.cards.add(card);
 		this.targetUser = targetUser;
 		this.responseType = ResponseType.UseCardNotInTurn;
+		this.message = message;
+		this.serverMessage = serverMessage;
 	}
 	public UseCardNotInTurnResponse() {
 		super();

@@ -12,8 +12,10 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.Suit;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
+import com.example.springboot.response.UseCardNotInTurnResponse;
 import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CommonService;
+import com.example.springboot.utils.CardUtils;
 
 public class BlackJack extends Hero {
 	private static final Logger logger = LoggerFactory.getLogger(BlackJack.class);
@@ -42,8 +44,12 @@ public class BlackJack extends Hero {
 		String userName = character.getUserName();
 		// get cards for character;
 		List<Card> cards = commonService.getFromNewCardList(match, 2);
+		String message = "The second card:";
+		String serverMessage = userName + " uses hero'skill to get more 1 card.";
+//		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new UseCardNotInTurnResponse(userName, cards.get(1), null, message, serverMessage));
 		if(Suit.hearts.equals(cards.get(1).getSuit()) || Suit.diamonds.equals(cards.get(1).getSuit())) {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			cards.addAll(commonService.getFromNewCardList(match, 1));
 		}
 		character.getCardsInHand().addAll(cards);

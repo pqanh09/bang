@@ -39,7 +39,7 @@ public class GenelralStoreActionCmd extends AbsActionCmd implements ActionCmd {
 			logger.error("GenelralStoreActionCmd Error!!!!!!!!!!!!!!!!!!!");
 		} else {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-					new UseCardNotInTurnResponse(userName, card, null));
+					new UseCardNotInTurnResponse(userName, card, null, null, null));
 			turnNode.getCardTemp().remove(card);
 			character.getCardsInHand().add(card);
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);

@@ -44,14 +44,14 @@ public class PanicCardActionCmd extends AbsActionCmd implements ActionCmd {
 		if (StringUtils.isNotBlank(request.getId())) {
 			card = commonService.getCardInFront(targetCharacter, request.getId());
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-					new UseCardNotInTurnResponse(targetPlayer, card, null));
+					new UseCardNotInTurnResponse(targetPlayer, card, null, null, null));
 //			commonService.notifyCharacter(match.getMatchId(), targetCharacter, sessionTargetId);
 		} else {
 			if (!targetCharacter.getCardsInHand().isEmpty()) {
 				int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
 				card = commonService.getCardInHand(match, targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId(), null);
 				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-						new UseCardNotInTurnResponse(targetPlayer, CardUtils.backCard, null));
+						new UseCardNotInTurnResponse(targetPlayer, CardUtils.backCard, null, null, null));
 			} else {
 				logger.error("Panic card error cmd");
 			}

@@ -51,7 +51,7 @@ public class CatPalouActionCmd extends AbsActionCmd implements ActionCmd {
 		}
 		if(card != null) {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
-					new UseCardNotInTurnResponse(targetPlayer, card, null));
+					new UseCardNotInTurnResponse(targetPlayer, card, null, null, null));
 			if (CardType.gun.equals(card.getCardType()) || card instanceof BarrelCard || card instanceof MustangCard || card instanceof ScopeCard || card instanceof JailCard || card instanceof DynamiteCard) {
 				card.remove(targetCharacter);
 			} 

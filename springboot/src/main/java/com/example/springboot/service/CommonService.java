@@ -93,6 +93,7 @@ public class CommonService {
 		}
 		return addToOldCardList;
 	}
+
 	private boolean checkEndGame(Match match, Character character) {
 		boolean endGame = false;
 		if(match.getPlayerTurnQueue().size() == 1) {
@@ -111,6 +112,7 @@ public class CommonService {
 					notifyCharacter(match.getMatchId(), plCharacter, match.getUserMap().get(plCharacter.getUserName()));
 				}
 				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
+				match.getPlayerTurnQueue().clear();
 				endGame = true;
 			}
 		}
@@ -282,7 +284,9 @@ public class CommonService {
 		if(StringUtils.isNotBlank(nextPlayer)) {
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			match.getCurrentTurn().resetTurnNode(nextCharacter);
-			match.getPlayerTurnQueue().add(oldPlayer);
+			if(StringUtils.isNotBlank(oldPlayer)) {
+				match.getPlayerTurnQueue().add(oldPlayer);
+			}
 			if(useSkillOfVeraCuster(nextCharacter, match)) {
 				match.getCurrentTurn().run(match);
 			}
@@ -326,13 +330,6 @@ public class CommonService {
 		if(result != null) {
 			character.getCardsInHand().remove(result);
 			character.setNumCardsInHand(character.getCardsInHand().size());
-//			if(StringUtils.isNoneBlank(targetUser)) {
-//				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
-//						new UseCardResponse(character.getUserName(), result, targetUser));
-//			} else {
-//				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard",
-//						new UseCardResponse(character.getUserName(), result, null));
-//			}
 			if(character.getHero() instanceof SuzyLafayette && character.getCardsInHand().isEmpty()) {
 				character.getHero().useSkill(match, character, this, 1, null);
 			}

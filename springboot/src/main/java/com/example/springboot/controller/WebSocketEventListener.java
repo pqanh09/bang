@@ -65,9 +65,10 @@ public class WebSocketEventListener {
             	} else {
             		if(MatchStatus.waiting.equals(match.getStatus())) {
             			String host = match.getPlayerTurnQueue().peekFirst();
-            			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Update, userName, matchId, true));
+            			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Update, host, matchId, true));
             		}
             		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
+            		commonService.callNextPlayerTurn(match, null);
             	}
             	matchService.getUserMap().remove(userName);
             }

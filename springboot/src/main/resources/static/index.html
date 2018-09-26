@@ -58,7 +58,7 @@
 							style="display: flex; justify-content: center; height: 400px;"
 							id="charaterListElement">
 							<div ng-repeat="character in characters" style="width: 183px">
-								<div class="container" style="padding: 0 0 0 0;">
+								<div class="container" style="padding: 0 0 0 0;height: 33px;">
 									<div class="page-header"
 										style="text-align: center; color: brown;">
 										<h3 ng-show="character.userName !== userName"
@@ -70,28 +70,28 @@
 								<div class="item-hero-image-div"
 									ng-class="(characterTurn === character.userName) ? 'notify-charater' : ''">
 									<div class="item-hero-image-countdown">
-									<img ng-src="{{character.hero.image}}"
-										alt="{{character.hero.name}}"
-										class="img-thumbnail item-hero-image1"
-										ng-click="zoomImage(character.hero.image)">
-									<div ng-show="playerCountDown === character.userName" class="item-hero-countdown">{{countDown}}</div>
-									<div ng-show="playerCountDown === character.userName && (countDown % 2)" class="item-hero-action">{{actionStr}}</div>
+										<img ng-src="{{character.hero.image}}"
+											alt="{{character.hero.name}}"
+											class="img-thumbnail item-hero-image1"
+											ng-click="zoomImage(character.hero.image)">
+										<div ng-show="playerCountDown === character.userName" class="item-hero-countdown">{{countDown}}</div>
+										<div ng-show="playerCountDown === character.userName && (countDown % 2)" class="item-hero-action">{{actionStr}}</div>
 									</div>
 									<div style="display: flow-root;">
-										<img ng-src="{{character.roleImage}}"
+										<img ng-mouseleave="hideRole(character)" ng-mouseover="showRole(character)" ng-src="{{character.roleImage}}"
 											class="img-thumbnail item-role-mage">
 										<div class="table-responsive" style="margin-top: -1px;">
 											<table class="table"
 												style="margin-bottom: 0rem; width: 54px; font-size: 14px;">
 												<thead>
 													<tr style="text-align: center;">
-														<th style="font-size: 14px; padding: 0 0 0 0;">Life</th>
+														<th style="font-size: 16px; padding: 0 0 0 0;">Life</th>
 													</tr>
 												</thead>
 												<tbody>
 													<tr>
 														<td
-															style="padding: 0rem; text-align: center; font-size: 14px;">{{character.lifePoint}}/{{character.capacityLPoint}}</td>
+															style="padding: 0rem; text-align: center; font-size: 20px; font-weight: 500;">{{character.lifePoint}}/{{character.capacityLPoint}}</td>
 													</tr>
 												</tbody>
 											</table>
@@ -101,13 +101,13 @@
 												style="margin-bottom: 0rem; width: 54px; font-size: 14px;">
 												<thead>
 													<tr style="text-align: center;">
-														<th style="font-size: 14px; padding: 0 0 0 0;">Cards</th>
+														<th style="font-size: 16px; padding: 0 0 0 0;">Cards</th>
 													</tr>
 												</thead>
 												<tbody>
 													<tr>
 														<td
-															style="padding: 0rem; text-align: center; font-size: 14px;">{{character.numCardsInHand}}</td>
+															style="padding: 0rem; text-align: center;font-weight: 500; font-size: 22px;">{{character.numCardsInHand}}</td>
 													</tr>
 												</tbody>
 											</table>
@@ -126,19 +126,24 @@
 					</div>
 					<div class="row">
 						<div class="col-12"
+							style="display: flex; justify-content: center; height: 50px;">
+
+							<div ng-show="message.show" class="alert alert-success" role="alert"
+								style="margin-bottom: 0;">
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close" style="padding-left: 44px;">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								{{message.msg}}
+							</div>
+
+
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12"
 							style="display: flex; justify-content: center; height: 247px;">
 							<div>
-<!-- 								<div ng-show="oldCard"> -->
-<!-- 									<div class="page-header" -->
-<!-- 										style="text-align: center; color: brown; width: 122px;"> -->
-<!-- 										<h5 style="margin-bottom: 0; height: 24px;">Old card</h5> -->
-<!-- 									</div> -->
-<!-- 									<div style="width: 121px; height: 180px;"> -->
-<!-- 										<img ng-src="{{oldCard.image}}" alt="{{oldCard.name}}" -->
-<!-- 											class="img-thumbnail item-card-image" -->
-<!-- 											ng-click="zoomImage(oldCard.image)"> -->
-<!-- 									</div> -->
-<!-- 								</div> -->
 								<div >
 									<div class="page-header"
 										style="text-align: center; color: brown; width: 122px;">
@@ -166,14 +171,6 @@
 								</div>
 								
 							</div>
-<!-- 							<div> -->
-<!-- 								<div class="page-header" -->
-<!-- 									style="text-align: center; color: brown;"> -->
-<!-- 									<h5 style="margin-bottom: 0;">Notification</h5> -->
-<!-- 								</div> -->
-<!-- 								<ul id="messageArea" class="ul-server-notification"> -->
-<!-- 								</ul> -->
-<!-- 							</div> -->
 							<div style="position: absolute;right: 2%;">
 								<div class="page-header"
 									style="text-align: center; color: brown;">

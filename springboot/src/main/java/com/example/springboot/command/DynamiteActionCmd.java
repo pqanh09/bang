@@ -67,7 +67,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 			commonService.addToOldCardList(card, match);
 			character.setLifePoint(character.getLifePoint() - 3);
 			cards.add(CardUtils.lose3PointCard);
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards, null, null));
 			// skill hero  BartCassidy
 			if(character.getHero() instanceof BartCassidy) {
 				Map<String, Object> others = new HashMap<>();
@@ -88,7 +88,7 @@ public class DynamiteActionCmd extends AbsActionCmd implements ActionCmd {
 		} else {
 			commonService.addToOldCardList(card, match);
 			cards.add(CardUtils.escapeDynamiteCard);
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards, null, null));
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			match.getPlayerTurnQueue().poll();
 			String nextPlayer = match.getPlayerTurnQueue().peek();

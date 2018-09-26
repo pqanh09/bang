@@ -12,6 +12,7 @@ public enum ResponseType {
 	Role,
 	Hero,
 	Chatting,
+	Player,
 	//
 	CheckSkill,
 	CheckCard,

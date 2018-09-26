@@ -2,8 +2,10 @@ package com.example.springboot.controller;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,7 @@ import com.example.springboot.request.RequestType;
 import com.example.springboot.response.HeroResponse;
 import com.example.springboot.response.HostResponse;
 import com.example.springboot.response.MatchResponse;
+import com.example.springboot.response.PlayerResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.RoleResponse;
 import com.example.springboot.response.UserResponse;
@@ -168,7 +171,33 @@ public class BangController {
 		
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Join, userName));
 	}
-	
+	private void sendListPlayers(String userName, String sessionId, Match match) {
+		
+		List<String> frontPlayers = new ArrayList<>();
+		
+		Map<String, Integer> result = new HashMap<>();
+		boolean foundPlayer = false;
+		int n = 0;
+		for (String player : match.getUserMap().keySet()) {
+			if(foundPlayer) {
+				result.put(player, n);
+				n++;
+			} else {
+				if(userName.equals(player)) {
+					foundPlayer = true;
+					result.put(player, n);
+					n++;
+				} else {
+					frontPlayers.add(player);
+				}
+			}
+		}
+		for (String player : frontPlayers) {
+			result.put(player, n);
+			n++;
+		}
+		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ match.getMatchId() +"/player", new PlayerResponse(userName, result));
+	}
 	@MessageMapping("/game.start")
 	public void startGame(SimpMessageHeaderAccessor sha) {
 		String sessionId = sha.getUser().getName();
@@ -194,6 +223,7 @@ public class BangController {
 //			return;
 //		}
 		match.setStatus(MatchStatus.playing);
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
 		// get roles
 		List<Role> roles = roleService.getRoles(nRole);
 		// get heros for user pick
@@ -218,6 +248,8 @@ public class BangController {
 			//
 			Role role = roles.get(n);
 			character.setRole(role);
+			// send player map for user
+			sendListPlayers(plName, plSessionId, match);
 			// send role for user
 			simpMessageSendingOperations.convertAndSendToUser(plSessionId, "/queue/"+ matchId +"/role", new RoleResponse(plName, role));
 			if (foundSceriffo) {

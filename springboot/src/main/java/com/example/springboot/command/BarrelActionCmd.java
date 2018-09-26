@@ -37,14 +37,12 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 		
 		commonService.addToOldCardList(card, match);
 		
-//		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.UseBarrel, card, null));
-		
 		TurnNode turnNode = match.getCurrentTurn();
 		turnNode.getPlayerUsedBarrel().add(userName);
 		List<Card> cards = new ArrayList<>();
 		cards.add(BangUtils.getCardByCardType(match.getCharacterMap().get(userName).getCardsInFront(),BarrelCard.class));
 		cards.add(card);
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
+		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards, null, null));
 		
 		if(Suit.hearts.equals(card.getSuit())) {
 			if(ResponseType.Bang.equals(turnNode.getAction()) 

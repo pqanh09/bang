@@ -2,6 +2,32 @@
 	width: 380px;
 }
 
+.life-point-title {
+	font-size: 16px;
+	padding: 0 0 0 0;
+	text-align: center;
+}
+
+.life-point-number {
+	padding: 0rem;
+	text-align: center;
+	font-size: 20px;
+	font-weight: 500;
+}
+
+.card-in-hand-title {
+	font-size: 16px;
+	padding: 0 0 0 0;
+	text-align: center;
+}
+
+.card-in-hand-number {
+	padding: 0rem;
+	text-align: center;
+	font-weight: 500;
+	font-size: 22px;
+}
+
 .other-player {
 	width: 188px;
 	margin: 0 3px 0 3px;
@@ -11,27 +37,30 @@
 	display: flow-root;
 	text-align: center;
 }
+
 .item-hero-image-countdown {
 	position: relative;
-    text-align: center;
-    color: red;
-    font-size: -webkit-xxx-large;
-}
-.item-hero-countdown {
-	position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-.item-hero-action {
-	color: blue;
-    font-size: large;
-	position: absolute;
-    top: 90%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+	text-align: center;
+	color: red;
+	font-size: -webkit-xxx-large;
 }
 
+.item-hero-countdown {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.item-hero-action {
+	color: blue;
+	font-size: 15px;
+	font-weight: bold;
+	position: absolute;
+	top: 87%;
+	right: -37%;
+	transform: translate(-50%, -50%);
+}
 
 .item-hero-image {
 	text-align: center;

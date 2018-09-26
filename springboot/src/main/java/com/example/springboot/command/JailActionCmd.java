@@ -47,9 +47,6 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		String userName = character.getUserName();
 		String sessionId = match.getUserMap().get(userName);
 		
-		
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCard", new UseCardResponse(userName, ResponseType.DrawCardJail, card, null));
-		
 		character.setBeJailed(false);
 		// find jailCard
 		Card jailCard = BangUtils.getCardByCardType(character.getCardsInFront(),JailCard.class);
@@ -65,11 +62,11 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 //		cards.add(card);
 		if(Suit.hearts.equals(card.getSuit())) {
 			cards.add(CardUtils.escapeJailCard);
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards, null, null));
 			match.getCurrentTurn().run(match);
 		} else {
 			cards.add(CardUtils.loseTurn);
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards));
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards, null, null));
 			commonService.endTurn(userName, match);
 		}
 		OldCardResponse oldCardResponse = new OldCardResponse();
