@@ -10,7 +10,7 @@
 </head>
 <body>
 	<!-- <img src="/data/image/hero/Hero-BartCassidy.jpg" alt="aaa" class="img-thumbnail"> -->
-	<div ng-app="myapp">
+	<div ng-app="myapp" ng-cloak>
 		<div ng-controller="FirstCtrl">
 
 			<div id="hallPage" ng-show="hallPage">
@@ -246,7 +246,7 @@
 
 						</div>
 						<div class="modal-body">
-							<input type="text" class="form-control" id="name"
+							<input type="text" class="form-control" id="name" ng-keypress="userNameKeypressFunc($event)"
 								ng-model="userName" placeholder="Username" autocomplete="off">
 						</div>
 						<div class="modal-footer">

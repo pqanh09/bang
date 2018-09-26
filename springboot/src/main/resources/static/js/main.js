@@ -117,6 +117,19 @@ myapp.controller('FirstCtrl',
 				show : true
 			});
 		}
+		$scope.userNameKeypressFunc = function(keyEvent) {
+			
+			if (keyEvent.which === 13){
+				if ($scope.userName) {
+					dialogInputUserName.modal('hide');
+					socket = new SockJS('/ws');
+					stompClient = Stomp.over(socket);
+					stompClient.connect({}, onConnected, onError);
+				} else {
+					console.log('Error');
+				}
+			}
+		}
 		$scope.getCardFunc = function() {
 			$scope.playerGettingCard = '';
 			$scope.showCardNotInTurn = false;
@@ -1132,11 +1145,14 @@ myapp.controller('FirstCtrl',
 
 			} else if (response.responseType === 'Join') {
 				if(response.userName !== $scope.userName){
-					callMessageServerFunc(response.userName + ' has joined!', 10000);
+					addChattingMessage1('success', ' has joined!', response.userName);
+//					callMessageServerFunc(response.userName + ' has joined!', 10000);
 				}
 //				addMessage(response.userName + 'has joined!');
 			}  else if (response.responseType === 'Leave') {
-				callMessageServerFunc(response.userName + '  has leaved!', 10000);
+				
+//				callMessageServerFunc(response.userName + '  has leaved!', 10000);
+				addChattingMessage1('warning', ' has leaved!', response.userName);
 //				addMessage(response.userName + ' has leaved!');
 			} else if (response.responseType === 'Winner') {
 				callMessageServerFunc(response.userName + ' win!!!!!', 10000);
@@ -1178,9 +1194,42 @@ myapp.controller('FirstCtrl',
 			var messageElement = document.createElement('li');
 			messageElement.innerHTML = message;
 			messageElement.classList.add('li-server-notification');
-			messageElement.classList.add('animated');
-			messageElement.classList.add('bounceInRight');
+//			messageElement.classList.add('animated');
+//			messageElement.classList.add('bounceInRight');
 			messageArea.appendChild(messageElement);
+			messageArea.scrollTop = messageArea.scrollHeight;
+		}
+		function addChattingMessage1(type, message, strongMessage) {
+			var messageArea = document.querySelector('#chattingArea');
+			if(type === 'warning'){
+				var messageElement = document.createElement('li');
+				messageElement.classList.add('li-server-notification');
+				messageElement.classList.add('alert');
+				messageElement.classList.add('alert-warning');
+				var strongElement = document.createElement('strong');
+				strongElement.innerHTML = strongMessage;
+				messageElement.appendChild(strongElement);
+				messageElement.innerHTML = message;
+				messageArea.appendChild(messageElement);
+			} else if(type === 'success'){
+				var messageElement = document.createElement('li');
+				messageElement.innerHTML = message;
+				messageElement.classList.add('li-server-notification');
+				messageElement.classList.add('alert');
+				messageElement.classList.add('alert-success');
+				var strongElement = document.createElement('strong');
+				strongElement.innerHTML = strongMessage;
+				messageElement.appendChild(strongElement);
+				messageElement.innerHTML = message;
+				messageArea.appendChild(messageElement);
+			} else {
+				var messageElement = document.createElement('li');
+				messageElement.innerHTML = message;
+				messageElement.classList.add('li-server-notification');
+				messageElement.classList.add('alert');
+				messageElement.classList.add('alert-success');
+				messageArea.appendChild(messageElement);
+			}
 			messageArea.scrollTop = messageArea.scrollHeight;
 		}
 		

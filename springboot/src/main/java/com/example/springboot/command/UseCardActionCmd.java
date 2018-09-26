@@ -307,7 +307,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					commonService.addToOldCardList(card, match);
 					List<String> players = new ArrayList<>(match.getPlayerTurnQueue());
 					for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
-						if(players.contains(entry.getKey())) {
+						if(!players.contains(entry.getKey())) {
 							continue;
 						}
 						card.apply(entry.getValue());

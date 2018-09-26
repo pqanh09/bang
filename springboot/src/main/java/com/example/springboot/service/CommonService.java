@@ -102,6 +102,7 @@ public class CommonService {
 			character.setRoleImage(character.getRole().getImage());
 			notifyCharacter(match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, lastCharacter.getRole().getRoleType().toString()));
+			match.getPlayerTurnQueue().clear();
 			endGame = true;
 		} else {
 			if(RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
