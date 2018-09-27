@@ -1,6 +1,7 @@
 package com.example.springboot.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.BangCard;
+import com.example.springboot.model.card.BarrelCard;
 import com.example.springboot.model.card.BeerCard;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.card.Card.CardType;
@@ -26,11 +28,13 @@ import com.example.springboot.model.card.GeneralStoreCard;
 import com.example.springboot.model.card.IndiansCard;
 import com.example.springboot.model.card.JailCard;
 import com.example.springboot.model.card.MissedCard;
+import com.example.springboot.model.card.MustangCard;
 import com.example.springboot.model.card.PanicCard;
 import com.example.springboot.model.card.SaloonCard;
 import com.example.springboot.model.card.StageCoachCard;
 import com.example.springboot.model.card.WellsFargoCard;
 import com.example.springboot.model.hero.BartCassidy;
+import com.example.springboot.model.hero.BelleStar;
 import com.example.springboot.model.hero.ElGringo;
 import com.example.springboot.model.hero.ElenaFuente;
 import com.example.springboot.model.hero.JohnnyKisch;
@@ -38,10 +42,10 @@ import com.example.springboot.model.hero.MollyStark;
 import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.model.hero.TequilaJoe;
 import com.example.springboot.request.Request;
+import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UseCardInTurnResponse;
 import com.example.springboot.response.UseCardNotInTurnResponse;
-import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.service.CommonService;
 import com.example.springboot.utils.BangUtils;
 import com.example.springboot.utils.CardUtils;
@@ -116,13 +120,13 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			commonService.addToOldCardList(card, match);
 			//skill hero MollyStark
 			if(character.getHero() instanceof MollyStark) {
-				character.getHero().useSkill(match, character, commonService, 1, null);
+				character.getHero().useSkill(match, character, commonService, 0, null);
 			}
 
 			if (ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Gatling.equals(turnNode.getAction())) {
 				//skill hero ElenaFuente
 				if(character.getHero() instanceof ElenaFuente) {
-					character.getHero().useSkill(match, character, commonService, 1, null);
+					character.getHero().useSkill(match, character, commonService, 0, null);
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 				} else {
 					if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
@@ -191,7 +195,34 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 		}
 	}
-
+	private void checkBelleStarSkill(Character character, TurnNode turnNode, Match match, List<String> targerUsers) {
+		if(character.getHero() instanceof BelleStar) {
+			boolean notify = false;
+			// Bang Panic Gatling
+			if(ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Panic.equals(turnNode.getAction())) {
+				Character targerCharacter = match.getCharacterMap().get(targerUsers.get(0));
+				Card card = BangUtils.getCardByCardType(targerCharacter.getCardsInFront(), MustangCard.class);
+				if(card == null) {
+					card = BangUtils.getCardByCardType(targerCharacter.getCardsInFront(), BarrelCard.class);
+				}
+				if(card != null) {
+					notify = true;
+				}
+			} else if(ResponseType.Gatling.equals(turnNode.getAction())) {
+				for (String targetUser : targerUsers) {
+					Character targerCharacter = match.getCharacterMap().get(targetUser);
+					Card card = BangUtils.getCardByCardType(targerCharacter.getCardsInFront(), BarrelCard.class);
+					if(card != null) {
+						notify = true;
+						break;
+					}
+				}
+			} 
+			if(notify) {
+				character.getHero().useSkill(match, character, commonService, 0, null);
+			}
+		}
+	}
 	private void processUseCardInTurn(Match match, Request userCardRequest) {
 		String userName = userCardRequest.getUser();
 		TurnNode turnNode = match.getCurrentTurn();
@@ -284,6 +315,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				if(card instanceof MissedCard) {
 					character.getHero().useSkill(match, character, commonService, 0, null);
 				}
+				checkBelleStarSkill(character, turnNode, match, Arrays.asList(targetUser));
 				turnNode.setAction(ResponseType.Bang);
 				turnNode.setAlreadyUseBangCard(true);
 				turnNode.getNextPlayer().clear();
@@ -311,6 +343,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 					// skill hero ApacheKid
 					commonService.useSkillOfApacheKid(match, otherPlayers, card, true);
+					checkBelleStarSkill(character, turnNode, match, otherPlayers);
 					turnNode.setAction(ResponseType.Gatling);
 					turnNode.setNextPlayer(otherPlayers);
 					turnNode.requestOtherPlayerUseCard(match);
@@ -385,6 +418,9 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardInTurn", new UseCardInTurnResponse(character.getUserName(), card, targetUser));
 					commonService.addToOldCardList(card, match);
 					ResponseType turnAction = card instanceof PanicCard ? ResponseType.Panic : ResponseType.CatPalou;
+					if(card instanceof PanicCard) {
+						checkBelleStarSkill(character, turnNode, match, Arrays.asList(targetUser));
+					}
 					turnNode.setAction(turnAction);
 					turnNode.getNextPlayer().clear();
 					turnNode.getNextPlayer().add(targetUser);

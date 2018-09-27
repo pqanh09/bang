@@ -45,7 +45,9 @@ public class ElGringo extends Hero {
 		if(targetCharacter.getCardsInHand().isEmpty()) {
 			return false;
 		}
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		String serverMessage = "- Using " + character.getHero().getName() + "'skill.";
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new HeroSkillResponse(character.getUserName(), "", "", serverMessage, character.getHero()));
 		int rdCardNumber = new Random().nextInt(targetCharacter.getCardsInHand().size());
 		Card card = commonService.getCardInHand(targetCharacter, targetCharacter.getCardsInHand().get(rdCardNumber).getId());
 		commonService.notifyCharacter(match.getMatchId(), targetCharacter, match.getUserMap().get(targetCharacter.getUserName()));

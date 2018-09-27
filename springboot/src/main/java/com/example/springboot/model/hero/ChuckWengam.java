@@ -50,7 +50,9 @@ public class ChuckWengam extends Hero {
 					new SkillResponse(userName, false));
 			return false;
 		}
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		String serverMessage = "- Using " + character.getHero().getName() + "'skill.";
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
 		
 		character.setLifePoint(character.getLifePoint() -1);
 

@@ -15,9 +15,7 @@ import com.example.springboot.model.card.Card;
 import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.SkillResponse;
-import com.example.springboot.response.UserResponse;
 import com.example.springboot.service.CommonService;
-import com.example.springboot.utils.BangUtils;
 
 public class ClausTheSaint extends Hero {
 	private static final Logger logger = LoggerFactory.getLogger(ClausTheSaint.class);
@@ -49,7 +47,6 @@ public class ClausTheSaint extends Hero {
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
 		if(step == 1) {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<Card> cards = commonService.getFromNewCardList(match, match.getPlayerTurnQueue().size() + 1);
 			character.getCardsInHand().addAll(cards);
 			List<String> players = new ArrayList<>(match.getPlayerTurnQueue());
@@ -66,7 +63,6 @@ public class ClausTheSaint extends Hero {
 			
 		} else {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownEnd, userName, 20));
-			boolean performed = false;
 			if(others != null &&  others.size() != turnNode.getTemp().size()) {
 				String player, cardId;
 				for (Entry<String, Object> entry : others.entrySet()) {
@@ -80,16 +76,16 @@ public class ClausTheSaint extends Hero {
 					playerCharacter.getCardsInHand().add(commonService.getCardInHand(character, cardId));
 					playerCharacter.setNumCardsInHand(playerCharacter.getCardsInHand().size());
 					commonService.notifyCharacter(match.getMatchId(), playerCharacter, sessionIdPlayer);
-					performed = true;
 				}
 			} else {
 				//auto
 				auto(match, character, commonService, turnNode, userName);
-				performed = true;
 			}
-			if(!performed) {
-				auto(match, character, commonService, turnNode, userName);
-			}
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to give a new card for each player.";
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
+			
+			auto(match, character, commonService, turnNode, userName);
 			character.setNumCardsInHand(character.getCardsInHand().size());
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			match.getCurrentTurn().setAlreadyGetCard(true);

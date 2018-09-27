@@ -59,6 +59,12 @@ public class UseCardNotInTurnResponse extends UserResponse {
 		this.message = message;
 		this.serverMessage = serverMessage;
 	}
+	
+	
+	
+	public UseCardNotInTurnResponse(ResponseType responseType, String userName) {
+		super(responseType, userName);
+	}
 	public UseCardNotInTurnResponse() {
 		super();
 	}

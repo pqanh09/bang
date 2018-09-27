@@ -45,9 +45,9 @@ public class BlackJack extends Hero {
 		// get cards for character;
 		List<Card> cards = commonService.getFromNewCardList(match, 2);
 		String message = "The second card:";
-		String serverMessage = "- Using" + character.getHero().getName() + "'skill to get more 1 card.";
+		String serverMessage = "- Using " + character.getHero().getName() + "'skill to get more 1 card.";
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
-				new HeroSkillResponse(userName, cards.get(1), null, message, serverMessage));
+				new HeroSkillResponse(userName, cards.get(1), "", message, serverMessage, character.getHero()));
 		if(Suit.hearts.equals(cards.get(1).getSuit()) || Suit.diamonds.equals(cards.get(1).getSuit())) {
 			cards.addAll(commonService.getFromNewCardList(match, 1));
 		}

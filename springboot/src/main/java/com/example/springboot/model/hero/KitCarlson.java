@@ -55,7 +55,6 @@ public class KitCarlson extends Hero {
 			return false;
 		}
 		if(step == 1) {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<Card> cards = commonService.getFromNewCardList(match, 3);
 			turnNode.getCardTemp().clear();
 			turnNode.getCardTemp().addAll(cards);
@@ -91,6 +90,11 @@ public class KitCarlson extends Hero {
 			character.getCardsInHand().addAll(turnNode.getCardTemp());
 			character.setNumCardsInHand(character.getCardsInHand().size());
 			turnNode.getCardTemp().clear();
+			
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to pick 2 in 3 cards in his turn.";
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
+			
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			
 			match.getNewCards().addFirst(card);

@@ -75,7 +75,6 @@ public class UncleWill extends Hero {
 			turnNode.getCardTemp().clear();
 			turnNode.setCardTemp(cards);
 			//
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 20));
@@ -103,6 +102,12 @@ public class UncleWill extends Hero {
 			}
 			commonService.addToOldCardList(card, match);
 
+			String message = " Removed card:";
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to use General Store ";
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, card, "", message, serverMessage, character.getHero()));
+			
+			
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			
 			turnNode.setUncleWill(true);

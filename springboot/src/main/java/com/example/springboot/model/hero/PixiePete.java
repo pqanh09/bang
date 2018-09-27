@@ -41,7 +41,7 @@ public class PixiePete extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		String serverMessage = "- Using" + character.getHero().getName() + "'skill to get 3 cards.";
+		String serverMessage = "- Using " + character.getHero().getName() + "'skill to get 3 cards.";
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
 				new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
 		// get cards for character;

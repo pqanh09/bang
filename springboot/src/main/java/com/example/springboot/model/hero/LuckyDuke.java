@@ -45,7 +45,6 @@ public class LuckyDuke extends Hero {
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
 		if(step == 1) {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<Card> cards = commonService.getFromNewCardList(match, 2);
 			turnNode.getCardTemp().clear();
 			turnNode.setCardTemp(cards);
@@ -78,6 +77,12 @@ public class LuckyDuke extends Hero {
 				commonService.addToOldCardList(cards.get(0), match);
 			}
 			turnNode.getCardTemp().clear();
+			
+			String message = "The card for drawing:";
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to pick 1 in 2 cards for drawing";
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, card, "", message, serverMessage, character.getHero()));
+			
 			
 			if(character.isHasDynamite()) {
 				DynamiteActionCmd.checkDynamite(match, card, commonService);

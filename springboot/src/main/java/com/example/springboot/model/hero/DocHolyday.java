@@ -67,7 +67,6 @@ public class DocHolyday extends Hero {
 			turnNode.getCardTemp().clear();
 			turnNode.setCardTemp(cards);
 			//
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 15));
@@ -95,6 +94,7 @@ public class DocHolyday extends Hero {
 				}
 			}
 			turnNode.getCardTemp().clear();
+			turnNode.getCardTemp().addAll(cards);
 
 			//
 			
@@ -120,8 +120,16 @@ public class DocHolyday extends Hero {
 				List<String> otherPlayers = turnNode.getTemp();
 				targetPlayer = otherPlayers.get(new Random().nextInt(otherPlayers.size()));
 			}
-			turnNode.getTemp().clear();
+			
+			String message = "Removed cards:";
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to bang " + targetPlayer;
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, turnNode.getCardTemp(), message, serverMessage, character.getHero()));
 			//
+			turnNode.getTemp().clear();
+			turnNode.getCardTemp().clear();
+			//
+			
 			turnNode.setAction(ResponseType.Bang);
 			turnNode.setDocHolyday(true);
 			turnNode.getNextPlayer().clear();

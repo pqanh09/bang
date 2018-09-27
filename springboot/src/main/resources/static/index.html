@@ -75,7 +75,7 @@
 											class="img-thumbnail item-hero-image1"
 											ng-click="zoomImage(character.hero.image)">
 										<div ng-click="zoomImage(character.hero.image)" ng-show="playerCountDown === character.userName" class="item-hero-countdown">{{countDown}}</div>
-										<div  ng-show="playerCountDown === character.userName && (countDown % 2)" class="item-hero-action">{{actionStr}}</div>
+										<div  ng-show="playerCountDown === character.userName" class="item-hero-action animated flipInX infinite">{{actionStr}}</div>
 									</div>
 									<div style="display: flow-root;">
 										<img ng-mouseleave="hideRole(character)" ng-mouseover="showRole(character)" ng-src="{{character.roleImage}}"
@@ -272,7 +272,7 @@
 
 				</div>
 			</div>
-			<div id="dialogSelectUser" class="modal fade" role="dialog">
+			<div id="userDialog" class="modal fade" role="dialog">
 				<div class="modal-dialog">
 
 					<!-- Modal content-->
@@ -460,7 +460,7 @@
 				</div>
 			</div>
 		</div>
-
+ 	
 	</div>
 	<script src="/js/stomp.min.js"></script>
 	<script src="/js/sockjs.min.js"></script>

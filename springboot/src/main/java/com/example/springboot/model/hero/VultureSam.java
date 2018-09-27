@@ -41,7 +41,7 @@ public class VultureSam extends Hero {
 			Map<String, Object> others) {
 		String userName = character.getUserName();
 		String targetPlayer =  (String) others.get("targetUser");
-		String serverMessage = "- Using" + character.getHero().getName() + "'skill to get card(s) from " + targetPlayer;
+		String serverMessage = "- Using " + character.getHero().getName() + "'skill to get card(s) from " + targetPlayer;
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
 				new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
 		// get cards for character;

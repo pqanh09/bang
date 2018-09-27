@@ -40,7 +40,7 @@ public class TequilaJoe extends Hero {
 			Map<String, Object> others) {
 		String userName = character.getUserName();
 		if(character.getCapacityLPoint() - character.getLifePoint() >= 2) {
-			String serverMessage = "- Using" + character.getHero().getName() + "'skill.";
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill.";
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
 					new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
 		}

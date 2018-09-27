@@ -29,7 +29,6 @@ import com.example.springboot.model.hero.SuzyLafayette;
 import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.CharacterResponse;
-import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
 import com.example.springboot.response.UserResponse;
@@ -429,10 +428,8 @@ public class CommonService {
 			if(match.getCharacterMap().get(player).getHero() instanceof ApacheKid) {
 				apacheKids.add(player);
 				if(notify) {
-					String serverMessage = "- Using ApacheKid'skill.";
-					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/skill",
-							new HeroSkillResponse(player, "", "", serverMessage, match.getCharacterMap().get(player).getHero()));
-					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, player, match.getCharacterMap().get(player).getHero(), null, null));
+					Character character = match.getCharacterMap().get(player);
+					character.getHero().useSkill(match, character, this, 0, null);
 				}
 			}
 		}

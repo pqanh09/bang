@@ -52,15 +52,16 @@ public class HeroSkillResponse extends UseCardNotInTurnResponse {
 		this.others = others;
 	}
 	
-	public HeroSkillResponse(String userName, List<Card> cards, String message, String serverMessage) {
+	public HeroSkillResponse(String userName, List<Card> cards, String message, String serverMessage, Hero hero) {
 		super();
 		this.userName = userName;
 		this.cards = cards;
 		this.responseType = ResponseType.UseCardNotInTurn;
 		this.message = message;
 		this.serverMessage = serverMessage;
+		this.hero = hero;
 	}
-	public HeroSkillResponse(String userName, Card card, String targetUser, String message, String serverMessage) {
+	public HeroSkillResponse(String userName, Card card, String targetUser, String message, String serverMessage, Hero hero) {
 		super();
 		this.userName = userName;
 		this.cards.add(card);
@@ -68,6 +69,7 @@ public class HeroSkillResponse extends UseCardNotInTurnResponse {
 		this.responseType = ResponseType.UseCardNotInTurn;
 		this.message = message;
 		this.serverMessage = serverMessage;
+		this.hero = hero;
 	}
 	public HeroSkillResponse(String userName, String targetUser, String message, String serverMessage, Hero hero) {
 		super();
@@ -79,15 +81,6 @@ public class HeroSkillResponse extends UseCardNotInTurnResponse {
 		this.hero = hero;
 	}
 	
-	public HeroSkillResponse(ResponseType responseType, String userName, Hero hero, String targetUser,
-			Map<String, Object> others) {
-		super(responseType, userName);
-		this.hero = hero;
-		this.targetUser = targetUser;
-		this.others = others;
-	}
-	
-
 	public HeroSkillResponse(ResponseType responseType, String userName, int countDown) {
 		super(responseType, userName);
 		this.countDown = countDown;

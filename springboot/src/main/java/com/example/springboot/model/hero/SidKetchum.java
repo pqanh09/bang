@@ -66,7 +66,6 @@ public class SidKetchum extends Hero {
 			turnNode.getCardTemp().clear();
 			turnNode.setCardTemp(cards);
 			//
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2 , null, cards, character.getHero(), null));
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 20));
@@ -101,6 +100,12 @@ public class SidKetchum extends Hero {
 				character.getCardsInHand().remove(card);
 				commonService.addToOldCardList(card, match);
 			}
+			
+			String message = "Removed cards:";
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to get 1 life point.";
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, cards, message, serverMessage, character.getHero()));
+			
 			character.setLifePoint(character.getLifePoint() + 1);
 			character.setNumCardsInHand(character.getCardsInHand().size());
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);

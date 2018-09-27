@@ -49,7 +49,6 @@ public class VeraCuster extends Hero {
 		String sessionId = match.getUserMap().get(userName);
 		TurnNode turnNode = match.getCurrentTurn();
 		if(step == 1) {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<String> otherPlayers = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
 			//auto
 			turnNode.getTemp().clear();
@@ -70,7 +69,11 @@ public class VeraCuster extends Hero {
 			//
 			Character targetCharacter = match.getCharacterMap().get(targetPlayer);
 			character.attachHero(targetCharacter.getHero(), false);
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), targetPlayer, null));
+			
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to copy skill of " + targetPlayer + "'s hero.";
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(character.getUserName(), "", "", serverMessage, character.getHero()));
+			
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			match.getCurrentTurn().run(match);
 		}

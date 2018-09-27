@@ -62,7 +62,6 @@ public class PatBrennan extends Hero {
 			return false;
 		}
 		if(step == 1) {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 			List<String> temp = new ArrayList<>(BangUtils.getOtherPlayer(match.getPlayerTurnQueue(), userName));
 			List<String> otherPlayers = new ArrayList<>();
 			for (String player : temp) {
@@ -131,6 +130,10 @@ public class PatBrennan extends Hero {
 			if (CardType.gun.equals(card.getCardType()) || card instanceof BarrelCard || card instanceof MustangCard || card instanceof ScopeCard || card instanceof JailCard || card instanceof DynamiteCard) {
 				card.remove(targetCharacter);
 			} 
+			String message = targetPlayer + " has been lost the card:";
+			String serverMessage = "- Using " + character.getHero().getName() + "'skill to get the card from " + targetPlayer;
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, card, "", message, serverMessage, character.getHero()));
 			
 			commonService.notifyCharacter(match.getMatchId(), targetCharacter, sessionIdTarget);
 			

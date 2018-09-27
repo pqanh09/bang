@@ -44,22 +44,22 @@ public class Jourdonnais extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		Card card = commonService.getFromNewCardList(match, 1).get(0);
 		
 		commonService.addToOldCardList(card, match);
 		
+		String serverMessage = "- Using " + character.getHero().getName() + "'skill.";
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new HeroSkillResponse(userName, card, "", "", serverMessage, character.getHero()));
+		
 		TurnNode turnNode = match.getCurrentTurn();
 		if(Suit.hearts.equals(card.getSuit())) {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skillresult", new UserResponse(ResponseType.Skill, userName, "Success"));
 			if(match.getCurrentTurn().getCharacter().getHero() instanceof SlabTheKiller) {
 				turnNode.getCharacter().getHero().useSkill(match, character, commonService, 1, null);
 //				match.getCurrentTurn().getPlayerUsedMissed().add(userName);//TODO excuxe by hero
 			} else {
 				turnNode.getNextPlayer().poll();
 			}
-		} else {
-			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skillresult", new UserResponse(ResponseType.Skill, userName, "Fail"));
 		}
 		return true;
 	}

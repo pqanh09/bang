@@ -5,7 +5,7 @@ myapp.controller('FirstCtrl',
 		var socket = null;
 		var stompClient = null;
 		var dialogInputUserName = angular.element('#dialogInputUserName');
-		var dialogSelectUser = angular.element('#dialogSelectUser');
+		var userDialog = angular.element('#userDialog');
 		var dialogSelectHero = angular.element('#dialogSelectHero');
 		var dialogFullImage = angular.element('#dialogFullImage');
 		//card: Panic - Cat Palou - General Store - Remove Card when ending turn
@@ -381,7 +381,7 @@ myapp.controller('FirstCtrl',
             			$scope.getCardFunc();
             		}
             		else if($scope.actionType === 'UseCard'){
-            			dialogSelectUser.modal('hide');
+            			userDialog.modal('hide');
             			stompClient.send('/app/game.execute', {}, JSON
             					.stringify({
             						actionType : 'EndTurn'
@@ -632,7 +632,6 @@ myapp.controller('FirstCtrl',
 					$scope.$apply();
 				}
 			} else if (response.responseType === 'Dead') {
-				addMessage(response.userName + ' is dead!!!');
 				addAlertMessage('danger', 'is dead', response.userName, 10000);
 				$scope.characters.forEach(function(character) {
 					if (character.userName === userName) {
@@ -662,12 +661,12 @@ myapp.controller('FirstCtrl',
 			if (response.responseType === 'CheckCard') {
 				if (response.canUse) {
 					if (response.mustChooseTarget) {
-						if (dialogSelectUser) {
+						if (userDialog) {
 							$timeout(
 									function() {
 										$scope.userCanBeAffectList = response.userCanBeAffectList;
 										$scope.selectedUser = $scope.userCanBeAffectList[0];
-										dialogSelectUser.modal({backdrop:'static',keyboard:true,show:true});
+										userDialog.modal({backdrop:'static',keyboard:true,show:true});
 									}, 200);
 						} else {
 							console.log('ERROR');
@@ -770,10 +769,16 @@ myapp.controller('FirstCtrl',
 		function onTurnTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Turn') {
-				addMessage(' Turn of ' + response.userName
+				console.log(' Turn of ' + response.userName
 						+ ' is started! ');
 
 				$scope.characterTurn = response.userName;
+				dialogFullImage.modal('hide');
+				userDialog.modal('hide');
+				cardDialog.modal('hide');
+				userSkillDialog.modal('hide');
+				cardSkillDialog.modal('hide');
+				userCardSkillDialog.modal('hide');
 				
 				$scope.$apply();
 			} else if (response.responseType === 'EndTurn') {
@@ -792,8 +797,6 @@ myapp.controller('FirstCtrl',
 		function onCardActionTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'GetCard') {
-				addMessage(response.userName
-						+ ' will get card......');
 				if($scope.actionType === 'DrawCardDynamite' || $scope.actionType === 'DrawCardJail'){
 					$scope.showCardNotInTurn = true;
 				} else {
@@ -806,12 +809,10 @@ myapp.controller('FirstCtrl',
 				$scope.playerDrawingCard = '';
 				$scope.actionStr = 'Getting card...';
 				/// count down time
-				callCountDownFunc(response);
+//				callCountDownFunc(response);
 				///
 				$scope.$apply();
 			} else if (response.responseType === 'UseCard') {
-				addMessage(response.userName
-						+ ' will use card......');
 				if($scope.userName === response.userName){
 					$scope.skillInfo.enableUseSkillBtn = true;
 				}
@@ -828,8 +829,6 @@ myapp.controller('FirstCtrl',
 				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardJail') {
-				addMessage(response.userName
-						+ ' will draw card for escaping the Jail......');
 
 				$scope.playerDrawingCard = response.userName;
 				$scope.actionType = response.responseType;
@@ -842,8 +841,6 @@ myapp.controller('FirstCtrl',
 				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardDynamite') {
-				addMessage(response.userName
-						+ ' will draw card for escaping dynamite......');
 				$scope.playerDrawingCard = response.userName;
 				$scope.actionType = response.responseType;
 				$scope.playerUsingCard = '';
@@ -854,8 +851,6 @@ myapp.controller('FirstCtrl',
 				
 				$scope.$apply();
 			} else if (response.responseType === 'RemoveCardEndTurn') {
-				addMessage(response.userName
-						+ ' is ending his turn..........');
 				$scope.actionType = response.responseType;
 				$scope.playerDrawingCard = '';
 				$scope.playerUsingCard = '';
@@ -970,7 +965,6 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Skill') {
 				$scope.actionType = response.responseType;
-				//addMessage(JSON.stringify(response));
 				if(response.status && $scope.userName === response.userName && response.hero && $scope.myInfo.character.hero.name === response.hero.name){
 					if(response.hero.name === 'JesseJones'){
 						$scope.skillInfo.enableOkBtn = true;
@@ -1135,14 +1129,15 @@ myapp.controller('FirstCtrl',
 				$scope.playerUserCardNotInTurn = response.message;
 				$scope.notTurnCards = response.cards;
 				$scope.showCardNotInTurn = true;
-				addAlertMessage('success', response.serverMessage, response.userName, 5000);
+				addAlertMessage('success', response.serverMessage, response.userName, 10000);
 //				callMessageServerFunc(response.serverMessage)
 			}else if (response.responseType === 'Skill') {
 				var msg = response.userName + ' use skill of ' + response.hero.name;
 				if(response.targetUser){
 					msg = msg + ' to ' + response.targetUser;
 				}
-				addMessage(msg);
+				console.log('ERROR');
+				console.log(msg);
 			}  else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
@@ -1196,19 +1191,6 @@ myapp.controller('FirstCtrl',
 			$scope.$apply();
 		}
 		
-		function addMessage(message) {
-			var messageArea = document
-					.querySelector('#messageArea');
-			if(messageArea){
-				var messageElement = document.createElement('li');
-				messageElement.innerHTML = message;
-				messageElement.classList.add('li-server-notification');
-				messageElement.classList.add('animated');
-				messageElement.classList.add('rubberBand');
-				messageArea.appendChild(messageElement);
-				messageArea.scrollTop = messageArea.scrollHeight;
-			}
-		}
 //		function addChattingMessage(message) {
 //			var messageArea = document
 //					.querySelector('#chattingArea');
@@ -1247,7 +1229,6 @@ myapp.controller('FirstCtrl',
 				timeToHide = 5000;
 			}
 			$timeout(function(messageElement) {
-				console.log(messageElementId);
 				var alertElement = document.querySelector('#' + messageElementId);
 				alertElement.remove();
 			}, timeToHide);
