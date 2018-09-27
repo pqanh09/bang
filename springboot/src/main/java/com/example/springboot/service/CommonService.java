@@ -1,7 +1,6 @@
 package com.example.springboot.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -31,10 +30,8 @@ import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.HeroSkillResponse;
-import com.example.springboot.response.OldCardResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
-import com.example.springboot.response.UseCardResponse;
 import com.example.springboot.response.UserResponse;
 
 @Service("commonService")
@@ -81,19 +78,85 @@ public class CommonService {
 			//first hero
 			Character fisrtCharacter = vultureSams.get(0);
 			others.put("cards", cards.subList(0, numCards));
+			others.put("targetUser", deadCharacter.getUserName());
 			fisrtCharacter.getHero().useSkill(match, fisrtCharacter, this, 1, others);
 			notifyCharacter(match.getMatchId(), fisrtCharacter , match.getUserMap().get(fisrtCharacter.getUserName()));
 			//second hero
 			if(vultureSams.size() > 1) {
 				Character secondCharacter = vultureSams.get(1);
 				others.put("cards", cards.subList(numCards, cards.size()));
+				others.put("targetUser", deadCharacter.getUserName());
 				secondCharacter.getHero().useSkill(match, secondCharacter, this, 1, others);
 				notifyCharacter(match.getMatchId(), secondCharacter , match.getUserMap().get(secondCharacter.getUserName()));
 			}
 		}
 		return addToOldCardList;
 	}
-
+	private String getMessageWinner(Match match, RoleType role) {
+		StringBuilder sb = new StringBuilder();
+		switch (role) {
+		case FUORILEGGE:
+			sb.append("Outlaw");
+			if(match.getOutlaws().size() > 1) {
+				sb.append("s");
+			}
+			sb.append("(");
+			for (int i = 0; i < match.getOutlaws().size(); i++) {
+				sb.append(match.getOutlaws().get(i));
+				if(i+1 < match.getOutlaws().size()) {
+					sb.append(", ");
+				}
+			}
+			if(match.getRenegades().size() > 1) {
+				sb.append(") win!!!");
+			} else {
+				sb.append(") wins!!!");
+			}
+			break;
+		case RINNEGATO:
+			sb.append("Renegade");
+			if(match.getRenegades().size() > 1) {
+				sb.append("s");
+			}
+			sb.append("(");
+			for (int i = 0; i < match.getDeputies().size(); i++) {
+				sb.append(match.getDeputies().get(i));
+				if(i+1 < match.getDeputies().size()) {
+					sb.append(", ");
+				}
+			}
+			if(match.getRenegades().size() > 1) {
+				sb.append(") win!!!");
+			} else {
+				sb.append(") wins!!!");
+			}
+			break;
+		default:
+			sb.append("Sheriff(");
+			
+			sb.append(match.getSheriff().get(0));
+			if(match.getDeputies().isEmpty()) {
+				sb.append(") wins!!!");
+			} else {
+				
+				if(match.getDeputies().size() > 1) {
+					sb.append(") and Deputy");
+				} else {
+					sb.append(") and Deputies");
+				}
+				sb.append("(");
+				for (int i = 0; i < match.getDeputies().size(); i++) {
+					sb.append(match.getDeputies().get(i));
+					if(i+1 < match.getDeputies().size()) {
+						sb.append(", ");
+					}
+				}
+				sb.append(") win!!!");
+			}
+			break;
+		}
+		return sb.toString();
+	}
 	private boolean checkEndGame(Match match, Character character) {
 		boolean endGame = false;
 		if(match.getPlayerTurnQueue().size() == 1) {
@@ -101,7 +164,7 @@ public class CommonService {
 			Character lastCharacter = match.getCharacterMap().get(lastPlayer);
 			character.setRoleImage(character.getRole().getImage());
 			notifyCharacter(match.getMatchId(), character, match.getUserMap().get(character.getUserName()));
-			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, lastCharacter.getRole().getRoleType().toString()));
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, null, getMessageWinner(match, lastCharacter.getRole().getRoleType())));
 			match.getPlayerTurnQueue().clear();
 			endGame = true;
 		} else {
@@ -112,23 +175,26 @@ public class CommonService {
 					plCharacter.setRoleImage(plCharacter.getRole().getImage());
 					notifyCharacter(match.getMatchId(), plCharacter, match.getUserMap().get(plCharacter.getUserName()));
 				}
-				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, null, getMessageWinner(match, RoleType.FUORILEGGE)));
 				match.getPlayerTurnQueue().clear();
 				endGame = true;
 			}
 		}
 		return endGame;
 	}
-	public void playerDead(String userName, boolean beKilled, Match match) {
+	public void playerDead(String userName, boolean beKilled, Match match, boolean leave) {
 		match.getPlayerTurnQueue().remove(userName);
 		Character character = match.getCharacterMap().get(userName);
 		if(character == null) {
 			return;
 		}
-		if(character.getRole() != null) {
+		if(!RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
 			character.setRoleImage(character.getRole().getImage());
+			notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
 		}
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
+		if(!leave) {
+			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
+		}
 //		notifyCharacter(character,userMap.get(userName));
 		
 		if(checkEndGame(match, character)) {
@@ -150,7 +216,7 @@ public class CommonService {
 			RoleType roleTypeDeathPlayer = character.getRole().getRoleType();
 			
 			if(RoleType.FUORILEGGE.equals(roleTypeDeathPlayer)) {
-				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Gitf, killerCharacter.getUserName()));
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Gift, killerCharacter.getUserName(), "receives 3 cards after killing a FUORILEGGE"));
 				// get cards for character;
 				List<Card> cards = getFromNewCardList(match, 3);
 				killerCharacter.getCardsInHand().addAll(cards);
@@ -159,7 +225,7 @@ public class CommonService {
 //				notifyPrivateCharacter(killingPlayer, killerCharacter);
 				notifyCharacter(match.getMatchId(), killerCharacter, killerSessionId);
 			} else if(RoleType.VICE.equals(roleTypeDeathPlayer) && RoleType.SCERIFFO.equals(killerCharacter.getRole().getRoleType())) {
-				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.LoseCard, killerCharacter.getUserName()));
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.LoseCard, killerCharacter.getRole().getName(), "loses all his cards after killing a VICE"));
 				addToOldCardList(killerCharacter.getCardsInFront(), match);
 				addToOldCardList(killerCharacter.getCardsInHand(), match);
 				//udpate character for user 
@@ -167,7 +233,7 @@ public class CommonService {
 			} else if(RoleType.SCERIFFO.equals(roleTypeDeathPlayer)) {
 				killerCharacter.setRoleImage(killerCharacter.getRole().getImage());
 				notifyCharacter(match.getMatchId(), killerCharacter, killerSessionId);
-				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, RoleType.FUORILEGGE.toString()));
+				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Winner, null, getMessageWinner(match, RoleType.FUORILEGGE)));
 				match.getPlayerTurnQueue().clear();
 				return;
 			}
@@ -211,7 +277,7 @@ public class CommonService {
 	
 	public void disconnecPlayer(Match match, String playerName) {
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Leave, playerName));
-   		playerDead(playerName, false, match);
+   		playerDead(playerName, false, match, true);
 		
 //		match.getPlayerTurnQueue().remove(playerName);
 //		Character playerCharacter = match.getCharacterMap().get(playerName);
@@ -281,6 +347,9 @@ public class CommonService {
 		}
 	}
 	public void callNextPlayerTurn(Match match, String oldPlayer) {
+		if(match.getCurrentTurn() == null) {
+			return;
+		}
 		String nextPlayer = match.getPlayerTurnQueue().peek();
 		if(StringUtils.isNotBlank(nextPlayer)) {
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
@@ -360,6 +429,9 @@ public class CommonService {
 			if(match.getCharacterMap().get(player).getHero() instanceof ApacheKid) {
 				apacheKids.add(player);
 				if(notify) {
+					String serverMessage = "- Using ApacheKid'skill.";
+					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/skill",
+							new HeroSkillResponse(player, "", "", serverMessage, match.getCharacterMap().get(player).getHero()));
 					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, player, match.getCharacterMap().get(player).getHero(), null, null));
 				}
 			}

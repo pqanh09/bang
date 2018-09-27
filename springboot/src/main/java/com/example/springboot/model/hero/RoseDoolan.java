@@ -40,7 +40,7 @@ public class RoseDoolan extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+//		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
 		character.setViewOthers(1);
 		commonService.notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
 		return true;

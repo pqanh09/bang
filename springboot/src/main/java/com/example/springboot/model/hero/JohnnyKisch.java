@@ -42,22 +42,26 @@ public class JohnnyKisch extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		boolean notified = false;
+		boolean notify = false;
 		// get cards for character;
 		Card newCard = (Card) others.get("card");
 		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 			if(!userName.equals(entry.getValue().getUserName())) {
 				Card card = getCard(entry.getValue(), newCard.getName());
 				if(card != null) {
-					if(!notified) {
-						commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
-						notified = true;
+					if(!notify) {
+						notify = true;
 					}
 					card.remove(character);
 					commonService.notifyCharacter(match.getMatchId(), entry.getValue(), match.getUserMap().get(entry.getValue().getUserName()));
 					commonService.addToOldCardList(card, match);
 				}
 			}
+		}
+		if(notify) {
+			String serverMessage = "- Using" + character.getHero().getName() + "'skill.";
+			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+					new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
 		}
 		return true;
 	}

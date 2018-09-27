@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.example.springboot.model.Character;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.card.Card;
+import com.example.springboot.response.HeroSkillResponse;
 import com.example.springboot.service.CommonService;
 
 public class BelleStar extends Hero {
@@ -36,8 +37,10 @@ public class BelleStar extends Hero {
 	@Override
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
-		// TODO Auto-generated method stub
-		return false;
+		String serverMessage = "- Using" + character.getHero().getName() + "'skill.";
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new HeroSkillResponse(character.getUserName(), "", "", serverMessage, character.getHero()));
+		return true;
 	}
 
 }

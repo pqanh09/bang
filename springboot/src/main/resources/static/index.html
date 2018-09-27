@@ -74,8 +74,8 @@
 											alt="{{character.hero.name}}"
 											class="img-thumbnail item-hero-image1"
 											ng-click="zoomImage(character.hero.image)">
-										<div ng-show="playerCountDown === character.userName" class="item-hero-countdown">{{countDown}}</div>
-										<div ng-show="playerCountDown === character.userName && (countDown % 2)" class="item-hero-action">{{actionStr}}</div>
+										<div ng-click="zoomImage(character.hero.image)" ng-show="playerCountDown === character.userName" class="item-hero-countdown">{{countDown}}</div>
+										<div  ng-show="playerCountDown === character.userName && (countDown % 2)" class="item-hero-action">{{actionStr}}</div>
 									</div>
 									<div style="display: flow-root;">
 										<img ng-mouseleave="hideRole(character)" ng-mouseover="showRole(character)" ng-src="{{character.roleImage}}"
@@ -125,17 +125,17 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-12"
+						<div id="alertArea" class="col-12"
 							style="display: flex; justify-content: center; height: 50px;">
 
-							<div ng-show="message.show" class="alert alert-success" role="alert"
-								style="margin-bottom: 0;">
-								<button type="button" class="close" data-dismiss="alert"
-									aria-label="Close" style="padding-left: 44px;">
-									<span aria-hidden="true">&times;</span>
-								</button>
-								{{message.msg}}
-							</div>
+<!-- 							<div ng-show="message.show" class="alert alert-success" role="alert" -->
+<!-- 								style="margin-bottom: 0;"> -->
+<!-- 								<button type="button" class="close" data-dismiss="alert" -->
+<!-- 									aria-label="Close" style="padding-left: 44px;"> -->
+<!-- 									<span aria-hidden="true">&times;</span> -->
+<!-- 								</button> -->
+<!-- 								{{message.msg}} -->
+<!-- 							</div> -->
 
 
 						</div>
@@ -174,7 +174,7 @@
 							<div style="position: absolute;right: 2%;">
 								<div class="page-header"
 									style="text-align: center; color: brown;">
-									<h5 style="margin-bottom: 0;">Chatting</h5>
+									<h5 style="margin-bottom: 0;">Server</h5>
 								</div>
 								<ul id="chattingArea" class="ul-chating-notification">
 								</ul>
@@ -191,7 +191,7 @@
 
 							<div style="width: 130px;">
 								<button type="button"
-									ng-show="userName === playerUsingCard && (userName !== characterTurn || actionType === 'Duello')"
+									ng-show="playerUsingCard === userName && ((playerUsingCard !== characterTurn && (actionType === 'Duello' || actionType === 'Gatling' || actionType === 'Indians' || actionType === 'Bang')) || (playerUsingCard === characterTurn &&  actionType === 'Duello'))"
 									ng-click="lostLifePointFunc()" class="btn btn-primary">Lose
 									life point</button>
 								<button type="button"

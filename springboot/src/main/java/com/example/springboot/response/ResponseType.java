@@ -30,7 +30,7 @@ public enum ResponseType {
 	Character,
 	Dead,
 	LoseCard,
-	Gitf,
+	Gift,
 	//
 	Suppending,
 	//

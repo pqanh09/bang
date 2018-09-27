@@ -6,9 +6,9 @@ import java.util.List;
 import com.example.springboot.model.card.Card;
 
 public class UseCardNotInTurnResponse extends UserResponse {
-	private String targetUser;
-	private List<Card> cards = new ArrayList<>();
-	private String serverMessage;
+	protected String targetUser;
+	protected List<Card> cards = new ArrayList<>();
+	protected String serverMessage;
 	
 	public String getServerMessage() {
 		return serverMessage;
@@ -46,6 +46,14 @@ public class UseCardNotInTurnResponse extends UserResponse {
 		super();
 		this.userName = userName;
 		this.cards.add(card);
+		this.targetUser = targetUser;
+		this.responseType = ResponseType.UseCardNotInTurn;
+		this.message = message;
+		this.serverMessage = serverMessage;
+	}
+	public UseCardNotInTurnResponse(String userName, String targetUser, String message, String serverMessage) {
+		super();
+		this.userName = userName;
 		this.targetUser = targetUser;
 		this.responseType = ResponseType.UseCardNotInTurn;
 		this.message = message;

@@ -171,14 +171,14 @@ public class BangController {
 		
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Join, userName));
 	}
-	private void sendListPlayers(String userName, String sessionId, Match match) {
+	private void sendListPlayers(String userName, String sessionId, String matchId, List<String> playerTurnQueue) {
 		
 		List<String> frontPlayers = new ArrayList<>();
 		
 		Map<String, Integer> result = new HashMap<>();
 		boolean foundPlayer = false;
 		int n = 0;
-		for (String player : match.getUserMap().keySet()) {
+		for (String player : playerTurnQueue) {
 			if(foundPlayer) {
 				result.put(player, n);
 				n++;
@@ -196,7 +196,7 @@ public class BangController {
 			result.put(player, n);
 			n++;
 		}
-		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ match.getMatchId() +"/player", new PlayerResponse(userName, result));
+		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ matchId +"/player", new PlayerResponse(userName, result));
 	}
 	@MessageMapping("/game.start")
 	public void startGame(SimpMessageHeaderAccessor sha) {
@@ -217,11 +217,11 @@ public class BangController {
 			return;
 		}
 		int nRole = match.getPlayerTurnQueue().size();
-//		if (nRole < 4) {
-//			logger.error("Not enough number player to play");
-//			//TODO
-//			return;
-//		}
+		if (nRole < 3) {
+			logger.error("Not enough number player to play");
+			//TODO
+			return;
+		}
 		match.setStatus(MatchStatus.playing);
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
 		// get roles
@@ -236,6 +236,7 @@ public class BangController {
 		// get cards
 		match.setNewCards(new LinkedList<>(cardService.getCards()));
 		boolean foundSceriffo = false;
+		List<String> playerTurnQueue = new ArrayList<>(match.getPlayerTurnQueue());
 		match.getPlayerTurnQueue().clear();
 		List<String> playerNotYetInTurn = new ArrayList<>();
 		int n = 0;
@@ -247,9 +248,10 @@ public class BangController {
 			match.getCharacterMap().put(plName, character);
 			//
 			Role role = roles.get(n);
+			match.addRole(role, plName);
 			character.setRole(role);
 			// send player map for user
-			sendListPlayers(plName, plSessionId, match);
+			sendListPlayers(plName, plSessionId, match.getMatchId(), playerTurnQueue);
 			// send role for user
 			simpMessageSendingOperations.convertAndSendToUser(plSessionId, "/queue/"+ matchId +"/role", new RoleResponse(plName, role));
 			if (foundSceriffo) {

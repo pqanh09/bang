@@ -90,7 +90,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			//
 			commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 			if (character.getLifePoint() == 0) {
-				commonService.playerDead(userName, true, match);
+				commonService.playerDead(userName, true, match, false);
 				if(match.getPlayerTurnQueue().size() <=1) {
 					//end game
 					return;
@@ -126,6 +126,9 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 				} else {
 					if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
+						if(card instanceof BangCard) {
+							character.getHero().useSkill(match, character, commonService, 0, null);
+						}
 						commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 						if(ResponseType.Bang.equals(turnNode.getAction()) && turnNode.getCharacter().getHero() instanceof SlabTheKiller && !turnNode.getPlayerUsedMissed().contains(userName)) {
 							turnNode.getCharacter().getHero().useSkill(match, character, commonService, 1, null);
@@ -148,15 +151,19 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				
 			} else if (ResponseType.Indians.equals(turnNode.getAction())) {
 				if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
-
+					if(card instanceof MissedCard) {
+						character.getHero().useSkill(match, character, commonService, 0, null);
+					}
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 				} else {
 					logger.error("%%%%%%%%%%%%%%%%%%%%%%%Indians Error");
 				}
 			} else if (ResponseType.Duello.equals(turnNode.getAction())) {
 				if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
+					if(card instanceof MissedCard) {
+						character.getHero().useSkill(match, character, commonService, 0, null);
+					}
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
-
 					String targetUser = turnNode.getCharacter().getUserName();
 					turnNode.getNextPlayer().addFirst(targetUser);
 					if (turnNode.getNextPlayer().peek() == null) {
@@ -205,7 +212,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				}
 				commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 				if (character.getLifePoint() == 0) {
-					commonService.playerDead(userName, false, match);
+					commonService.playerDead(userName, false, match, false);
 					if(match.getPlayerTurnQueue().size() <=1) {
 						//end game
 						return;
@@ -227,6 +234,9 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 			}
 			if (ResponseType.Duello.equals(turnNode.getAction())) {
 				if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
+					if(card instanceof MissedCard) {
+						character.getHero().useSkill(match, character, commonService, 0, null);
+					}
 					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn",
 							new UseCardNotInTurnResponse(userName, card, null, null, null));
 					commonService.addToOldCardList(card, match);
@@ -271,6 +281,9 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardInTurn", new UseCardInTurnResponse(character.getUserName(), card, targetUser));
 				commonService.addToOldCardList(card, match);
 				commonService.notifyCharacter(match.getMatchId(), character, sessionId);
+				if(card instanceof MissedCard) {
+					character.getHero().useSkill(match, character, commonService, 0, null);
+				}
 				turnNode.setAction(ResponseType.Bang);
 				turnNode.setAlreadyUseBangCard(true);
 				turnNode.getNextPlayer().clear();
@@ -297,7 +310,7 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					commonService.addToOldCardList(card, match);
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 					// skill hero ApacheKid
-					commonService.useSkillOfApacheKid(match, otherPlayers, card, false);
+					commonService.useSkillOfApacheKid(match, otherPlayers, card, true);
 					turnNode.setAction(ResponseType.Gatling);
 					turnNode.setNextPlayer(otherPlayers);
 					turnNode.requestOtherPlayerUseCard(match);

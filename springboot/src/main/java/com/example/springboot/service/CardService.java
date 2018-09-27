@@ -52,53 +52,40 @@ public class CardService {
 
 		
 		cards.add(new BangCard(Suit.spades, 14, "14B-Bang.jpg"));
-//		//BarrelCard
-//		cards.add(new BarrelCard(Suit.hearts, 12, "12C-Barrel.jpg"));
-//		cards.add(new BarrelCard(Suit.spades, 13, "13B-Barrel.jpg"));
-//		//
+		//BarrelCard
+		cards.add(new BarrelCard(Suit.hearts, 12, "12C-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 13, "13B-Barrel.jpg"));
+		//
 		//BeerCard
 
 		cards.add(new BeerCard(Suit.hearts, 9, "9C-Beer.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 10, "10C-Beer.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 11, "11C-Beer.jpg"));
 		//CatPalouCard
-//		cards.add(new CatPalouCard(Suit.hearts, 13, "13C-CatPalou.jpg"));
-//		cards.add(new CatPalouCard(Suit.diamonds, 9, "9R-CatPalou.jpg"));
-//		cards.add(new CatPalouCard(Suit.diamonds, 10, "10R-CatPalou.jpg"));
-//		cards.add(new CatPalouCard(Suit.diamonds, 11, "11R-CatPalou.jpg"));
-//		//DuelloCard
-//		cards.add(new DuelloCard(Suit.clubs, 9, "8Ch-Duello.jpg"));
-//		cards.add(new DuelloCard(Suit.spades, 10, "11B-Duello.jpg"));
+		cards.add(new CatPalouCard(Suit.hearts, 13, "13C-CatPalou.jpg"));
+		cards.add(new CatPalouCard(Suit.diamonds, 9, "9R-CatPalou.jpg"));
+		cards.add(new CatPalouCard(Suit.diamonds, 10, "10R-CatPalou.jpg"));
+		cards.add(new CatPalouCard(Suit.diamonds, 11, "11R-CatPalou.jpg"));
+		//DuelloCard
+		cards.add(new DuelloCard(Suit.clubs, 9, "8Ch-Duello.jpg"));
+		cards.add(new DuelloCard(Suit.spades, 10, "11B-Duello.jpg"));
 		cards.add(new BangCard(Suit.diamonds, 4, "4R-Bang.jpg"));
 		cards.add(new BangCard(Suit.diamonds, 5, "5R-Bang.jpg"));
 		cards.add(new BangCard(Suit.diamonds, 6, "6R-Bang.jpg"));
-//		cards.add(new DuelloCard(Suit.diamonds, 11, "12R-Duello.jpg"));
-//		//DynamiteCard
-//		cards.add(new DynamiteCard(Suit.hearts, 2, "2C-Dynamite.jpg"));
+		cards.add(new DuelloCard(Suit.diamonds, 11, "12R-Duello.jpg"));
+		//DynamiteCard
+		cards.add(new DynamiteCard(Suit.hearts, 2, "2C-Dynamite.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 6, "6C-Beer.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 7, "7C-Beer.jpg"));
 		cards.add(new BeerCard(Suit.hearts, 8, "8C-Beer.jpg"));
 		
 		
-		
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		//GatlingCard
-//		cards.add(new GatlingCard(Suit.hearts, 10, "10C-Gatling.jpg"));
-////		GeneralStoreCard
-//		cards.add(new GeneralStoreCard(Suit.spades, 12, "12B-GeneralStore.jpg"));
-//		cards.add(new GeneralStoreCard(Suit.clubs, 9, "9Ch-GeneralStore.jpg"));
-////		IndiansCard
+		//GatlingCard
+		cards.add(new GatlingCard(Suit.hearts, 10, "10C-Gatling.jpg"));
+//		GeneralStoreCard
+		cards.add(new GeneralStoreCard(Suit.spades, 12, "12B-GeneralStore.jpg"));
+		cards.add(new GeneralStoreCard(Suit.clubs, 9, "9Ch-GeneralStore.jpg"));
+//		IndiansCard
 		cards.add(new IndiansCard(Suit.diamonds, 13, "13R-Indians.jpg"));
 		cards.add(new BangCard(Suit.hearts, 12, "12C-Bang.jpg"));
 		cards.add(new BangCard(Suit.hearts, 13, "13C-Bang.jpg"));
@@ -121,7 +108,7 @@ public class CardService {
 		cards.add(new MustangCard(Suit.hearts, 8, "8C-Mustang.jpg"));
 		cards.add(new MustangCard(Suit.hearts, 9, "9C-Mustang.jpg"));
 		//PanicCard
-//		cards.add(new PanicCard(Suit.hearts, 11, "11C-Panic.jpg"));
+		cards.add(new PanicCard(Suit.hearts, 11, "11C-Panic.jpg"));
 		cards.add(new BangCard(Suit.clubs, 8, "8Ch-Bang.jpg"));
 		cards.add(new BangCard(Suit.clubs, 9, "9Ch-Bang.jpg"));
 		
@@ -175,23 +162,23 @@ public class CardService {
 		
 		
 		
-		cards.add(new SaloonCard(Suit.hearts, 21, "5C-Saloon.jpg"));
-		cards.add(new SaloonCard(Suit.hearts, 22, "5C-Saloon.jpg"));
-		cards.add(new SaloonCard(Suit.hearts, 23, "5C-Saloon.jpg"));
-		cards.add(new SaloonCard(Suit.hearts, 24, "5C-Saloon.jpg"));
-		cards.add(new SaloonCard(Suit.hearts, 25, "5C-Saloon.jpg"));
-		cards.add(new SaloonCard(Suit.hearts, 26, "5C-Saloon.jpg"));
-		cards.add(new SaloonCard(Suit.hearts, 27, "5C-Saloon.jpg"));
-		cards.add(new SaloonCard(Suit.hearts, 28, "5C-Saloon.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 21, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 22, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 23, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 24, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 25, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 26, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 27, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 28, "9Ch-GeneralStore.jpg"));
-		cards.add(new GeneralStoreCard(Suit.clubs, 29, "9Ch-GeneralStore.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 21, "5C-Saloon.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 22, "5C-Saloon.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 23, "5C-Saloon.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 24, "5C-Saloon.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 25, "5C-Saloon.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 26, "5C-Saloon.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 27, "5C-Saloon.jpg"));
+//		cards.add(new SaloonCard(Suit.hearts, 28, "5C-Saloon.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 21, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 22, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 23, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 24, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 25, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 26, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 27, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 28, "9Ch-GeneralStore.jpg"));
+//		cards.add(new GeneralStoreCard(Suit.clubs, 29, "9Ch-GeneralStore.jpg"));
 		
 //		cards.add(new DynamiteCard(Suit.hearts, 3, "2C-Dynamite.jpg"));
 //		cards.add(new DynamiteCard(Suit.hearts, 4, "2C-Dynamite.jpg"));

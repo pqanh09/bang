@@ -633,6 +633,7 @@ myapp.controller('FirstCtrl',
 				}
 			} else if (response.responseType === 'Dead') {
 				addMessage(response.userName + ' is dead!!!');
+				addAlertMessage('danger', 'is dead', response.userName, 10000);
 				$scope.characters.forEach(function(character) {
 					if (character.userName === userName) {
 						character.hero = response.character.hero;
@@ -704,7 +705,7 @@ myapp.controller('FirstCtrl',
 				$scope.cardInfo.enableCancelBtn = false;
 				$scope.cardInfo.selectedCards.length = 0;
 				$scope.cardInfo.numberCard = response.numberCard;
-				$scope.cardInfo.titleDialog = 'You must remove ' + response.numberCard + ' before ending turn.';
+				$scope.cardInfo.titleDialog = 'You must remove ' + response.numberCard + ' card(s) before ending turn.';
 				$timeout(function() {
 					cardDialog.modal({backdrop:'static',keyboard:true,show:true});
 				}, 500);
@@ -760,7 +761,7 @@ myapp.controller('FirstCtrl',
 		function onChattingTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Chatting') {
-				addChattingMessage(response.userName + ': ' +response.message);
+				addChattingMessage('info', response.message, response.userName);
 			} else {
 				console.log('Error');
 				alert(JSON.stringify(response));
@@ -847,7 +848,7 @@ myapp.controller('FirstCtrl',
 				$scope.actionType = response.responseType;
 				$scope.playerUsingCard = '';
 				$scope.playerGettingCard = '';
-				$scope.actionStr = 'Drawing TNT...';
+				$scope.actionStr = 'Drawing Dynamite...';
 				/// count down time
 				callCountDownFunc(response);
 				
@@ -874,23 +875,37 @@ myapp.controller('FirstCtrl',
 		function onActionTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			$scope.skillInfo.enableUseSkillBtn = false;
+			$scope.playerUsingBarrel = '';
 			if (response.responseType === 'Bang'
 					|| response.responseType === 'Gatling'
 					|| response.responseType === 'Duello'
 					|| response.responseType === 'Indians') {
 				$scope.actionType = response.responseType;
+				$scope.actionStr = 'Using card...';
 				$scope.playerUsingCard = response.userName;
 				if (response.canUseBarrel
 						&& (response.responseType === 'Bang' || response.responseType === 'Gatling')) {
 					$scope.playerUsingBarrel = response.userName;
-				} else {
-					$scope.playerUsingBarrel = '';
+				}
+				if(response.responseType === 'Bang'){
+					$scope.actionStr = 'Be shot...';
+				} else 
+				if(response.responseType === 'Gatling'){
+					$scope.actionStr = 'Be shot...';
+				} else 
+				if(response.responseType === 'Indians'){
+					$scope.actionStr = 'Bang Indians...';
+				} else 
+				if(response.responseType === 'Duello'){
+					$scope.actionStr = 'Duelling...';
 				}
 				/// count down time
 				callCountDownFunc(response);
 				$scope.$apply();
 			} else if (response.responseType === 'Panic') {
 				$scope.actionType = response.responseType;
+				$scope.playerUsingCard = response.userName;
+				$scope.actionStr = 'Selecting card...';
 				if ($scope.userName === response.userName) {
 					$scope.cardInfo.cards = response.cards;
 					$scope.cardInfo.titleBtnCard = 'Get';
@@ -907,9 +922,10 @@ myapp.controller('FirstCtrl',
 				/// count down time
 				callCountDownFunc(response);
 			} else if (response.responseType === 'CatPalou') {
+				$scope.playerUsingCard = response.userName;
+				$scope.actionStr = 'Selecting card...';
+				$scope.actionType = response.responseType;
 				if ($scope.userName === response.userName) {
-					$scope.actionType = response.responseType;
-					
 					$scope.cardInfo.cards = response.cards;
 					$scope.cardInfo.titleBtnCard = 'Remove';
 					$scope.cardInfo.hasCardInHand = response.hasCardInHand;
@@ -925,8 +941,10 @@ myapp.controller('FirstCtrl',
 				/// count down time
 				callCountDownFunc(response);
 			} else if (response.responseType === 'GeneralStore') {
+				$scope.playerUsingCard = response.userName;
+				$scope.actionStr = 'Getting card...';
+				$scope.actionType = response.responseType;
 				if ($scope.userName === response.userName) {
-					$scope.actionType = response.responseType;
 					$scope.cardInfo.cards = response.cards;
 					$scope.cardInfo.titleBtnCard = 'Get';
 					$scope.cardInfo.hasCardInHand = false;
@@ -942,7 +960,6 @@ myapp.controller('FirstCtrl',
 				/// count down time
 				callCountDownFunc(response);
 			} else {
-				$scope.playerUsingBarrel = '';
 				console.log('ERROR');
 				alert(JSON.stringify(response));
 			}
@@ -1118,7 +1135,8 @@ myapp.controller('FirstCtrl',
 				$scope.playerUserCardNotInTurn = response.message;
 				$scope.notTurnCards = response.cards;
 				$scope.showCardNotInTurn = true;
-				callMessageServerFunc(response.serverMessage)
+				addAlertMessage('success', response.serverMessage, response.userName, 5000);
+//				callMessageServerFunc(response.serverMessage)
 			}else if (response.responseType === 'Skill') {
 				var msg = response.userName + ' use skill of ' + response.hero.name;
 				if(response.targetUser){
@@ -1137,26 +1155,29 @@ myapp.controller('FirstCtrl',
 				if($scope.userName === response.userName){
 					$scope.host = response.host;
 				}
-			} else if (response.responseType === 'Gitf') {
-				addMessage(response.userName
-						+ ' receives 3 cards after killing a FUORILEGGE');
+			} else if (response.responseType === 'Gift') {
+//				addMessage(response.userName
+//						+ ' receives 3 cards after killing a FUORILEGGE');
+				addAlertMessage('success', response.message, response.userName, 10000);
 			} else if (response.responseType === 'LoseCard') {
-				addMessage('SCERIFFO loses all his cards after killing a VICE');
+//				addMessage('SCERIFFO loses all his cards after killing a VICE');
+				addAlertMessage('danger', response.message, response.userName, 10000);
 
 			} else if (response.responseType === 'Join') {
 				if(response.userName !== $scope.userName){
-					addChattingMessage1('success', ' has joined!', response.userName);
+					addChattingMessage('success', 'has joined!', response.userName);
 //					callMessageServerFunc(response.userName + ' has joined!', 10000);
 				}
 //				addMessage(response.userName + 'has joined!');
 			}  else if (response.responseType === 'Leave') {
 				
 //				callMessageServerFunc(response.userName + '  has leaved!', 10000);
-				addChattingMessage1('warning', ' has leaved!', response.userName);
+				addChattingMessage('warning', 'has leaved!', response.userName);
 //				addMessage(response.userName + ' has leaved!');
 			} else if (response.responseType === 'Winner') {
-				callMessageServerFunc(response.userName + ' win!!!!!', 10000);
+//				callMessageServerFunc(response.userName + ' win!!!!!', 10000);
 //				addMessage(response.userName + ' win!!!!!');
+				addAlertMessage('success', '', response.message, 100000);
 				$interval.cancel(countDownPromise);
 				$scope.endGame = true;
 				$scope.myInfo.character.roleImage = $scope.myInfo.role.image;
@@ -1188,48 +1209,64 @@ myapp.controller('FirstCtrl',
 				messageArea.scrollTop = messageArea.scrollHeight;
 			}
 		}
-		function addChattingMessage(message) {
-			var messageArea = document
-					.querySelector('#chattingArea');
-			var messageElement = document.createElement('li');
-			messageElement.innerHTML = message;
-			messageElement.classList.add('li-server-notification');
-//			messageElement.classList.add('animated');
-//			messageElement.classList.add('bounceInRight');
-			messageArea.appendChild(messageElement);
-			messageArea.scrollTop = messageArea.scrollHeight;
-		}
-		function addChattingMessage1(type, message, strongMessage) {
-			var messageArea = document.querySelector('#chattingArea');
+//		function addChattingMessage(message) {
+//			var messageArea = document
+//					.querySelector('#chattingArea');
+//			var messageElement = document.createElement('li');
+//			messageElement.innerHTML = message;
+//			messageElement.classList.add('li-server-notification');
+////			messageElement.classList.add('animated');
+////			messageElement.classList.add('bounceInRight');
+//			messageArea.appendChild(messageElement);
+//			messageArea.scrollTop = messageArea.scrollHeight;
+//		}
+		function addAlertMessage(type, message, strongMessage, timeToHide) {
+			var messageArea = document.querySelector('#alertArea');
+			var messageElement = document.createElement('div');
+			var messageElementId = 'alert-' + new Date().getTime();
+			messageElement.id = messageElementId;
+			messageElement.classList.add('alert');
 			if(type === 'warning'){
-				var messageElement = document.createElement('li');
-				messageElement.classList.add('li-server-notification');
-				messageElement.classList.add('alert');
 				messageElement.classList.add('alert-warning');
-				var strongElement = document.createElement('strong');
-				strongElement.innerHTML = strongMessage;
-				messageElement.appendChild(strongElement);
-				messageElement.innerHTML = message;
-				messageArea.appendChild(messageElement);
 			} else if(type === 'success'){
-				var messageElement = document.createElement('li');
-				messageElement.innerHTML = message;
-				messageElement.classList.add('li-server-notification');
-				messageElement.classList.add('alert');
 				messageElement.classList.add('alert-success');
-				var strongElement = document.createElement('strong');
-				strongElement.innerHTML = strongMessage;
-				messageElement.appendChild(strongElement);
-				messageElement.innerHTML = message;
-				messageArea.appendChild(messageElement);
+			} else if(type === 'danger'){
+				messageElement.classList.add('alert-danger');
 			} else {
-				var messageElement = document.createElement('li');
-				messageElement.innerHTML = message;
-				messageElement.classList.add('li-server-notification');
-				messageElement.classList.add('alert');
-				messageElement.classList.add('alert-success');
-				messageArea.appendChild(messageElement);
+				messageElement.classList.add('alert-info');
 			}
+			messageElement.classList.add('my-alert');
+			if(strongMessage){
+				messageElement.innerHTML = '<strong>'+ strongMessage +'</strong> ' +message;
+			} else {
+				messageElement.innerHTML = message;
+			}
+			messageArea.appendChild(messageElement);
+			
+			if(!timeToHide){
+				timeToHide = 5000;
+			}
+			$timeout(function(messageElement) {
+				console.log(messageElementId);
+				var alertElement = document.querySelector('#' + messageElementId);
+				alertElement.remove();
+			}, timeToHide);
+			
+		}
+		function addChattingMessage(type, message, strongMessage) {
+			var messageArea = document.querySelector('#chattingArea');
+			var messageElement = document.createElement('li');
+			messageElement.classList.add('li-server-notification');
+			messageElement.classList.add('alert');
+			if(type === 'warning'){
+				messageElement.classList.add('alert-warning');
+			} else if(type === 'success'){
+				messageElement.classList.add('alert-success');
+			} else {
+				messageElement.classList.add('alert-info');
+			}
+			messageElement.innerHTML = '<strong>'+ strongMessage +'</strong> ' +message;
+			messageArea.appendChild(messageElement);
 			messageArea.scrollTop = messageArea.scrollHeight;
 		}
 		

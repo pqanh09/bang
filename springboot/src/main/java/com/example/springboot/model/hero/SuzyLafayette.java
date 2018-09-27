@@ -40,7 +40,9 @@ public class SuzyLafayette extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		String serverMessage = "- Using" + character.getHero().getName() + "'skill to get more 1 card.";
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
 		// get cards for character;
 		List<Card> cards = commonService.getFromNewCardList(match, 1);
 		character.getCardsInHand().addAll(cards);

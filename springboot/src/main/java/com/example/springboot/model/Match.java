@@ -13,6 +13,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.Hero;
+import com.example.springboot.model.role.Role;
+import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UserResponse;
 
@@ -32,6 +34,10 @@ public class Match {
 	private LinkedList<String> playerTurnQueue = new LinkedList<>();
 	private Map<Pair<String, String>, Integer> rangeMap = new HashMap<>();
 	private TurnNode currentTurn;
+	private List<String> outlaws = new ArrayList<>();
+	private List<String> sheriff  = new ArrayList<>();
+	private List<String> renegades = new ArrayList<>();
+	private List<String> deputies  = new ArrayList<>();
 	//for VeraCuster
 	private Hero veraCuster;
 	private String veraCusterPlayer;
@@ -185,6 +191,49 @@ public class Match {
 	}
 	public void setPlayerTurnQueue(LinkedList<String> playerTurnQueue) {
 		this.playerTurnQueue = playerTurnQueue;
+	}
+	public List<String> getOutlaws() {
+		return outlaws;
+	}
+	public void setOutlaws(List<String> outlaws) {
+		this.outlaws = outlaws;
+	}
+	public List<String> getSheriff() {
+		return sheriff;
+	}
+	public void setSheriff(List<String> sheriff) {
+		this.sheriff = sheriff;
+	}
+	public List<String> getRenegades() {
+		return renegades;
+	}
+	public void setRenegades(List<String> renegades) {
+		this.renegades = renegades;
+	}
+	public List<String> getDeputies() {
+		return deputies;
+	}
+	public void setDeputies(List<String> deputies) {
+		this.deputies = deputies;
+	}
+	
+	public void addRole(Role role, String userName) {
+		switch (role.getRoleType()) {
+		case SCERIFFO:
+			sheriff.add(userName);
+			break;
+		case VICE:
+			deputies.add(userName);		
+				break;
+		case FUORILEGGE:
+			outlaws.add(userName);
+			break;
+		case RINNEGATO:
+			renegades.add(userName);
+			break;
+		default:
+			break;
+		}
 	}
 	
 }

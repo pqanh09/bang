@@ -40,7 +40,10 @@ public class VultureSam extends Hero {
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
 		String userName = character.getUserName();
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+		String targetPlayer =  (String) others.get("targetUser");
+		String serverMessage = "- Using" + character.getHero().getName() + "'skill to get card(s) from " + targetPlayer;
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
 		// get cards for character;
 		List<Card> cards = (List<Card>) others.get("cards");
 		character.getCardsInHand().addAll(cards);

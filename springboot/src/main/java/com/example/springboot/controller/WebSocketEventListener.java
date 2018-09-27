@@ -57,18 +57,23 @@ public class WebSocketEventListener {
             String matchId = matchService.getUserMap().get(userName);
             if(StringUtils.isNotBlank(matchId)) {
             	Match match = matchService.getMatchMap().get(matchId);
-        		commonService.disconnecPlayer(match, userName);
-        		match.getUserMap().remove(userName);
-        		if(match.getPlayerTurnQueue().isEmpty()) {
-            		matchService.getMatchMap().remove(matchId);
-            		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
-            	} else {
-            		if(MatchStatus.waiting.equals(match.getStatus())) {
-            			String host = match.getPlayerTurnQueue().peekFirst();
-            			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Update, host, matchId, true));
-            		}
-            		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
-            		commonService.callNextPlayerTurn(match, null);
+            	if(match != null) {
+            		commonService.disconnecPlayer(match, userName);
+            		match.getUserMap().remove(userName);
+            		if(match.getPlayerTurnQueue().isEmpty()) {
+            			match.getCharacterMap().clear();
+            			match.getUserMap().clear();
+            			match.setCurrentTurn(null);
+                		matchService.getMatchMap().remove(matchId);
+                		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
+                	} else {
+                		if(MatchStatus.waiting.equals(match.getStatus())) {
+                			String host = match.getPlayerTurnQueue().peekFirst();
+                			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Update, host, matchId, true));
+                		}
+                		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
+                		commonService.callNextPlayerTurn(match, null);
+                	}
             	}
             	matchService.getUserMap().remove(userName);
             }

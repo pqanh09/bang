@@ -6,7 +6,9 @@
 .main-player {
 	width: 380px;
 }
-
+.my-alert{
+	margin-bottom: 0;
+}
 .life-point-title {
 	font-size: 16px;
 	padding: 0 0 0 0;
@@ -55,16 +57,21 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	cursor: pointer;
 }
 
 .item-hero-action {
-	color: blue;
-	font-size: 15px;
-	font-weight: bold;
-	position: absolute;
-	top: 87%;
-	right: -37%;
-	transform: translate(-50%, -50%);
+    color: blue;
+    font-size: 15px;
+    font-weight: bold;
+    position: absolute;
+    top: 87%;
+    right: -48%;
+    left: 56%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    /* overflow: hidden; */
+    white-space: nowrap;
 }
 
 .item-hero-image {
@@ -85,6 +92,7 @@
 	color: #f35626;
 	margin-left: -40px;
 	padding-left: 10px;
+	margin-bottom: 2px;
 }
 
 .ul-server-notification {
@@ -161,6 +169,7 @@
 .item-hero-image1 {
 	width: 120px;
 	height: 177px;
+	cursor: pointer;
 }
 
 .item-role-mage {

@@ -210,7 +210,8 @@ public class TurnNode {
 				// request player use cards
 				if(hasBarrel) {
 					if((ResponseType.Bang.equals(action) || ResponseType.Gatling.equals(action)) && match.getCurrentTurn().getCharacter().getHero() instanceof BelleStar) {
-						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, false, 2));
+						match.getCurrentTurn().getCharacter().getHero().useSkill(match, match.getCurrentTurn().getCharacter(), commonService, 0, null);
+						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, false, 20));
 					} else {
 						this.simpMessageSendingOperations.convertAndSend("/topic/"+this.matchId+"/action", new BarrelCardResponse(action, targetUser, true, 20));
 					}

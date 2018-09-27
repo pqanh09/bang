@@ -49,10 +49,10 @@ public class HeroService {
 	public HeroService() {
 		// auto
 //		heros.add(new ApacheKid());
-//		heros.add(new BartCassidy());
+		heros.add(new BartCassidy());
 //		heros.add(new BelleStar());
 //		heros.add(new BillNoface());
-//		heros.add(new BlackJack());
+		heros.add(new BlackJack());
 //		heros.add(new CalamityJanet());
 //		heros.add(new ElenaFuente());
 //		heros.add(new GregDigger());
@@ -63,11 +63,11 @@ public class HeroService {
 //		heros.add(new PaulRegret());
 //		heros.add(new PixiePete());
 //		heros.add(new RoseDoolan());
-		heros.add(new SeanMallory());
+//		heros.add(new SeanMallory());
 //		heros.add(new SlabTheKiller());
-//		heros.add(new SuzyLafayette());
+		heros.add(new SuzyLafayette());
 //		heros.add(new TequilaJoe());
-//		heros.add(new VultureSam());
+		heros.add(new VultureSam());
 //		heros.add(new WillyTheKid());
 //		heros.add(new ElGringo());
 //		// manual
@@ -76,8 +76,8 @@ public class HeroService {
 //		heros.add(new JesseJones());
 //		heros.add(new PatBrennan());
 //		heros.add(new SidKetchum());
-		heros.add(new UncleWill());
-		heros.add(new JoseDelgado());
+//		heros.add(new UncleWill());
+//		heros.add(new JoseDelgado());
 //		heros.add(new DocHolyday());
 //		// auto-manual
 ////		heros.add(new VeraCuster());
