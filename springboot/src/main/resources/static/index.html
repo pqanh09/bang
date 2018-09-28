@@ -79,7 +79,7 @@
 									</div>
 									<div style="display: flow-root;">
 										<img ng-mouseleave="hideRole(character)" ng-mouseover="showRole(character)" ng-src="{{character.roleImage}}"
-											class="img-thumbnail item-role-mage">
+											class="img-thumbnail item-role-mage" ng-class="(character.userName === userName) ? 'animated infinite tada' : ''">
 										<div class="table-responsive" style="margin-top: -1px;">
 											<table class="table"
 												style="margin-bottom: 0rem; width: 54px; font-size: 14px;">
@@ -150,7 +150,7 @@
 										<h5 ng-show="playerUserCardInTurn" style="margin-bottom: 0; height: 24px;">{{playerUserCardInTurn}}</h5>
 									</div>
 									<div style="width: 121px; height: 180px;">
-										<img ng-src="{{turnCard.image}}" alt="{{turnCard.name}}"
+										<img ng-src="{{turnCard.image}}" ng-show="turnCard" alt="{{turnCard.name}}"
 											class="img-thumbnail item-card-image"
 											ng-click="zoomImage(turnCard.image)">
 									</div>
@@ -203,7 +203,7 @@
 								<button type="button" class="btn btn-info"
 									ng-show="userName === playerGettingCard && userName === characterTurn"
 									ng-click="getCardFunc()">Get Card</button>
-								<button type="button" class="btn btn-info" ng-show="!myInfo.hero.autoUseSkill && userName === characterTurn && skillInfo.enableUseSkillBtn"
+								<button type="button" class="btn btn-info" ng-show="!myInfo.character.hero.autoUseSkill && userName === characterTurn && skillInfo.enableUseSkillBtn"
 									ng-click="useHeroSkillFunc()">Use Hero'skill</button>
 								<button type="button" class="btn btn-info"
 									ng-show="playerUsingCard === characterTurn && userName === characterTurn && actionType !== 'Duello'"

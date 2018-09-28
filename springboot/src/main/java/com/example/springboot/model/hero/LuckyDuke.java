@@ -47,7 +47,7 @@ public class LuckyDuke extends Hero {
 		if(step == 1) {
 			List<Card> cards = commonService.getFromNewCardList(match, 2);
 			turnNode.getCardTemp().clear();
-			turnNode.setCardTemp(cards);
+			turnNode.getCardTemp().addAll(cards);
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 2, null, cards, character.getHero(), null));
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/countdown", new HeroSkillResponse(ResponseType.CountDownStart, userName, 20));

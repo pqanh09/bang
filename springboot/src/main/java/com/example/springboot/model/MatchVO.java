@@ -10,7 +10,7 @@ public class MatchVO {
 	private List<String> players = new ArrayList<>();
 	private MatchStatus status = MatchStatus.waiting;
 	public MatchVO(Match match) {
-		this.players.addAll(match.getPlayerTurnQueue());
+		this.players.addAll(match.getUserMap().keySet());
 		this.matchId = match.getMatchId();
 		this.status = match.getStatus();
 	}

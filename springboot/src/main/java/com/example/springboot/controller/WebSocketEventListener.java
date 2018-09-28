@@ -13,7 +13,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import com.example.springboot.model.Constants;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.Match.MatchStatus;
-import com.example.springboot.response.HostResponse;
+import com.example.springboot.response.PlayerResponse;
 import com.example.springboot.response.MatchResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.UserResponse;
@@ -60,6 +60,7 @@ public class WebSocketEventListener {
             	if(match != null) {
             		commonService.disconnecPlayer(match, userName);
             		match.getUserMap().remove(userName);
+            		match.getCharacterMap().remove(userName);
             		if(match.getPlayerTurnQueue().isEmpty()) {
             			match.getCharacterMap().clear();
             			match.getUserMap().clear();
@@ -69,7 +70,10 @@ public class WebSocketEventListener {
                 	} else {
                 		if(MatchStatus.waiting.equals(match.getStatus())) {
                 			String host = match.getPlayerTurnQueue().peekFirst();
-                			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Update, host, matchId, true));
+            				//update Host
+            				commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/server", new UserResponse(ResponseType.Update, host));
+                			//update playerMap
+                			commonService.sendCharacterMapForEachPlayer(match, null, userName, false);
                 		}
                 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
                 		commonService.callNextPlayerTurn(match, null);

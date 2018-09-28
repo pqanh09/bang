@@ -1,6 +1,6 @@
 body {
 /*    background-image: url("/data/image/others/Background.jpg"); */
-/*    background-color: papayawhip; */
+   background-color: papayawhip;
 }
 
 
@@ -191,6 +191,7 @@ body {
 	width: 53px;
 	margin-top: 0px;
 	height: 59px;
+	animation-duration: 3s;
 }
 
 .hero-info-card-hand-td {

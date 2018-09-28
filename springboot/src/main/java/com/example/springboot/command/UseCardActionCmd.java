@@ -315,8 +315,8 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				if(card instanceof MissedCard) {
 					character.getHero().useSkill(match, character, commonService, 0, null);
 				}
-				checkBelleStarSkill(character, turnNode, match, Arrays.asList(targetUser));
 				turnNode.setAction(ResponseType.Bang);
+				checkBelleStarSkill(character, turnNode, match, Arrays.asList(targetUser));
 				turnNode.setAlreadyUseBangCard(true);
 				turnNode.getNextPlayer().clear();
 				turnNode.getNextPlayer().add(targetUser);
@@ -343,8 +343,8 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 					// skill hero ApacheKid
 					commonService.useSkillOfApacheKid(match, otherPlayers, card, true);
-					checkBelleStarSkill(character, turnNode, match, otherPlayers);
 					turnNode.setAction(ResponseType.Gatling);
+					checkBelleStarSkill(character, turnNode, match, otherPlayers);
 					turnNode.setNextPlayer(otherPlayers);
 					turnNode.requestOtherPlayerUseCard(match);
 					return;
@@ -418,10 +418,10 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/usedCardInTurn", new UseCardInTurnResponse(character.getUserName(), card, targetUser));
 					commonService.addToOldCardList(card, match);
 					ResponseType turnAction = card instanceof PanicCard ? ResponseType.Panic : ResponseType.CatPalou;
+					turnNode.setAction(turnAction);
 					if(card instanceof PanicCard) {
 						checkBelleStarSkill(character, turnNode, match, Arrays.asList(targetUser));
 					}
-					turnNode.setAction(turnAction);
 					turnNode.getNextPlayer().clear();
 					turnNode.getNextPlayer().add(targetUser);
 					turnNode.requestOtherPlayerUseCard(match);

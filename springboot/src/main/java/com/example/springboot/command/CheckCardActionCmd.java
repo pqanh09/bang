@@ -81,7 +81,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				return;
 			}
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-					new CheckCardResponse(false, "Not yet handled card " + request.getId()));
+					new CheckCardResponse(false, "Can't use this card."));
 			return;
 		} else if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Indians.equals(turnNode.getAction())) {
 			if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
@@ -124,7 +124,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 						new CheckCardResponse(true, ""));
 			} else {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false, "Can't use this card"));
+						new CheckCardResponse(false, "Can't use this card."));
 			}
 			return;
 		}
@@ -155,7 +155,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			// return false
 			if (!canUseCard) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false, message));
+						new CheckCardResponse(false, "Can't use this card."));
 				return;
 			}
 			// check range to use
@@ -185,12 +185,17 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		else if (CardType.magic.equals(card.getCardType())) {
 			// BeerCard
 			if (card instanceof BeerCard) {
-				if (character.getLifePoint() < character.getCapacityLPoint() && match.getPlayerTurnQueue().size() > 2) {
-					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(true, ""));
+				if (character.getLifePoint() < character.getCapacityLPoint()) {
+					if(match.getPlayerTurnQueue().size() > 2) {
+						simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
+								new CheckCardResponse(true, ""));
+					} else {
+						simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
+								new CheckCardResponse(false, "Can't use Beer card when there are only 2 players"));
+					}
 				} else {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(false, "Can't use Beer card when there are only 2 players"));
+							new CheckCardResponse(false, "You don't lose any life point."));
 				}
 				return;
 			}

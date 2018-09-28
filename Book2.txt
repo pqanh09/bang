@@ -1,0 +1,69 @@
+	Auto	ex	la ro vo tac dung	Hero-ApacheKid
+	Auto	st	Mat mau rut 1 la	Hero-BartCassidy
+	Auto	st	la' 2 rut la co hoac ro thi rut them 1 la	Hero-BlackJack
+	Auto	st	het bai rut 1 la	Hero-SuzyLafayette
+	Auto	st	"bang nhu miss, miss nhu bang"	Hero-CalamityJanet
+No	Auto	st	other view +1	Hero-PaulRegret
+No	Auto	st	view orther +1	Hero-RoseDoolan
+	Auto	st	"Moi khi nguoi khac chet, lay het bai "	Hero-VultureSam
+	Auto	ex	Moi khi nguoi khac bi giet dc rut 2 la	Hero-HerbHunter
+	Auto	st	Xai nhieu bang	Hero-WillyTheKid
+	Auto	ex	"Dat 1 la xuong, tat ca cac la khac bi huy"	Hero-JohnnyKisch
+	Auto	ex	Rut 3 la	Hero-PixiePete
+	Auto	ex	moi khi nguoi khac bi giet dc hoi 2 mau	Hero-GregDigger
+	Auto	ex	Su dung beer hoi 2 mau	Hero-TequilaJoe
+	Auto	ex	Giu 10 la tren tay	Hero-SeanMallory
+	Auto	ex	moi khi su dung 1 la ko phai  trong luot dc rut 1 la	Hero-MollyStark
+ok	Auto	ex	Trong luot nhung la trc mat cua nguoi khac ko tac dung	Hero-BelleStar
+match.getCurrentTurn().getCharacter().getHero().useSkill(match, match.getCurrentTurn().getCharacter(), commonService, 0, null); 213 TurnNode
+ok	Auto	ex	Su dung bat ky la nao xem nhu miss	Hero-ElenaFuente
+ok	Auto	ex	"rut 1 la, cong them 1 la cho moi mau' bi mat"	Hero-BillNoface
+ok	Auto	st	Thung` (Must Bang)	Hero-Jourdonnais
+ok	Auto	st	Phai su dung 2 missed	Hero-SlabTheKiller
+ok	Auto	st	"moi khi mat mau, rut tren tay nguoi lam mat mau"	Hero-ElGringo	
+
+
+/////
+ok	uc	ex	chon mat 1 mau de rut 2 la	Hero-ChuckWengam
+111	gc	st	la dau tien co the rut tu chong bai bo	Hero-PedroRamirez
+/////
+111	gc	st	La dau tien co the rut tren tay nguoi choi	Hero-JesseJones
+ok	gc	ex	rut 1 la trc mat nguoi choi thay vi rut bai`	Hero-PatBrennan
+
+ok	bc	st	Bo 2 la hoi 1 mau	Hero-SidKetchum                                                                Remove Card 2   dialogSelectCardPC
+ok	bc	ex	1 lan trong luot co the su dung 1 la nhu general store	Hero-UncleWill                             Remove Card 1   dialogSelectCardPC
+ok    bc	ex	2 lan trong luot co the bo la xanh de rut them 2 la	Hero-JoseDelgado                               Remove Card 1   dialogSelectCardPC
+ok  	bc	ex	1 lan trong luot co the bo 2 la de ban 1 nguoi	Hero-DocHolyday                                    Remove Card 2   dialogSelectCardPC
+
+ok 	Auto	ex	Copy skill	Hero-VeraCuster                                                                    Select User     dialogSelectUser
+ok 	Auto	st	"rut 2 phan xet, chon 1 kq"	Hero-LuckyDuke                                                     Select Card 1   dialogSelectCardPC
+ok 	Auto 	st	xem 3 la rut 2	Hero-KitCarlson                                                                Remove Card 1   dialogSelectCardPC
+ok 	Auto	ex	"rut so la bang so nguoi choi +1, sau do chia cho moi nguoi 1 la"	Hero-ClausTheSaint	       Select Card n 
+
+	https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
+		
+		
+		https://github.com/GoogleCloudPlatform/getting-started-java/tree/master/appengine-standard-java8/springboot-appengine-standard
+		https://blog.codecentric.de/en/2018/02/appengine-flex-spring-boot-deployment/
+		https://github.com/CLCO-CLC-2017-Tuesday-G01/CLCO-CLC-2017-Tuesday-Week09-G01
+		
+		
+		deploy spring boot web mvc  google app engine
+		https://stackoverflow.com/questions/48170662/google-app-engine-standard-env-not-found-controller-method-spring-boot-app
+		https://codelabs.developers.google.com/codelabs/cloud-app-engine-springboot/index.html?index=..%2F..%2Findex#0
+		https://www.quora.com/How-do-I-deploy-Spring-Boot-application-Web-MVC-on-Google-App-Engine-GAE-or-HEROKU-using-Eclipse-IDE
+		https://www.quora.com/Is-it-worth-learning-Spring-MVC-or-Spring-Boot-in-2017
+		spring boot mvc rest api
+		https://o7planning.org/vi/10865/vi-du-crud-don-gian-voi-spring-mvc-restful-web-service#a4922877
+		https://medium.com/@gustavo.ponce.ch/spring-boot-spring-mvc-spring-security-mysql-a5d8545d837d
+		https://spring.io/guides/gs/serving-web-content/
+		https://viblo.asia/p/tao-rest-api-voi-spring-boot-mysql-jpa-repository-Eb85oJykl2G
+		
+		
+		
+		https://www.youtube.com/watch?v=2f4VnG9j_Nw
+		
+		
+		mvn archetype:generate -Dappengine-version=1.9.65 -Djava8=true -DCloudSDK_Tooling=false -Dapplication-id=11223344 -Dfilter=com.google.appengine.archetypes:
+
+				

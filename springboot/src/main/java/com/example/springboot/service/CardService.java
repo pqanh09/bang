@@ -160,7 +160,48 @@ public class CardService {
 		
 		
 		
+		//
+		cards.add(new GatlingCard(Suit.hearts, 20, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 21, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 22, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 23, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 24, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 25, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 26, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 27, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 28, "10C-Gatling.jpg"));
+		cards.add(new GatlingCard(Suit.hearts, 29, "10C-Gatling.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 20, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 21, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 22, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 23, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 24, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 25, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 26, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 27, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 28, "13B-Barrel.jpg"));
+		cards.add(new BarrelCard(Suit.spades, 29, "13B-Barrel.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 20, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 21, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 22, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 23, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 24, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 25, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 26, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 27, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 28, "9C-Mustang.jpg"));
+		cards.add(new MustangCard(Suit.hearts, 29, "9C-Mustang.jpg"));
 		
+//		cards.add(new WinchesterCard(Suit.spades, 20, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 21, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 22, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 23, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 24, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 25, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 26, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 27, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 28, "8B-Winchester.jpg"));
+//		cards.add(new WinchesterCard(Suit.spades, 29, "8B-Winchester.jpg"));
 		
 //		cards.add(new SaloonCard(Suit.hearts, 21, "5C-Saloon.jpg"));
 //		cards.add(new SaloonCard(Suit.hearts, 22, "5C-Saloon.jpg"));

@@ -29,7 +29,7 @@ import com.example.springboot.model.role.RoleType;
 import com.example.springboot.request.Request;
 import com.example.springboot.request.RequestType;
 import com.example.springboot.response.HeroResponse;
-import com.example.springboot.response.HostResponse;
+import com.example.springboot.response.PlayerResponse;
 import com.example.springboot.response.MatchResponse;
 import com.example.springboot.response.PlayerResponse;
 import com.example.springboot.response.ResponseType;
@@ -136,8 +136,9 @@ public class BangController {
 			Match match = new Match(matchId, userName, sessionId, simpMessageSendingOperations);
 			matchService.getUserMap().put(userName, matchId);
 			matchService.getMatchMap().put(matchId, match);
-			HostResponse createResponse = new HostResponse(ResponseType.Create, userName, matchId, true);
-			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
+			commonService.sendCharacterMapForEachPlayer(match, userName, null, true);
+//			HostResponse createResponse = new HostResponse(ResponseType.Create, userName, matchId, true);
+//			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", createResponse);
 			simpMessageSendingOperations.convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
 		}
 	}
@@ -167,10 +168,11 @@ public class BangController {
 		
 		matchService.getUserMap().put(userName, match.getMatchId());
 		
+		commonService.sendCharacterMapForEachPlayer(match, userName, null, false);
 		
 		simpMessageSendingOperations.convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
 		
-		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Join, userName));
+//		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Join, userName));
 	}
 //	private void sendListPlayers(String userName, String sessionId, String matchId, List<String> playerTurnQueue) {
 //		
@@ -218,7 +220,7 @@ public class BangController {
 			return;
 		}
 		int nRole = match.getPlayerTurnQueue().size();
-		if (nRole < 3) {
+		if (nRole < 2) {
 			logger.error("Not enough number player to play");
 			//TODO
 			return;
@@ -237,21 +239,21 @@ public class BangController {
 		// get cards
 		match.setNewCards(new LinkedList<>(cardService.getCards()));
 		boolean foundSceriffo = false;
-		List<String> playerTurnQueue = new ArrayList<>(match.getPlayerTurnQueue());
+//		List<String> playerTurnQueue = new ArrayList<>(match.getPlayerTurnQueue());
 		match.getPlayerTurnQueue().clear();
 		List<String> playerNotYetInTurn = new ArrayList<>();
 		int n = 0;
 		for (String plName : match.getUserMap().keySet()) {
 			String plSessionId = match.getUserMap().get(plName);
-			// create Character
-			Character character = new Character(plName);
-			match.getCharacterMap().put(plName, character);
+			// get Character
+			Character character = match.getCharacterMap().get(plName);
+//			match.getCharacterMap().put(plName, character);
 			//
 			Role role = roles.get(n);
 			match.addRole(role, plName);
 			character.setRole(role);
-			// send player map for user
-			sendListPlayers(plName, plSessionId, match.getMatchId(), playerTurnQueue);
+//			 send player map for user
+//			sendListPlayers(plName, plSessionId, match.getMatchId(), playerTurnQueue);
 			// send role for user
 			simpMessageSendingOperations.convertAndSendToUser(plSessionId, "/queue/"+ matchId +"/role", new RoleResponse(plName, role));
 			if (foundSceriffo) {

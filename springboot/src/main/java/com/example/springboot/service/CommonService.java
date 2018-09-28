@@ -31,7 +31,6 @@ import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.CharacterResponse;
 import com.example.springboot.response.CheckCardResponse;
-import com.example.springboot.response.HostResponse;
 import com.example.springboot.response.PlayerResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
@@ -68,6 +67,7 @@ public class CommonService {
 			List<Card> cards = new ArrayList<>();
 			cards.addAll(deadCharacter.getCardsInFront());
 			cards.addAll(deadCharacter.getCardsInHand());
+			deadCharacter.setNumCardsInHand(0);
 			if(cards.isEmpty()) {
 				return false;
 			} else {
@@ -188,26 +188,37 @@ public class CommonService {
 	public void playerDead(String userName, boolean beKilled, Match match, boolean leave) {
 		match.getPlayerTurnQueue().remove(userName);
 		Character character = match.getCharacterMap().get(userName);
-		if(character == null) {
+		if(character == null || character.getRole() == null) {
 			return;
 		}
-		if(!RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
-			character.setRoleImage(character.getRole().getImage());
-			notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
-		}
+//		if(!RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
+//			character.setRoleImage(character.getRole().getImage());
+//			notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
+//		}
 		if(!leave) {
 			simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/character", new CharacterResponse(ResponseType.Dead, userName, character.getVO()));
 		}
 //		notifyCharacter(character,userMap.get(userName));
 		
 		if(checkEndGame(match, character)) {
+//			if(!RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
+//				character.setRoleImage(character.getRole().getImage());
+//				notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
+//			}
 			return;
+		} else {
+			character.setRoleImage(character.getRole().getImage());
+			if(!usingSkillOfHeroWhenAPlayerDead(userName, match, character)) {
+				addToOldCardList(character.getCardsInFront(), match);
+				addToOldCardList(character.getCardsInHand(), match);
+				character.getCardsInFront().clear();
+				character.getCardsInHand().clear();
+				character.setNumCardsInHand(0);
+			};
+			notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
 		}
 		//
-		if(!usingSkillOfHeroWhenAPlayerDead(userName, match, character)) {
-			addToOldCardList(character.getCardsInFront(), match);
-			addToOldCardList(character.getCardsInHand(), match);
-		};
+		
 			
 		//	
 		updateRangeMap(match);
@@ -465,34 +476,34 @@ public class CommonService {
 		return userCanBeAffectList;
 	}
 	
-private void sendListPlayers(String userName, String sessionId, String matchId, List<String> playerTurnQueue) {
-		
-		List<String> frontPlayers = new ArrayList<>();
-		
-		Map<String, Integer> result = new HashMap<>();
-		boolean foundPlayer = false;
-		int n = 0;
-		for (String player : playerTurnQueue) {
-			if(foundPlayer) {
-				result.put(player, n);
-				n++;
-			} else {
-				if(userName.equals(player)) {
-					foundPlayer = true;
-					result.put(player, n);
-					n++;
-				} else {
-					frontPlayers.add(player);
-				}
-			}
-		}
-		for (String player : frontPlayers) {
-			result.put(player, n);
-			n++;
-		}
-		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ matchId +"/player", new PlayerResponse(userName, result));
-	}
-	public void sendCharacterMapForEachPlayer(Match match, String joinPlayer, boolean host) {
+//private void sendListPlayers(String userName, String sessionId, String matchId, List<String> playerTurnQueue) {
+//		
+//		List<String> frontPlayers = new ArrayList<>();
+//		
+//		Map<String, Integer> result = new HashMap<>();
+//		boolean foundPlayer = false;
+//		int n = 0;
+//		for (String player : playerTurnQueue) {
+//			if(foundPlayer) {
+//				result.put(player, n);
+//				n++;
+//			} else {
+//				if(userName.equals(player)) {
+//					foundPlayer = true;
+//					result.put(player, n);
+//					n++;
+//				} else {
+//					frontPlayers.add(player);
+//				}
+//			}
+//		}
+//		for (String player : frontPlayers) {
+//			result.put(player, n);
+//			n++;
+//		}
+//		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ matchId +"/player", new PlayerResponse(userName, result));
+//	}
+	public void sendCharacterMapForEachPlayer(Match match, String joinPlayer, String leavePlayer, boolean host) {
 		String sessionId, userName;
 		Character character;
 		Map<Integer, CharacterVO> result = new HashMap<>();
@@ -501,6 +512,9 @@ private void sendListPlayers(String userName, String sessionId, String matchId, 
 		int n = 0;
 		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 			userName = entry.getKey();
+			if(StringUtils.isNotBlank(leavePlayer) && leavePlayer.equals(userName)) {
+				continue;
+			}
 			sessionId = match.getUserMap().get(userName);
 			character = entry.getValue();
 			result.clear();
@@ -528,9 +542,9 @@ private void sendListPlayers(String userName, String sessionId, String matchId, 
 				result.put(n, match.getCharacterMap().get(player).getVO());
 			}
 			
-			HostResponse joinResponse = new HostResponse(ResponseType.Join, userName, match.getMatchId(), result);
+			PlayerResponse joinResponse = new PlayerResponse(userName, match.getMatchId(), result);
 			
-			if(joinPlayer.equals(userName)) {
+			if(StringUtils.isNotBlank(joinPlayer) && joinPlayer.equals(userName)) {
 				joinResponse.setHost(host);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", joinResponse);
 			} else {

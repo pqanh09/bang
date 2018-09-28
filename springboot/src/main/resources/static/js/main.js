@@ -354,7 +354,7 @@ myapp.controller('FirstCtrl',
 			}
 		};
 		$scope.showRole = function(character) {
-			if($scope.userName === character.userName){
+			if($scope.userName === character.userName && $scope.myInfo.role){
 				character.roleImage = $scope.myInfo.role.image;
 			}
 		};
@@ -498,7 +498,7 @@ myapp.controller('FirstCtrl',
 		}
 		function onGameQueueReceived(payload) {
 			var response = JSON.parse(payload.body);
-			if (response.responseType === 'Join' || response.responseType === 'Create') {
+			if (response.responseType === 'Player') {
 				$scope.myInfo.matchId = response.matchId;
 				$scope.gamePage = true;
 				$scope.hallPage = false;
@@ -524,14 +524,13 @@ myapp.controller('FirstCtrl',
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/oldcard',onOldCardTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/action',onActionTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/chatting',onChattingTopicReceived);
-				
 				//
 				
 				$scope.characters.length = 0;
-				angular.forEach(response.mapCharacter, function(value, key) {
+				angular.forEach(response.playerMap, function(value, key) {
 					$scope.characters.push(value);
 				});
-				
+				$scope.myInfo.character = $scope.characters[0];
 				
 			} else {
 				console.log('ERROR');
@@ -558,8 +557,8 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Role') {
 				$scope.myInfo.role = response.role;
-				$scope.$apply();
 				$scope.host = false;
+				$scope.$apply();
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
@@ -568,10 +567,11 @@ myapp.controller('FirstCtrl',
 		function onPlayerReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Player') {
-				$scope.playerMap = response.playerMap;
-				angular.forEach($scope.playerMap, function(value, key) {
-					$scope.characters.push({});
+				$scope.characters.length = 0;
+				angular.forEach(response.playerMap, function(value, key) {
+					$scope.characters.push(value);
 				});
+				$scope.$apply();
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
@@ -611,7 +611,7 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'CountDownStart') {
 				$scope.actionStr = 'Using skill...';
-				callCountDownFunc(response);
+				//callCountDownFunc(response);
 				$scope.$apply();
 			} 
 			else if (response.responseType === 'CountDownEnd') {
@@ -628,7 +628,6 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			var userName = response.character.userName;
 			if (response.responseType === 'Character') {
-				var update = false;
 				var changedCharater = null;
 				$scope.characters.forEach(function(character) {
 					if (character.userName === userName) {
@@ -644,18 +643,9 @@ myapp.controller('FirstCtrl',
 						character.roleImage = response.character.roleImage;
 						character.beJailed = response.character.beJailed;
 						character.hasDynamite = response.character.hasDynamite;
-						update = true;
 						$scope.$apply();
 					}
 				});
-				if (!update) {
-					var index = $scope.playerMap[response.character.userName];
-					$scope.characters[index] = response.character;
-					if($scope.userName === response.character.userName){
-						$scope.myInfo.character = $scope.characters[index]; 
-					}
-					$scope.$apply();
-				}
 			} else if (response.responseType === 'Dead') {
 				addAlertMessage('danger', 'is dead', response.userName, 10000);
 				$scope.characters.forEach(function(character) {
@@ -677,6 +667,7 @@ myapp.controller('FirstCtrl',
 				});
 				$scope.$apply();
 			} else {
+				
 				console.log('Error');
 				alert(JSON.stringify(response));
 			}
@@ -737,7 +728,7 @@ myapp.controller('FirstCtrl',
 					cardDialog.modal({backdrop:'static',keyboard:true,show:true});
 				}, 500);
 				/// count down time
-				callCountDownFunc(response);
+				//callCountDownFunc(response);
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
@@ -825,6 +816,9 @@ myapp.controller('FirstCtrl',
 		function onCardActionTopicReceived(payload) {
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'GetCard') {
+				if($scope.userName === response.userName){
+					$scope.skillInfo.enableUseSkillBtn = true;
+				}
 				if($scope.actionType === 'DrawCardDynamite' || $scope.actionType === 'DrawCardJail'){
 					$scope.showCardNotInTurn = true;
 				} else {
@@ -837,7 +831,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerDrawingCard = '';
 				$scope.actionStr = 'Getting card...';
 				/// count down time
-				callCountDownFunc(response);
+  				//callCountDownFunc(response);
 				///
 				$scope.$apply();
 			} else if (response.responseType === 'UseCard') {
@@ -853,7 +847,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerDrawingCard = '';
 				$scope.actionStr = 'Using card...';
 				/// count down time
-				callCountDownFunc(response);
+  				//callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardJail') {
@@ -865,7 +859,7 @@ myapp.controller('FirstCtrl',
 				$scope.actionStr = 'Drawing Jail...';
 				
 				/// count down time
-				callCountDownFunc(response);
+  				//callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardDynamite') {
@@ -875,7 +869,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerGettingCard = '';
 				$scope.actionStr = 'Drawing Dynamite...';
 				/// count down time
-				callCountDownFunc(response);
+  				//callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else if (response.responseType === 'RemoveCardEndTurn') {
@@ -886,7 +880,7 @@ myapp.controller('FirstCtrl',
 				$scope.actionStr = 'Ending turn...';
 				
 				/// count down time
-				callCountDownFunc(response);
+  				//callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else {
@@ -923,7 +917,7 @@ myapp.controller('FirstCtrl',
 					$scope.actionStr = 'Duelling...';
 				}
 				/// count down time
-				callCountDownFunc(response);
+				//callCountDownFunc(response);
 				$scope.$apply();
 			} else if (response.responseType === 'Panic') {
 				$scope.actionType = response.responseType;
@@ -943,7 +937,7 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				callCountDownFunc(response);
+				//callCountDownFunc(response);
 			} else if (response.responseType === 'CatPalou') {
 				$scope.playerUsingCard = response.userName;
 				$scope.actionStr = 'Selecting card...';
@@ -962,7 +956,7 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				callCountDownFunc(response);
+				//callCountDownFunc(response);
 			} else if (response.responseType === 'GeneralStore') {
 				$scope.playerUsingCard = response.userName;
 				$scope.actionStr = 'Getting card...';
@@ -981,7 +975,7 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				callCountDownFunc(response);
+				//callCountDownFunc(response);
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
@@ -1176,7 +1170,7 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Update') {
 				if($scope.userName === response.userName){
-					$scope.host = response.host;
+					$scope.host = true;
 				}
 			} else if (response.responseType === 'Gift') {
 //				addMessage(response.userName
@@ -1274,7 +1268,7 @@ myapp.controller('FirstCtrl',
 			} else {
 				messageElement.classList.add('alert-info');
 			}
-			messageElement.innerHTML = '<strong>'+ strongMessage +'</strong>: - ' +message;
+			messageElement.innerHTML = '<strong>'+ strongMessage +'</strong>: ' +message;
 			messageArea.appendChild(messageElement);
 			messageArea.scrollTop = messageArea.scrollHeight;
 		}

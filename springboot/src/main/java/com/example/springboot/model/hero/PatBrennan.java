@@ -97,7 +97,7 @@ public class PatBrennan extends Hero {
 			turnNode.getNextPlayer().add(targetPlayer);
 			
 			//auto
-			turnNode.setCardTemp(targetCharacter.getCardsInFront());
+			turnNode.getCardTemp().addAll(targetCharacter.getCardsInFront());
 			//
 			commonService.getSimpMessageSendingOperations().convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/skill",
 					new SkillResponse(userName, true, 3 , null, targetCharacter.getCardsInFront(), character.getHero(), targetPlayer));
