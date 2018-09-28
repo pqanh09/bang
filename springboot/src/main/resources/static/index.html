@@ -210,9 +210,9 @@
 									ng-click="endTurnFunc()">End Turn</button>
 							</div>
 							<div>
-								<div class="page-header"
-									style="text-align: center; color: brown; width: 100%;">
-									<h5 style="margin-bottom: 0;">Your cards</h5>
+								<div id="yourCardHeader" class="page-header"
+									style="text-align: left; color: blue; width: 100%; display: flex">
+									<h5 style="margin-bottom: 0; margin-left: 5px;">Your cards</h5>
 								</div>
 								<div class="flex-container">
 									<div ng-repeat="card in cardsInHand" class="item-hero-card">

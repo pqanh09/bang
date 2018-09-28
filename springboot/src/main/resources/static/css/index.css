@@ -1,14 +1,21 @@
-[ng-cloak]
-{
-  display: none !important;
+[ng-cloak] {
+	display: none !important;
 }
 
 .main-player {
 	width: 380px;
 }
-.my-alert{
+
+.my-alert {
 	margin-bottom: 0;
 }
+
+.check-card-message {
+	display: block;
+	margin-left: 50px;
+	color: red;
+}
+
 .life-point-title {
 	font-size: 16px;
 	padding: 0 0 0 0;
@@ -61,17 +68,17 @@
 }
 
 .item-hero-action {
-    color: blue;
-    font-size: 15px;
-    font-weight: bold;
-    position: absolute;
-    top: 87%;
-    right: -48%;
-    left: 56%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    /* overflow: hidden; */
-    white-space: nowrap;
+	color: blue;
+	font-size: 15px;
+	font-weight: bold;
+	position: absolute;
+	top: 86%;
+/* 	right: -48%; */
+	left: 7%;
+	transform: translate(-50%, -50%);
+	cursor: pointer;
+	/* overflow: hidden; */
+	white-space: nowrap;
 }
 
 .item-hero-image {

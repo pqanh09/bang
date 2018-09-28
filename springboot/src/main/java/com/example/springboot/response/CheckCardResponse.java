@@ -33,18 +33,20 @@ public class CheckCardResponse extends Response{
 		this.userCanBeAffectList = userCanBeAffectList;
 	}
 
-	public CheckCardResponse(boolean canUse) {
+	public CheckCardResponse(boolean canUse, String message) {
 		super();
 		this.responseType = ResponseType.CheckCard;
 		this.canUse = canUse;
+		this.message = message;
 	}
 
-	public CheckCardResponse(boolean canUse, List<String> userCanBeAffectList, boolean mustChooseTarget) {
+	public CheckCardResponse(boolean canUse, List<String> userCanBeAffectList, boolean mustChooseTarget, String message) {
 		super();
 		this.canUse = canUse;
 		this.userCanBeAffectList = userCanBeAffectList;
 		this.mustChooseTarget = mustChooseTarget;
 		this.responseType = ResponseType.CheckCard;
+		this.message = message;
 	}
 
 

@@ -18,8 +18,7 @@ myapp.controller('FirstCtrl',
 		var wsUserQueue,wsGameQueue,wsGameTopic;
 		
 		$scope.countDown = 10;
-		var messageServerPromise;
-		var countDownPromise;
+		var messageServerPromise, countDownPromise, checkCardMessagePromise;
 		$scope.actionStr = '';
 		$scope.playerMap = null;
 //		$scope.showCardInTurn = false;
@@ -438,6 +437,28 @@ myapp.controller('FirstCtrl',
 						$scope.message.show = false; 
 			}, time);
 		}
+		
+		function callCheckCardMessageFunc(message){
+			var checkCardMessage = document.querySelector('#checkCardMessage');
+			$timeout.cancel(checkCardMessagePromise);
+			if(checkCardMessage) {
+				checkCardMessage.remove();
+			}
+			var yourCardHeader = document.querySelector('#yourCardHeader');
+			checkCardMessage = document.createElement('div');
+			checkCardMessage.id = 'checkCardMessage';
+			checkCardMessage.classList.add('fadeInDown');
+			checkCardMessage.classList.add('animated');
+			checkCardMessage.classList.add('check-card-message');
+			checkCardMessage.innerHTML = message;
+			yourCardHeader.appendChild(checkCardMessage);
+			checkCardMessagePromise = $timeout(function() {
+				var checkCardMessage = document.querySelector('#checkCardMessage');
+				if(checkCardMessage) {
+					checkCardMessage.remove();
+				}
+			}, 2000);
+		}
 		function initWSUser(){
 			wsUserQueue = stompClient.subscribe('/user/queue/user', onUserQueueReceived);
 			wsGameQueue = stompClient.subscribe('/user/queue/game', onGameQueueReceived);
@@ -457,10 +478,6 @@ myapp.controller('FirstCtrl',
 		} 
 		function onConnected() {
 			initWSUser();
-			// ok
-//			wsUserQueue = stompClient.subscribe('/user/queue/user', onUserQueueReceived);
-//			wsGameQueue = stompClient.subscribe('/user/queue/game', onGameQueueReceived);
-//			wsGameTopic = stompClient.subscribe('/topic/game', onGameTopicReceived);
 			
 			$scope.userName = $scope.userName.replace(/ /g,'');
 			// Tell your username to the server
@@ -683,6 +700,9 @@ myapp.controller('FirstCtrl',
 
 				} else {
 					console.log('Can not use card');
+					if(response.message){
+						callCheckCardMessageFunc(response.message);
+					}
 				}
 			} else {
 				console.log('ERROR');
@@ -809,7 +829,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerDrawingCard = '';
 				$scope.actionStr = 'Getting card...';
 				/// count down time
-//				callCountDownFunc(response);
+				callCountDownFunc(response);
 				///
 				$scope.$apply();
 			} else if (response.responseType === 'UseCard') {
@@ -1246,7 +1266,7 @@ myapp.controller('FirstCtrl',
 			} else {
 				messageElement.classList.add('alert-info');
 			}
-			messageElement.innerHTML = '<strong>'+ strongMessage +'</strong> ' +message;
+			messageElement.innerHTML = '<strong>'+ strongMessage +'</strong>: - ' +message;
 			messageArea.appendChild(messageElement);
 			messageArea.scrollTop = messageArea.scrollHeight;
 		}

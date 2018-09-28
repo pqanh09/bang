@@ -64,37 +64,37 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Card card = BangUtils.findCardInHand(character, request.getId());
 		if (card == null) {
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-					new CheckCardResponse(false));
+					new CheckCardResponse(false, ""));
 			return;
 		}
 		if (ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Gatling.equals(turnNode.getAction())) {
 			//skill hero ElenaFuente
 			if(character.getHero() instanceof ElenaFuente) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(true));
+						new CheckCardResponse(true, ""));
 				return;
 			}
 			if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(true));
+						new CheckCardResponse(true, ""));
 				return;
 			}
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-					new CheckCardResponse(false));
+					new CheckCardResponse(false, ""));
 			return;
 		} else if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Indians.equals(turnNode.getAction())) {
 			if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
 				if(ResponseType.Duello.equals(turnNode.getAction()) && Suit.diamonds.equals(card.getSuit()) && turnNode.getCharacter().getHero() instanceof ApacheKid) {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(false));
+							new CheckCardResponse(false, ""));
 				} else {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(true));
+							new CheckCardResponse(true, ""));
 				}
 				
 			} else {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false));
+						new CheckCardResponse(false, ""));
 			}
 			return;
 		} else {
@@ -112,7 +112,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Card card = BangUtils.findCardInHand(character, request.getId());
 		if (card == null) {
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-					new CheckCardResponse(false));
+					new CheckCardResponse(false, ""));
 			return;
 		}
 		
@@ -120,10 +120,10 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		if(ResponseType.Duello.equals(turnNode.getAction())) {
 			if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(true));
+						new CheckCardResponse(true, ""));
 			} else {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false));
+						new CheckCardResponse(false, ""));
 			}
 			return;
 		}
@@ -150,7 +150,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			// return false
 			if (!canUseCard) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false));
+						new CheckCardResponse(false, "aaaaaaaaa"));
 				return;
 			}
 			// check range to use
@@ -161,7 +161,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty()));
+								!userCanBeAffectList.isEmpty(), ""));
 				return;
 			}
 		}
@@ -171,10 +171,10 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			if (card instanceof BeerCard) {
 				if (character.getLifePoint() < character.getCapacityLPoint() && match.getPlayerTurnQueue().size() > 2) {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(true));
+							new CheckCardResponse(true, ""));
 				} else {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(false));
+							new CheckCardResponse(false, ""));
 				}
 				return;
 			}
@@ -193,7 +193,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty()));
+								!userCanBeAffectList.isEmpty(), ""));
 				return;
 			}
 			// DuelloCard
@@ -202,7 +202,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				// skill hero ApacheKid
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList, true));
+						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList, true, ""));
 				return;
 			} 
 			//SaloonCard
@@ -215,7 +215,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 					}
 				}
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(findPlayerLoseLifePoint));
+						new CheckCardResponse(findPlayerLoseLifePoint, ""));
 				return;
 			}
 			//CatPalouCard
@@ -239,7 +239,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty()));
+								!userCanBeAffectList.isEmpty(), ""));
 				return;
 			} 
 			// JailCard
@@ -261,7 +261,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty()));
+								!userCanBeAffectList.isEmpty(), ""));
 				return;
 			}
 			// Dynamite
@@ -278,12 +278,12 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 					}
 				}
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(!alreadyDynamiteCard));
+						new CheckCardResponse(!alreadyDynamiteCard, ""));
 				return;
 			}
 		}
 		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-				new CheckCardResponse(true));
+				new CheckCardResponse(true, "Can can not use"));
 	}
 
 }
