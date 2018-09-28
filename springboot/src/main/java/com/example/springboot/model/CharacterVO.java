@@ -8,7 +8,6 @@ import com.example.springboot.model.hero.Hero;
 import com.example.springboot.model.role.RoleType;
 
 public class CharacterVO {
-	protected int id;
 	protected String userName;
 	protected Hero hero;
 	protected List<Card> cardsInFront = new ArrayList<>();
@@ -22,14 +21,6 @@ public class CharacterVO {
 	protected String roleImage;
 	protected boolean beJailed = false;
 	protected boolean hasDynamite = false;
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public boolean isBarrel() {
 		return barrel;
@@ -146,11 +137,10 @@ public class CharacterVO {
 		this.lifePoint = lifePoint;
 	}
 
-	public CharacterVO(int id, String userName, Hero hero, List<Card> cardsInFront, int numCardsInHand, int gun,
+	public CharacterVO(String userName, Hero hero, List<Card> cardsInFront, int numCardsInHand, int gun,
 			int lifePoint, int capacityLPoint, int viewOthers, int othersView, boolean barrel, String roleImage,
 			boolean beJailed, boolean hasDynamite) {
 		super();
-		this.id = id;
 		this.userName = userName;
 		this.hero = hero;
 		this.cardsInFront = cardsInFront;

@@ -84,6 +84,9 @@ public class BangController {
 		String matchId = matchService.getUserMap().get(playerName);
 		if(StringUtils.isNotBlank(matchId)) {
 			Match match = matchService.getMatchMap().get(matchId);
+			if(match == null) {
+				return;
+			}
 			request.setUser(playerName);
 			dispatcher.perform(request, match);
 		}
@@ -164,40 +167,38 @@ public class BangController {
 		
 		matchService.getUserMap().put(userName, match.getMatchId());
 		
-		HostResponse joinResponse = new HostResponse(ResponseType.Join, userName, match.getMatchId(), false);
-		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", joinResponse);
 		
 		simpMessageSendingOperations.convertAndSend("/topic/game", new MatchResponse(ResponseType.Update));
 		
 		simpMessageSendingOperations.convertAndSend("/topic/"+match.getMatchId()+"/server", new HostResponse(ResponseType.Join, userName));
 	}
-	private void sendListPlayers(String userName, String sessionId, String matchId, List<String> playerTurnQueue) {
-		
-		List<String> frontPlayers = new ArrayList<>();
-		
-		Map<String, Integer> result = new HashMap<>();
-		boolean foundPlayer = false;
-		int n = 0;
-		for (String player : playerTurnQueue) {
-			if(foundPlayer) {
-				result.put(player, n);
-				n++;
-			} else {
-				if(userName.equals(player)) {
-					foundPlayer = true;
-					result.put(player, n);
-					n++;
-				} else {
-					frontPlayers.add(player);
-				}
-			}
-		}
-		for (String player : frontPlayers) {
-			result.put(player, n);
-			n++;
-		}
-		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ matchId +"/player", new PlayerResponse(userName, result));
-	}
+//	private void sendListPlayers(String userName, String sessionId, String matchId, List<String> playerTurnQueue) {
+//		
+//		List<String> frontPlayers = new ArrayList<>();
+//		
+//		Map<String, Integer> result = new HashMap<>();
+//		boolean foundPlayer = false;
+//		int n = 0;
+//		for (String player : playerTurnQueue) {
+//			if(foundPlayer) {
+//				result.put(player, n);
+//				n++;
+//			} else {
+//				if(userName.equals(player)) {
+//					foundPlayer = true;
+//					result.put(player, n);
+//					n++;
+//				} else {
+//					frontPlayers.add(player);
+//				}
+//			}
+//		}
+//		for (String player : frontPlayers) {
+//			result.put(player, n);
+//			n++;
+//		}
+//		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ matchId +"/player", new PlayerResponse(userName, result));
+//	}
 	@MessageMapping("/game.start")
 	public void startGame(SimpMessageHeaderAccessor sha) {
 		String sessionId = sha.getUser().getName();
@@ -243,8 +244,7 @@ public class BangController {
 		for (String plName : match.getUserMap().keySet()) {
 			String plSessionId = match.getUserMap().get(plName);
 			// create Character
-			Character character = new Character(n + 1, plName);
-			match.getCharacterMap().put(plName, character);
+			Character character = new Character(plName);
 			match.getCharacterMap().put(plName, character);
 			//
 			Role role = roles.get(n);

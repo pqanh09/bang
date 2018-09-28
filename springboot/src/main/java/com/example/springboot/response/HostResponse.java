@@ -1,15 +1,24 @@
 package com.example.springboot.response;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.example.springboot.model.MatchVO;
+import com.example.springboot.model.CharacterVO;
 
 public class HostResponse extends UserResponse{
 	private String matchId;
 	private boolean host = false;
+	private Map<Integer, CharacterVO> mapCharacter = new HashMap<>();
 
 	
+	public Map<Integer, CharacterVO> getMapCharacter() {
+		return mapCharacter;
+	}
+
+	public void setMapCharacter(Map<Integer, CharacterVO> mapCharacter) {
+		this.mapCharacter = mapCharacter;
+	}
+
 	public boolean isHost() {
 		return host;
 	}
@@ -26,13 +35,14 @@ public class HostResponse extends UserResponse{
 		this.matchId = matchId;
 	}
 
-	public HostResponse(ResponseType responseType, String userName, String matchId, boolean host) {
+	public HostResponse(ResponseType responseType, String userName, String matchId, Map<Integer, CharacterVO> mapCharacter) {
 		super(responseType, userName);
 		this.matchId = matchId;
-		this.host = host;
+		this.mapCharacter = mapCharacter;
 	}
-	public HostResponse(ResponseType responseType, String userName) {
+	public HostResponse(ResponseType responseType, String userName, boolean host) {
 		super(responseType, userName);
+		this.host = host;
 	}
 
 	public HostResponse() {

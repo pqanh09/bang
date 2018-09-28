@@ -14,9 +14,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import com.example.springboot.model.card.Card;
 import com.example.springboot.model.hero.Hero;
 import com.example.springboot.model.role.Role;
-import com.example.springboot.model.role.RoleType;
-import com.example.springboot.response.ResponseType;
-import com.example.springboot.response.UserResponse;
 
 public class Match {
 	public enum MatchStatus {
@@ -47,6 +44,7 @@ public class Match {
 		this.playerTurnQueue.add(userName);
 		this.matchId = matchId;
 		this.status = MatchStatus.waiting;
+		this.characterMap.put(userName, new Character(userName));
 	}
 	public boolean addPlayer(String userName, String sessionId, SimpMessageSendingOperations messagingTemplate) {
 		if(userMap.containsKey(userName)) {
@@ -54,6 +52,7 @@ public class Match {
 		} else {
 			this.userMap.put(userName, sessionId);
 			this.playerTurnQueue.add(userName);
+			this.characterMap.put(userName, new Character(userName));
 			return true;
 		}
 	}

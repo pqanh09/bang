@@ -525,6 +525,14 @@ myapp.controller('FirstCtrl',
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/action',onActionTopicReceived);
 				stompClient.subscribe('/topic/'+ $scope.myInfo.matchId +'/chatting',onChattingTopicReceived);
 				
+				//
+				
+				$scope.characters.length = 0;
+				angular.forEach(response.mapCharacter, function(value, key) {
+					$scope.characters.push(value);
+				});
+				
+				
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));

@@ -1,6 +1,14 @@
+body {
+/*    background-image: url("/data/image/others/Background.jpg"); */
+/*    background-color: papayawhip; */
+}
+
+
 [ng-cloak] {
 	display: none !important;
 }
+
+
 
 .main-player {
 	width: 380px;

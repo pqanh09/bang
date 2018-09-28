@@ -17,6 +17,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import com.example.springboot.model.Character;
+import com.example.springboot.model.CharacterVO;
 import com.example.springboot.model.Match;
 import com.example.springboot.model.TurnNode;
 import com.example.springboot.model.card.Card;
@@ -29,6 +30,9 @@ import com.example.springboot.model.hero.SuzyLafayette;
 import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.response.CharacterResponse;
+import com.example.springboot.response.CheckCardResponse;
+import com.example.springboot.response.HostResponse;
+import com.example.springboot.response.PlayerResponse;
 import com.example.springboot.response.ResponseType;
 import com.example.springboot.response.TurnResponse;
 import com.example.springboot.response.UserResponse;
@@ -435,14 +439,16 @@ public class CommonService {
 		}
 		userCanBeAffectList.removeAll(apacheKids);
 	}
-	public List<String> checkRangeToUseCard(Match match, Character rootPlayer,  int rangeCard) {
+	public List<String> checkRangeToUseCard(Match match, Character rootPlayer,  int rangeCard, CheckCardResponse checkCardResponse) {
 		List<String> userCanBeAffectList = new ArrayList<>();
 		Character targetPlayer;
+		int numberPlayer = 0;
 		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 			targetPlayer = entry.getValue();
 			if(targetPlayer.getUserName().equals(rootPlayer.getUserName()) || !match.getPlayerTurnQueue().contains(entry.getKey())) {
 				continue;
 			}
+			numberPlayer ++;
 			int range = (match.getRangeMap().get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) != null) ? match.getRangeMap().get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) : match.getRangeMap().get(Pair.of(targetPlayer.getUserName(), rootPlayer.getUserName()));
 			if(!(rootPlayer.getHero() instanceof BelleStar)) {
 				range += targetPlayer.getOthersView();
@@ -451,6 +457,85 @@ public class CommonService {
 				userCanBeAffectList.add(targetPlayer.getUserName());
 			}
 		}
+		if(numberPlayer == 1  && userCanBeAffectList.isEmpty()) {
+			checkCardResponse.setCanUse(false);
+			checkCardResponse.setMustChooseTarget(false);
+			checkCardResponse.setMessage("Range not enough.");
+		}
 		return userCanBeAffectList;
+	}
+	
+private void sendListPlayers(String userName, String sessionId, String matchId, List<String> playerTurnQueue) {
+		
+		List<String> frontPlayers = new ArrayList<>();
+		
+		Map<String, Integer> result = new HashMap<>();
+		boolean foundPlayer = false;
+		int n = 0;
+		for (String player : playerTurnQueue) {
+			if(foundPlayer) {
+				result.put(player, n);
+				n++;
+			} else {
+				if(userName.equals(player)) {
+					foundPlayer = true;
+					result.put(player, n);
+					n++;
+				} else {
+					frontPlayers.add(player);
+				}
+			}
+		}
+		for (String player : frontPlayers) {
+			result.put(player, n);
+			n++;
+		}
+		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ matchId +"/player", new PlayerResponse(userName, result));
+	}
+	public void sendCharacterMapForEachPlayer(Match match, String joinPlayer, boolean host) {
+		String sessionId, userName;
+		Character character;
+		Map<Integer, CharacterVO> result = new HashMap<>();
+		List<String> frontPlayers = new ArrayList<>();
+		boolean foundPlayer = false;
+		int n = 0;
+		for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
+			userName = entry.getKey();
+			sessionId = match.getUserMap().get(userName);
+			character = entry.getValue();
+			result.clear();
+			frontPlayers.clear();
+			foundPlayer = false;
+			n = 0;
+			
+			for (String player : match.getPlayerTurnQueue()) {
+				if(foundPlayer) {
+					n++;
+					result.put(n, match.getCharacterMap().get(player).getVO());
+					
+				} else {
+					if(userName.equals(player)) {
+						foundPlayer = true;
+						n++;
+						result.put(n, character.getVO());
+					} else {
+						frontPlayers.add(player);
+					}
+				}
+			}
+			for (String player : frontPlayers) {
+				n++;
+				result.put(n, match.getCharacterMap().get(player).getVO());
+			}
+			
+			HostResponse joinResponse = new HostResponse(ResponseType.Join, userName, match.getMatchId(), result);
+			
+			if(joinPlayer.equals(userName)) {
+				joinResponse.setHost(host);
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/game", joinResponse);
+			} else {
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+ match.getMatchId() +"/player", joinResponse);
+			}
+		}
 	}
 }

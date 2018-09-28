@@ -64,7 +64,8 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Card card = BangUtils.findCardInHand(character, request.getId());
 		if (card == null) {
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-					new CheckCardResponse(false, ""));
+					new CheckCardResponse(false, "Not found card " + request.getId()));
+			logger.error("Not found card {}", request.getId());
 			return;
 		}
 		if (ResponseType.Bang.equals(turnNode.getAction()) || ResponseType.Gatling.equals(turnNode.getAction())) {
@@ -80,13 +81,13 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				return;
 			}
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-					new CheckCardResponse(false, ""));
+					new CheckCardResponse(false, "Not yet handled card " + request.getId()));
 			return;
 		} else if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Indians.equals(turnNode.getAction())) {
 			if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
 				if(ResponseType.Duello.equals(turnNode.getAction()) && Suit.diamonds.equals(card.getSuit()) && turnNode.getCharacter().getHero() instanceof ApacheKid) {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(false, ""));
+							new CheckCardResponse(false, "Can't use diamonds card with hero ApachaKid."));
 				} else {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 							new CheckCardResponse(true, ""));
@@ -94,11 +95,11 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				
 			} else {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false, ""));
+						new CheckCardResponse(false, "Can't use this card"));
 			}
 			return;
 		} else {
-			System.out.println("CheckCardActionCmd  processUseCardNotInTurn ERROR");
+			logger.error("CheckCardActionCmd  processUseCardNotInTurn ERROR");
 		}
 
 	}
@@ -112,7 +113,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 		Card card = BangUtils.findCardInHand(character, request.getId());
 		if (card == null) {
 			simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-					new CheckCardResponse(false, ""));
+					new CheckCardResponse(false, "Not found card " + request.getId()));
 			return;
 		}
 		
@@ -123,23 +124,27 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 						new CheckCardResponse(true, ""));
 			} else {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false, ""));
+						new CheckCardResponse(false, "Can't use this card"));
 			}
 			return;
 		}
 		// bang card
 		if (CardType.physical.equals(card.getCardType())) {
 			boolean canUseCard = false;
+			String message = "";
 			if (card instanceof BangCard) {
 				// check alreadyUseBangCard in turnNode
 				canUseCard = !match.getCurrentTurn().isAlreadyUseBangCard();
 				// check hero skill WillyTheKid
 				if (!canUseCard) {
+					message = "Only use 1 bang card in your turn";
 					canUseCard = character.getHero().useSkill(card);
 				}
 				// check weapon VolcanicCard
 				if (!canUseCard) {
 					canUseCard = BangUtils.hasCard(character, VolcanicCard.class);
+				} else {
+					message = "";
 				}
 			}
 			// check if it is Missed Card
@@ -150,18 +155,29 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			// return false
 			if (!canUseCard) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(false, "aaaaaaaaa"));
+						new CheckCardResponse(false, message));
 				return;
 			}
 			// check range to use
 			else {
-				List<String> userCanBeAffectList = commonService.checkRangeToUseCard(match, character,character.getGun());
-				//List<String> apacheKids = new ArrayList<>();
+				CheckCardResponse checkCardResponse = new CheckCardResponse(false, new ArrayList<String>(),
+						false, "");
+				List<String> userCanBeAffectList = commonService.checkRangeToUseCard(match, character,character.getGun(), checkCardResponse);
+				if(userCanBeAffectList.isEmpty()) {
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard", checkCardResponse);
+					return;
+				}
 				// skill hero ApacheKid
+				int numberPlayer = userCanBeAffectList.size();
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
-				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty(), ""));
+				if(numberPlayer == 1  && userCanBeAffectList.isEmpty()) {
+					checkCardResponse.setMessage("Can't use diamonds card with hero ApachaKid.");
+				}
+				checkCardResponse.setCanUse(!userCanBeAffectList.isEmpty());
+				checkCardResponse.setMustChooseTarget(!userCanBeAffectList.isEmpty());
+				checkCardResponse.setUserCanBeAffectList(userCanBeAffectList);
+				
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard", checkCardResponse);
 				return;
 			}
 		}
@@ -174,13 +190,19 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 							new CheckCardResponse(true, ""));
 				} else {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-							new CheckCardResponse(false, ""));
+							new CheckCardResponse(false, "Can't use Beer card when there are only 2 players"));
 				}
 				return;
 			}
 			// PanicCard
 			else if (card instanceof PanicCard) {
-				List<String> temp = commonService.checkRangeToUseCard(match, character, 1);
+				CheckCardResponse checkCardResponse = new CheckCardResponse(false, new ArrayList<String>(),
+						false, "");
+				List<String> temp = commonService.checkRangeToUseCard(match, character, 1, checkCardResponse);
+				if(temp.isEmpty()) {
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard", checkCardResponse);
+					return;
+				}
 				// check number card of user
 				List<String> userCanBeAffectList = new ArrayList<>();
 				for (String user : temp) {
@@ -189,11 +211,23 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 						userCanBeAffectList.add(user);
 					}
 				}
+				if(temp.size() == 1 && userCanBeAffectList.isEmpty()) {
+					checkCardResponse.setMessage("Not have any card to select.");
+					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard", checkCardResponse);
+					return;
+				}
 				// skill hero ApacheKid
+				int numberPlayer = userCanBeAffectList.size();
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
-				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty(), ""));
+				if(numberPlayer == 1  && userCanBeAffectList.isEmpty()) {
+					checkCardResponse.setMessage("Can't use diamonds card with hero ApachaKid.");
+				}
+				
+				checkCardResponse.setCanUse(!userCanBeAffectList.isEmpty());
+				checkCardResponse.setMustChooseTarget(!userCanBeAffectList.isEmpty());
+				checkCardResponse.setUserCanBeAffectList(userCanBeAffectList);
+				
+				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard", checkCardResponse);
 				return;
 			}
 			// DuelloCard
@@ -207,6 +241,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 			} 
 			//SaloonCard
 			else if (card instanceof SaloonCard) {
+				String message = "";
 				boolean findPlayerLoseLifePoint = false;
 				for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
 					if(entry.getValue().getLifePoint() < entry.getValue().getCapacityLPoint() && match.getPlayerTurnQueue().contains(entry.getKey())) {
@@ -214,13 +249,17 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 						break;
 					}
 				}
+				if(!findPlayerLoseLifePoint) {
+					message = "There are no players lost life point.";
+				}
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(findPlayerLoseLifePoint, ""));
+						new CheckCardResponse(findPlayerLoseLifePoint, message));
 				return;
 			}
 			//CatPalouCard
 			else if (card instanceof CatPalouCard) {
 				// check number card of user
+				
 				List<String> userCanBeAffectList = new ArrayList<>();
 				Character targetCharater;
 				for (Entry<String, Character> entry : match.getCharacterMap().entrySet()) {
@@ -235,11 +274,17 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 					}
 					userCanBeAffectList.add(entry.getKey());
 				}
+				String message = "";
 				// skill hero ApacheKid
+				int numberPlayer = userCanBeAffectList.size();
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
+				if(numberPlayer == 1  && userCanBeAffectList.isEmpty()) {
+					message = "Can't use diamonds card with hero ApachaKid.";
+				}
+				
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty(), ""));
+								!userCanBeAffectList.isEmpty(), message));
 				return;
 			} 
 			// JailCard
@@ -257,11 +302,16 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 					}
 					userCanBeAffectList.add(entry.getKey());
 				}
+				String message = "";
 				// skill hero ApacheKid
+				int numberPlayer = userCanBeAffectList.size();
 				commonService.useSkillOfApacheKid(match, userCanBeAffectList, card, false);
+				if(numberPlayer == 1  && userCanBeAffectList.isEmpty()) {
+					message = "Can't use diamonds card with hero ApachaKid.";
+				}
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(!userCanBeAffectList.isEmpty(), userCanBeAffectList,
-								!userCanBeAffectList.isEmpty(), ""));
+								!userCanBeAffectList.isEmpty(), message));
 				return;
 			}
 			// Dynamite
@@ -277,13 +327,17 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 						}
 					}
 				}
+				String message = "";
+				if(alreadyDynamiteCard) {
+					message = "There is only 1 Dynamite at the same time.";
+				}
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-						new CheckCardResponse(!alreadyDynamiteCard, ""));
+						new CheckCardResponse(!alreadyDynamiteCard, message));
 				return;
 			}
 		}
 		simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
-				new CheckCardResponse(true, "Can can not use"));
+				new CheckCardResponse(true, ""));
 	}
 
 }
