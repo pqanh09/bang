@@ -24,11 +24,9 @@ ok	Auto	st	"moi khi mat mau, rut tren tay nguoi lam mat mau"	Hero-ElGringo
 
 
 /////
-ok	uc	ex	chon mat 1 mau de rut 2 la	Hero-ChuckWengam
-111	gc	st	la dau tien co the rut tu chong bai bo	Hero-PedroRamirez
+
 /////
-111	gc	st	La dau tien co the rut tren tay nguoi choi	Hero-JesseJones
-ok	gc	ex	rut 1 la trc mat nguoi choi thay vi rut bai`	Hero-PatBrennan
+
 
 ok	bc	st	Bo 2 la hoi 1 mau	Hero-SidKetchum                                                                Remove Card 2   dialogSelectCardPC
 ok	bc	ex	1 lan trong luot co the su dung 1 la nhu general store	Hero-UncleWill                             Remove Card 1   dialogSelectCardPC
