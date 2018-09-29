@@ -181,17 +181,17 @@ public class CardService {
 //		cards.add(new BarrelCard(Suit.spades, 27, "13B-Barrel.jpg"));
 //		cards.add(new BarrelCard(Suit.spades, 28, "13B-Barrel.jpg"));
 //		cards.add(new BarrelCard(Suit.spades, 29, "13B-Barrel.jpg"));
-		
-		cards.add(new BangCard(Suit.diamonds, 20, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 21, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 22, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 23, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 24, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 25, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 26, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 27, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 28, "9R-Bang.jpg"));
-		cards.add(new BangCard(Suit.diamonds, 28, "9R-Bang.jpg"));
+//		
+//		cards.add(new BangCard(Suit.diamonds, 20, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 21, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 22, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 23, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 24, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 25, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 26, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 27, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 28, "9R-Bang.jpg"));
+//		cards.add(new BangCard(Suit.diamonds, 28, "9R-Bang.jpg"));
 //		cards.add(new MissedCard(Suit.clubs, 20, "12Ch-Missed.jpg"));
 //		cards.add(new MissedCard(Suit.clubs, 21, "12Ch-Missed.jpg"));
 //		cards.add(new MissedCard(Suit.clubs, 22, "12Ch-Missed.jpg"));

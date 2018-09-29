@@ -68,6 +68,8 @@ public class CommonService {
 			List<Card> cards = new ArrayList<>();
 			cards.addAll(deadCharacter.getCardsInFront());
 			cards.addAll(deadCharacter.getCardsInHand());
+			deadCharacter.getCardsInFront().clear();
+			deadCharacter.getCardsInHand().clear();
 			deadCharacter.setNumCardsInHand(0);
 			if(cards.isEmpty()) {
 				return false;
