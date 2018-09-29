@@ -26,6 +26,7 @@ import com.example.springboot.model.hero.ApacheKid;
 import com.example.springboot.model.hero.BelleStar;
 import com.example.springboot.model.hero.GregDigger;
 import com.example.springboot.model.hero.HerbHunter;
+import com.example.springboot.model.hero.PaulRegret;
 import com.example.springboot.model.hero.SuzyLafayette;
 import com.example.springboot.model.hero.VultureSam;
 import com.example.springboot.model.role.RoleType;
@@ -201,10 +202,6 @@ public class CommonService {
 //		notifyCharacter(character,userMap.get(userName));
 		
 		if(checkEndGame(match, character)) {
-//			if(!RoleType.SCERIFFO.equals(character.getRole().getRoleType())) {
-//				character.setRoleImage(character.getRole().getImage());
-//				notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
-//			}
 			return;
 		} else {
 			character.setRoleImage(character.getRole().getImage());
@@ -463,6 +460,10 @@ public class CommonService {
 			int range = (match.getRangeMap().get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) != null) ? match.getRangeMap().get(Pair.of(rootPlayer.getUserName(), targetPlayer.getUserName())) : match.getRangeMap().get(Pair.of(targetPlayer.getUserName(), rootPlayer.getUserName()));
 			if(!(rootPlayer.getHero() instanceof BelleStar)) {
 				range += targetPlayer.getOthersView();
+			} else {
+				if(targetPlayer.getHero() instanceof PaulRegret) {
+					range = range + 1;
+				}
 			}
 			if((rootPlayer.getViewOthers() + rangeCard) >= range) {
 				userCanBeAffectList.add(targetPlayer.getUserName());

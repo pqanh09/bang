@@ -1,5 +1,5 @@
-	Auto	ex	la ro vo tac dung	Hero-ApacheKid
-	Auto	st	Mat mau rut 1 la	Hero-BartCassidy
+
+
 	Auto	st	la' 2 rut la co hoac ro thi rut them 1 la	Hero-BlackJack
 	Auto	st	het bai rut 1 la	Hero-SuzyLafayette
 	Auto	st	"bang nhu miss, miss nhu bang"	Hero-CalamityJanet
@@ -14,10 +14,9 @@ No	Auto	st	view orther +1	Hero-RoseDoolan
 	Auto	ex	Su dung beer hoi 2 mau	Hero-TequilaJoe
 	Auto	ex	Giu 10 la tren tay	Hero-SeanMallory
 	Auto	ex	moi khi su dung 1 la ko phai  trong luot dc rut 1 la	Hero-MollyStark
-ok	Auto	ex	Trong luot nhung la trc mat cua nguoi khac ko tac dung	Hero-BelleStar
-match.getCurrentTurn().getCharacter().getHero().useSkill(match, match.getCurrentTurn().getCharacter(), commonService, 0, null); 213 TurnNode
+
 ok	Auto	ex	Su dung bat ky la nao xem nhu miss	Hero-ElenaFuente
-ok	Auto	ex	"rut 1 la, cong them 1 la cho moi mau' bi mat"	Hero-BillNoface
+
 ok	Auto	st	Thung` (Must Bang)	Hero-Jourdonnais
 ok	Auto	st	Phai su dung 2 missed	Hero-SlabTheKiller
 ok	Auto	st	"moi khi mat mau, rut tren tay nguoi lam mat mau"	Hero-ElGringo	
