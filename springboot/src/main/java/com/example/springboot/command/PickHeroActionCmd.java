@@ -50,8 +50,13 @@ public class PickHeroActionCmd extends AbsActionCmd implements ActionCmd {
 		Character character = match.getCharacterMap().get(userName);
 		//set hero in character
 		character.attachHero(hero, true);
-		if(hero instanceof PaulRegret  || hero instanceof RoseDoolan) {
-			hero.useSkill(match, character, commonService, 1, null);
+		if(hero instanceof RoseDoolan) {
+			character.setViewOthers(1);
+//			hero.useSkill(match, character, commonService, 1, null);
+		}
+		if(hero instanceof PaulRegret) {
+			character.setOthersView(1);
+//			hero.useSkill(match, character, commonService, 1, null);
 		}
 		if(hero instanceof VeraCuster) {
 			match.setVeraCuster(hero);

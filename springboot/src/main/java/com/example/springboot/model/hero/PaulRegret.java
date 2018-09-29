@@ -40,10 +40,14 @@ public class PaulRegret extends Hero {
 	@Override
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
-		String userName = character.getUserName();
-//		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
-		character.setOthersView(1);
-		commonService.notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
+//		String userName = character.getUserName();
+////		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill", new HeroSkillResponse(ResponseType.Skill, userName, character.getHero(), null, null));
+//		character.setOthersView(1);
+//		commonService.notifyCharacter(match.getMatchId(), character, match.getUserMap().get(userName));
+//		return true;
+		String serverMessage = "- Using " + character.getHero().getName() + "'skill.";
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
+				new HeroSkillResponse(character.getUserName(), "", "", serverMessage, character.getHero()));
 		return true;
 	}
 

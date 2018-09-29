@@ -5,6 +5,7 @@ myapp.controller('FirstCtrl',
 		var socket = null;
 		var stompClient = null;
 		var dialogInputUserName = angular.element('#dialogInputUserName');
+//		dialogInputUserName.modal({backdrop:'static',keyboard:false});
 		var userDialog = angular.element('#userDialog');
 		var dialogSelectHero = angular.element('#dialogSelectHero');
 		var dialogFullImage = angular.element('#dialogFullImage');
@@ -100,6 +101,16 @@ myapp.controller('FirstCtrl',
 				 $scope.chattingMsg = '';
 			 }
 		};
+		$scope.testFunc = function(cardId) {
+			$timeout(function() {
+				userDialog.modal({backdrop:'static',keyboard:false});
+			}, 200);
+		}
+		$scope.test1Func = function(cardId) {
+			$timeout(function() {
+				dialogInputUserName.modal({backdrop:'static',keyboard:false});
+			}, 200);
+		}
 		$scope.useBarrelCardFunc = function(cardId) {
 			stompClient.send('/app/game.execute', {}, JSON
 					.stringify({
@@ -548,7 +559,7 @@ myapp.controller('FirstCtrl',
 				console.log(JSON.stringify(response));
 				$timeout(
 					function() {
-						dialogInputUserName.modal({backdrop:'static',keyboard:true,show:true});
+						dialogInputUserName.modal({backdrop:'static',keyboard:false});
 					}, 500);
 			}
 			$scope.$apply();
@@ -587,7 +598,7 @@ myapp.controller('FirstCtrl',
 					$scope.dialogTitle = 'Your role is '
 							+ $scope.myInfo.role.name
 							+ '. Please select hero...';
-					dialogSelectHero.modal({backdrop:'static',keyboard:true,show:true});
+					dialogSelectHero.modal({backdrop:'static',keyboard:false});
 				}, 200);
 			} else {
 				console.log('ERROR');
@@ -682,7 +693,7 @@ myapp.controller('FirstCtrl',
 									function() {
 										$scope.userCanBeAffectList = response.userCanBeAffectList;
 										$scope.selectedUser = $scope.userCanBeAffectList[0];
-										userDialog.modal({backdrop:'static',keyboard:true,show:true});
+										userDialog.modal({backdrop:'static',keyboard:false});
 									}, 200);
 						} else {
 							console.log('ERROR');
@@ -725,7 +736,7 @@ myapp.controller('FirstCtrl',
 				$scope.cardInfo.numberCard = response.numberCard;
 				$scope.cardInfo.titleDialog = 'You must remove ' + response.numberCard + ' card(s) before ending turn.';
 				$timeout(function() {
-					cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+					cardDialog.modal({backdrop:'static',keyboard:false});
 				}, 500);
 				/// count down time
 				//callCountDownFunc(response);
@@ -933,7 +944,7 @@ myapp.controller('FirstCtrl',
 					$scope.cardInfo.numberCard = 1;
 					$scope.cardInfo.titleDialog = 'Get 1 card from ' + response.targetUser;
 					$timeout(function() {
-						cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+						cardDialog.modal({backdrop:'static',keyboard:false});
 					}, 500);
 				}
 				/// count down time
@@ -952,7 +963,7 @@ myapp.controller('FirstCtrl',
 					$scope.cardInfo.numberCard = 1;
 					$scope.cardInfo.titleDialog = 'Remove 1 card from ' + response.targetUser;
 					$timeout(function() {
-						cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+						cardDialog.modal({backdrop:'static',keyboard:false});
 					}, 500);
 				}
 				/// count down time
@@ -971,7 +982,7 @@ myapp.controller('FirstCtrl',
 					$scope.cardInfo.numberCard = 1;
 					$scope.cardInfo.titleDialog = 'General Store! Get 1 card. ';
 					$timeout(function() {
-						cardDialog.modal({backdrop:'static',keyboard:true,show:true});
+						cardDialog.modal({backdrop:'static',keyboard:false});
 					}, 500);
 				}
 				/// count down time
@@ -996,7 +1007,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.titleDialog = 'Select player to get card';
 						$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 						$timeout(function() {
-							userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							userSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					} else if(response.hero.name === 'PatBrennan'){
 						$scope.skillInfo.step = response.step;
@@ -1007,7 +1018,7 @@ myapp.controller('FirstCtrl',
 							$scope.skillInfo.titleDialog = 'Select player to get card';
 							$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 							$timeout(function() {
-								userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+								userSkillDialog.modal({backdrop:'static',keyboard:false});
 							}, 500);
 						}
 						if($scope.skillInfo.step === 3){
@@ -1018,7 +1029,7 @@ myapp.controller('FirstCtrl',
 							$scope.skillInfo.selectedCards.length = 0;
 							$scope.skillInfo.titleDialog = 'Select card instead of getting card in your turn.';
 							$timeout(function() {
-								cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+								cardSkillDialog.modal({backdrop:'static',keyboard:false});
 							}, 500);
 						}
 						
@@ -1031,7 +1042,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Choose 2 in 3. Remove 1 card..';
 						$timeout(function() {
-							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					} else if(response.hero.name === 'LuckyDuke'){
 						$scope.skillInfo.step = response.step;
@@ -1042,7 +1053,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Select card which is use to draw';
 						$timeout(function() {
-							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					} else if(response.hero.name === 'SidKetchum'){
 						$scope.skillInfo.step = response.step;
@@ -1057,7 +1068,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.numberCard = 2;
 						$scope.skillInfo.titleDialog = 'Remove 2 card to get 1 life point';
 						$timeout(function() {
-							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					} else if(response.hero.name === 'UncleWill'){
 						$scope.skillInfo.step = response.step;
@@ -1068,7 +1079,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Remove 1 card to use General Store';
 						$timeout(function() {
-							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					} else if(response.hero.name === 'JoseDelgado'){
 						$scope.skillInfo.step = response.step;
@@ -1079,7 +1090,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.selectedCards.length = 0;
 						$scope.skillInfo.titleDialog = 'Remove 1 blue card to get 2 new cards';
 						$timeout(function() {
-							cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							cardSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					}  else if(response.hero.name === 'DocHolyday'){
 						$scope.skillInfo.step = response.step;
@@ -1096,7 +1107,7 @@ myapp.controller('FirstCtrl',
 							$scope.skillInfo.numberCard = 2;
 							$scope.skillInfo.titleDialog = 'Remove 2 card to bang a persopm';
 							$timeout(function() {
-								cardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+								cardSkillDialog.modal({backdrop:'static',keyboard:false});
 							}, 500);
 						} else if($scope.skillInfo.step === 3 && response.players){
 							$scope.skillInfo.enableOkBtn = true;
@@ -1105,7 +1116,7 @@ myapp.controller('FirstCtrl',
 							$scope.skillInfo.titleDialog = 'Select player to bang...';
 							$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 							$timeout(function() {
-								userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+								userSkillDialog.modal({backdrop:'static',keyboard:false});
 							}, 500);
 						}
 						
@@ -1117,7 +1128,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.titleDialog = 'Select player to copy skill...';
 						$scope.skillInfo.selectedPlayer = $scope.skillInfo.players[0];
 						$timeout(function() {
-							userSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							userSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					} else if(response.hero.name === 'ClausTheSaint'){
 						$scope.skillInfo.step = response.step;
@@ -1130,7 +1141,7 @@ myapp.controller('FirstCtrl',
 						$scope.skillInfo.enableCancelBtn = false;
 						$scope.skillInfo.titleDialog = 'Keep 2 for yourself, give 1 to each player.';
 						$timeout(function() {
-							userCardSkillDialog.modal({backdrop:'static',keyboard:true,show:true});
+							userCardSkillDialog.modal({backdrop:'static',keyboard:false});
 						}, 500);
 					} else {
 						console.log('Unknown hero');
@@ -1277,5 +1288,5 @@ myapp.controller('FirstCtrl',
 			console.log(error);
 		}
 		
-		dialogInputUserName.modal({backdrop:'static',keyboard:true,show:true});
+		dialogInputUserName.modal({backdrop:'static',keyboard:false});
 	});

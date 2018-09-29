@@ -467,6 +467,8 @@ public class CommonService {
 			}
 			if((rootPlayer.getViewOthers() + rangeCard) >= range) {
 				userCanBeAffectList.add(targetPlayer.getUserName());
+			} else {
+				checkCardResponse.setMessage("Range not enough.");
 			}
 		}
 		if(numberPlayer == 1  && userCanBeAffectList.isEmpty()) {

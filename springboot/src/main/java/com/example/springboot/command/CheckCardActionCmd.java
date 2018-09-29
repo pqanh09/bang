@@ -166,6 +166,8 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				if(userCanBeAffectList.isEmpty()) {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard", checkCardResponse);
 					return;
+				} else {
+					checkCardResponse.setMessage("");
 				}
 				// skill hero ApacheKid
 				int numberPlayer = userCanBeAffectList.size();
@@ -207,6 +209,8 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 				if(temp.isEmpty()) {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard", checkCardResponse);
 					return;
+				} else {
+					checkCardResponse.setMessage("");
 				}
 				// check number card of user
 				List<String> userCanBeAffectList = new ArrayList<>();

@@ -39,6 +39,8 @@ import com.example.springboot.model.hero.ElGringo;
 import com.example.springboot.model.hero.ElenaFuente;
 import com.example.springboot.model.hero.JohnnyKisch;
 import com.example.springboot.model.hero.MollyStark;
+import com.example.springboot.model.hero.PaulRegret;
+import com.example.springboot.model.hero.RoseDoolan;
 import com.example.springboot.model.hero.SlabTheKiller;
 import com.example.springboot.model.hero.TequilaJoe;
 import com.example.springboot.request.Request;
@@ -317,6 +319,13 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 				}
 				turnNode.setAction(ResponseType.Bang);
 				checkBelleStarSkill(character, turnNode, match, Arrays.asList(targetUser));
+				if(character.getHero() instanceof RoseDoolan) {
+					character.getHero().useSkill(match, character, commonService, 0, null);
+				}
+				Character targetCharacter = match.getCharacterMap().get(targetUser);
+				if(targetCharacter.getHero() instanceof PaulRegret) {
+					targetCharacter.getHero().useSkill(match, targetCharacter, commonService, 0, null);
+				}
 				turnNode.setAlreadyUseBangCard(true);
 				turnNode.getNextPlayer().clear();
 				turnNode.getNextPlayer().add(targetUser);
@@ -421,6 +430,13 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					turnNode.setAction(turnAction);
 					if(card instanceof PanicCard) {
 						checkBelleStarSkill(character, turnNode, match, Arrays.asList(targetUser));
+						if(character.getHero() instanceof RoseDoolan) {
+							character.getHero().useSkill(match, character, commonService, 0, null);
+						}
+						Character targetCharacter = match.getCharacterMap().get(targetUser);
+						if(targetCharacter.getHero() instanceof PaulRegret) {
+							targetCharacter.getHero().useSkill(match, targetCharacter, commonService, 0, null);
+						}
 					}
 					turnNode.getNextPlayer().clear();
 					turnNode.getNextPlayer().add(targetUser);
