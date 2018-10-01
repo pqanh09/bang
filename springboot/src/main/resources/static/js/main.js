@@ -622,7 +622,7 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'CountDownStart') {
 				$scope.actionStr = 'Using skill...';
-				//callCountDownFunc(response);
+				callCountDownFunc(response);
 				$scope.$apply();
 			} 
 			else if (response.responseType === 'CountDownEnd') {
@@ -739,7 +739,7 @@ myapp.controller('FirstCtrl',
 					cardDialog.modal({backdrop:'static',keyboard:false});
 				}, 500);
 				/// count down time
-				//callCountDownFunc(response);
+				callCountDownFunc(response);
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
@@ -803,12 +803,12 @@ myapp.controller('FirstCtrl',
 						+ ' is started! ');
 
 				$scope.characterTurn = response.userName;
-				dialogFullImage.modal('hide');
-				userDialog.modal('hide');
-				cardDialog.modal('hide');
-				userSkillDialog.modal('hide');
-				cardSkillDialog.modal('hide');
-				userCardSkillDialog.modal('hide');
+				dialogFullImage.modal({backdrop:'static',keyboard:false, show:false});
+				userDialog.modal({backdrop:'static',keyboard:false, show:false});
+				cardDialog.modal({backdrop:'static',keyboard:false, show:false});
+				userSkillDialog.modal({backdrop:'static',keyboard:false, show:false});
+				cardSkillDialog.modal({backdrop:'static',keyboard:false, show:false});
+				userCardSkillDialog.modal({backdrop:'static',keyboard:false, show:false});
 				
 				$scope.$apply();
 			} else if (response.responseType === 'EndTurn') {
@@ -842,7 +842,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerDrawingCard = '';
 				$scope.actionStr = 'Getting card...';
 				/// count down time
-  				//callCountDownFunc(response);
+  				callCountDownFunc(response);
 				///
 				$scope.$apply();
 			} else if (response.responseType === 'UseCard') {
@@ -858,7 +858,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerDrawingCard = '';
 				$scope.actionStr = 'Using card...';
 				/// count down time
-  				//callCountDownFunc(response);
+  				callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardJail') {
@@ -870,7 +870,7 @@ myapp.controller('FirstCtrl',
 				$scope.actionStr = 'Drawing Jail...';
 				
 				/// count down time
-  				//callCountDownFunc(response);
+  				callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else if (response.responseType === 'DrawCardDynamite') {
@@ -880,7 +880,7 @@ myapp.controller('FirstCtrl',
 				$scope.playerGettingCard = '';
 				$scope.actionStr = 'Drawing Dynamite...';
 				/// count down time
-  				//callCountDownFunc(response);
+  				callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else if (response.responseType === 'RemoveCardEndTurn') {
@@ -891,7 +891,7 @@ myapp.controller('FirstCtrl',
 				$scope.actionStr = 'Ending turn...';
 				
 				/// count down time
-  				//callCountDownFunc(response);
+  				callCountDownFunc(response);
 				
 				$scope.$apply();
 			} else {
@@ -928,7 +928,7 @@ myapp.controller('FirstCtrl',
 					$scope.actionStr = 'Duelling...';
 				}
 				/// count down time
-				//callCountDownFunc(response);
+				callCountDownFunc(response);
 				$scope.$apply();
 			} else if (response.responseType === 'Panic') {
 				$scope.actionType = response.responseType;
@@ -948,7 +948,7 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				//callCountDownFunc(response);
+				callCountDownFunc(response);
 			} else if (response.responseType === 'CatPalou') {
 				$scope.playerUsingCard = response.userName;
 				$scope.actionStr = 'Selecting card...';
@@ -967,7 +967,7 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				//callCountDownFunc(response);
+				callCountDownFunc(response);
 			} else if (response.responseType === 'GeneralStore') {
 				$scope.playerUsingCard = response.userName;
 				$scope.actionStr = 'Getting card...';
@@ -986,7 +986,7 @@ myapp.controller('FirstCtrl',
 					}, 500);
 				}
 				/// count down time
-				//callCountDownFunc(response);
+				callCountDownFunc(response);
 			} else {
 				console.log('ERROR');
 				alert(JSON.stringify(response));
