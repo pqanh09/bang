@@ -1,7 +1,9 @@
 package com.example.springboot.command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,9 @@ public class BarrelActionCmd extends AbsActionCmd implements ActionCmd {
 			if(ResponseType.Bang.equals(turnNode.getAction()) 
 					&& turnNode.getCharacter().getHero() instanceof SlabTheKiller
 					&& !turnNode.getPlayerUsedMissed().contains(userName)) {
-				turnNode.getCharacter().getHero().useSkill(match, match.getCharacterMap().get(userName), commonService, 1, null);
+				Map<String, Object> others = new HashMap<>();
+				others.put("targetUser", userName);
+				turnNode.getCharacter().getHero().useSkill(match, turnNode.getCharacter(), commonService, 1, others);
 			} else {
 				turnNode.getNextPlayer().poll();
 			}

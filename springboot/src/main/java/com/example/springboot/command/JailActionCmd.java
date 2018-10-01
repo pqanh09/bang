@@ -58,6 +58,10 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 		commonService.addToOldCardList(card, match);
 		match.getCurrentTurn().setAlreadyCheckedJail(true);
 		
+		OldCardResponse oldCardResponse = new OldCardResponse();
+		oldCardResponse.getCards().add(card);
+		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/oldcard", oldCardResponse);
+		
 		List<Card> cards = new ArrayList<>();
 //		cards.add(card);
 		if(Suit.hearts.equals(card.getSuit())) {
@@ -69,9 +73,7 @@ public class JailActionCmd extends AbsActionCmd implements ActionCmd {
 			commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/usedCardNotInTurn", new UseCardNotInTurnResponse(userName, cards, null, null));
 			commonService.endTurn(userName, match);
 		}
-		OldCardResponse oldCardResponse = new OldCardResponse();
-		oldCardResponse.getCards().add(card);
-		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/oldcard", oldCardResponse);
+		
 	}
 
 }

@@ -163,6 +163,7 @@ public class TurnNode {
 		this.joseDelgado = 0;
 		
 		this.temp.clear();
+		
 	}
 
 	public TurnNode(CommonService commonService, String matchId) {
@@ -270,6 +271,9 @@ public class TurnNode {
 			// request player use cards
 			cardTemp.clear();
 			nextPlayer.clear();
+			if(!commonService.useSkillOfVeraCuster(match.getCurrentTurn().getCharacter(), match)) {
+				return;
+			}
 			OldCardResponse oldCardResponse = new OldCardResponse();
 			Card card = match.getOldCards().peekLast();
 			if(card != null) {

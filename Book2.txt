@@ -1,6 +1,4 @@
 
-ok	Auto	st	Thung` (Must Bang)	Hero-Jourdonnais
-ok	Auto	st	Phai su dung 2 missed	Hero-SlabTheKiller
 
 
 
@@ -9,10 +7,7 @@ ok	Auto	st	Phai su dung 2 missed	Hero-SlabTheKiller
 /////
 
 
-ok	bc	st	Bo 2 la hoi 1 mau	Hero-SidKetchum                                                                Remove Card 2   dialogSelectCardPC
-ok	bc	ex	1 lan trong luot co the su dung 1 la nhu general store	Hero-UncleWill                             Remove Card 1   dialogSelectCardPC
-ok    bc	ex	2 lan trong luot co the bo la xanh de rut them 2 la	Hero-JoseDelgado                               Remove Card 1   dialogSelectCardPC
-ok  	bc	ex	1 lan trong luot co the bo 2 la de ban 1 nguoi	Hero-DocHolyday                                    Remove Card 2   dialogSelectCardPC
+
 
 ok 	Auto	ex	Copy skill	Hero-VeraCuster                                                                    Select User     dialogSelectUser
 ok 	Auto	st	"rut 2 phan xet, chon 1 kq"	Hero-LuckyDuke                                                     Select Card 1   dialogSelectCardPC

@@ -35,6 +35,7 @@ import com.example.springboot.model.card.StageCoachCard;
 import com.example.springboot.model.card.WellsFargoCard;
 import com.example.springboot.model.hero.BartCassidy;
 import com.example.springboot.model.hero.BelleStar;
+import com.example.springboot.model.hero.CalamityJanet;
 import com.example.springboot.model.hero.ElGringo;
 import com.example.springboot.model.hero.ElenaFuente;
 import com.example.springboot.model.hero.JohnnyKisch;
@@ -131,13 +132,15 @@ public class UseCardActionCmd extends AbsActionCmd implements ActionCmd {
 					character.getHero().useSkill(match, character, commonService, 0, null);
 					commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 				} else {
-					if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
+					if (card instanceof MissedCard || (card instanceof BangCard && character.getHero() instanceof CalamityJanet)) {
 						if(card instanceof BangCard) {
 							character.getHero().useSkill(match, character, commonService, 0, null);
 						}
 						commonService.notifyCharacter(match.getMatchId(), character, sessionId);
 						if(ResponseType.Bang.equals(turnNode.getAction()) && turnNode.getCharacter().getHero() instanceof SlabTheKiller && !turnNode.getPlayerUsedMissed().contains(userName)) {
-							turnNode.getCharacter().getHero().useSkill(match, character, commonService, 1, null);
+							Map<String, Object> others = new HashMap<>();
+							others.put("targetUser", userName);
+							turnNode.getCharacter().getHero().useSkill(match, turnNode.getCharacter(), commonService, 1, others);
 							if (turnNode.getNextPlayer().peek() == null) {
 								// request player in turn continue using card
 								turnNode.requestPlayerUseCard();

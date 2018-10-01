@@ -998,7 +998,7 @@ myapp.controller('FirstCtrl',
 			var response = JSON.parse(payload.body);
 			if (response.responseType === 'Skill') {
 				$scope.actionType = response.responseType;
-				if(response.status && $scope.userName === response.userName && response.hero && $scope.myInfo.character.hero.name === response.hero.name){
+				if(response.status && $scope.userName === response.userName && response.hero){
 					if(response.hero.name === 'JesseJones'){
 						$scope.skillInfo.enableOkBtn = true;
 						$scope.skillInfo.enableCancelBtn = false;

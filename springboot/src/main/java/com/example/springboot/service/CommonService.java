@@ -332,18 +332,30 @@ public class CommonService {
 		Character firstCharacter = match.getCharacterMap().get(firstTurn);
 		match.setCurrentTurn(new TurnNode(this, match.getMatchId()));
 		match.getCurrentTurn().resetTurnNode(firstCharacter);
+		if(match.getVeraCuster() != null && firstCharacter.getUserName().equals(match.getVeraCusterPlayer())) {
+			match.setCopiedHero(false);
+//			match.getCurrentTurn().getCharacter().attachHero(match.getVeraCuster(), false);
+		} else {
+			match.setCopiedHero(true);
+		}
 		return useSkillOfVeraCuster(firstCharacter, match);
 		
 	}
-	private boolean useSkillOfVeraCuster(Character character, Match match) {
-		boolean canStart = true;
+	//return true if he copied hero
+	//return false to wait he copy hero's skill of other
+	public boolean useSkillOfVeraCuster(Character character, Match match) {
+		if(match.isCopiedHero()) {
+			return true;
+		}
 		if(match.getVeraCuster() != null && character.getUserName().equals(match.getVeraCusterPlayer())) {
+			match.getCurrentTurn().getCharacter().attachHero(match.getVeraCuster(), false);
 			match.getVeraCuster().useSkill(match, match.getCurrentTurn().getCharacter(),  this, 1, null);
+			match.setCopiedHero(true);
 			//wait to copy hero's skill
-			canStart =  false;
+			return false;
 			
 		}
-		return canStart;
+		return true;
 	}
 	public void endTurn(String userName, Match match) {
 		if(match.getPlayerTurnQueue().peek().equals(userName)){
@@ -367,12 +379,16 @@ public class CommonService {
 		if(StringUtils.isNotBlank(nextPlayer)) {
 			Character nextCharacter = match.getCharacterMap().get(nextPlayer);
 			match.getCurrentTurn().resetTurnNode(nextCharacter);
+			if(match.getVeraCuster() != null && nextCharacter.getUserName().equals(match.getVeraCusterPlayer())) {
+				match.setCopiedHero(false);
+//				match.getCurrentTurn().getCharacter().attachHero(match.getVeraCuster(), false);
+			} else {
+				match.setCopiedHero(true);
+			}
 			if(StringUtils.isNotBlank(oldPlayer)) {
 				match.getPlayerTurnQueue().add(oldPlayer);
 			}
-			if(useSkillOfVeraCuster(nextCharacter, match)) {
-				match.getCurrentTurn().run(match);
-			}
+			match.getCurrentTurn().run(match);
 		} else {
 			logger.error("Turn service callNextPlayerTurn ERROR @!@@@@@!");
 //			tableService.getsimpMessageSendingOperations().convertAndSend("/topic/turn", new TurnResponse(ResponseType.Winner, userName));

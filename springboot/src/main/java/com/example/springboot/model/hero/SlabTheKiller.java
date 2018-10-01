@@ -2,6 +2,7 @@ package com.example.springboot.model.hero;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +36,17 @@ public class SlabTheKiller extends Hero {
 	@Override
 	public boolean useSkill(Match match, Character character, CommonService commonService, int step,
 			Map<String, Object> others) {
+		String targetPlayer =  (String) others.get("targetUser");
+		// auto
+		if(StringUtils.isBlank(targetPlayer)) {
+			logger.error("not found targetPlayer");
+			return false;
+		}
 		String userName = character.getUserName();
 		String serverMessage = "- Using " + character.getHero().getName() + "'skill.";
 		commonService.getSimpMessageSendingOperations().convertAndSend("/topic/"+match.getMatchId()+"/skill",
 				new HeroSkillResponse(userName, "", "", serverMessage, character.getHero()));
-		match.getCurrentTurn().getPlayerUsedMissed().add(userName);
+		match.getCurrentTurn().getPlayerUsedMissed().add(targetPlayer);
 		return true;
 	}
 

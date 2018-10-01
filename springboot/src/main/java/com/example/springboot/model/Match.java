@@ -38,6 +38,7 @@ public class Match {
 	//for VeraCuster
 	private Hero veraCuster;
 	private String veraCusterPlayer;
+	private boolean copiedHero = false;
 	
 	public Match(String matchId, String userName, String sessionId, SimpMessageSendingOperations messagingTemplate) {
 		this.userMap.put(userName, sessionId);
@@ -112,6 +113,12 @@ public class Match {
 	
 	
 	
+	public boolean isCopiedHero() {
+		return copiedHero;
+	}
+	public void setCopiedHero(boolean copiedHero) {
+		this.copiedHero = copiedHero;
+	}
 	public String getVeraCusterPlayer() {
 		return veraCusterPlayer;
 	}

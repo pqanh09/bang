@@ -1,5 +1,6 @@
 package com.example.springboot.model.hero;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,9 @@ public class Jourdonnais extends Hero {
 		TurnNode turnNode = match.getCurrentTurn();
 		if(Suit.hearts.equals(card.getSuit())) {
 			if(match.getCurrentTurn().getCharacter().getHero() instanceof SlabTheKiller) {
-				turnNode.getCharacter().getHero().useSkill(match, match.getCurrentTurn().getCharacter(), commonService, 1, null);
+				Map<String, Object> othersSlabTheKiller = new HashMap<>();
+				othersSlabTheKiller.put("targetUser", userName);
+				turnNode.getCharacter().getHero().useSkill(match, match.getCurrentTurn().getCharacter(), commonService, 1, othersSlabTheKiller);
 //				match.getCurrentTurn().getPlayerUsedMissed().add(userName);//TODO excuxe by hero
 			} else {
 				turnNode.getNextPlayer().poll();

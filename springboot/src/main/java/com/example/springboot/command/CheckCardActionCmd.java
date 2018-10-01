@@ -25,6 +25,7 @@ import com.example.springboot.model.card.PanicCard;
 import com.example.springboot.model.card.SaloonCard;
 import com.example.springboot.model.card.VolcanicCard;
 import com.example.springboot.model.hero.ApacheKid;
+import com.example.springboot.model.hero.CalamityJanet;
 import com.example.springboot.model.hero.ElenaFuente;
 import com.example.springboot.model.role.RoleType;
 import com.example.springboot.request.Request;
@@ -75,7 +76,8 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 						new CheckCardResponse(true, ""));
 				return;
 			}
-			if (card instanceof MissedCard || (card instanceof BangCard && character.getHero().useSkill(card))) {
+			// skill hero CalamityJanet
+			if (card instanceof MissedCard || (card instanceof BangCard && character.getHero() instanceof CalamityJanet)) {
 				simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 						new CheckCardResponse(true, ""));
 				return;
@@ -84,7 +86,7 @@ public class CheckCardActionCmd extends AbsActionCmd implements ActionCmd {
 					new CheckCardResponse(false, "Can't use this card."));
 			return;
 		} else if (ResponseType.Duello.equals(turnNode.getAction()) || ResponseType.Indians.equals(turnNode.getAction())) {
-			if (card instanceof BangCard || (card instanceof MissedCard && character.getHero().useSkill(card))) {
+			if (card instanceof BangCard || (card instanceof MissedCard && character.getHero() instanceof CalamityJanet)) {
 				if(ResponseType.Duello.equals(turnNode.getAction()) && Suit.diamonds.equals(card.getSuit()) && turnNode.getCharacter().getHero() instanceof ApacheKid) {
 					simpMessageSendingOperations.convertAndSendToUser(sessionId, "/queue/"+match.getMatchId()+"/checkcard",
 							new CheckCardResponse(false, "Can't use diamonds card with hero ApachaKid."));
